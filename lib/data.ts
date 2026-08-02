@@ -148,7 +148,7 @@ export const certifications: Certification[] = [
   { name: 'Student Summit 2025',          issuer: 'ISACA',                category: 'security' },
   { name: 'Ethical Hacker',               issuer: 'Cisco',                category: 'security' },
   { name: 'Bug Bounty Masterclass',       issuer: 'Wiz',                  category: 'security' },
-  { name: 'OWASP Top 10 2025',            issuer: 'Snyk',                 category: 'security' },
+  { name: 'CyberOps Associate',           issuer: 'Cisco',                category: 'security' },
   // Cloud & Technical
   { name: 'Cloud Technical Essentials',                    issuer: 'AWS',       category: 'cloud' },
   { name: 'Cybersecurity Professional',                    issuer: 'Google',    category: 'cloud' },
