@@ -19,10 +19,14 @@ const typeChip: Record<string, string> = {
   sec:  'bg-c-cyan',
 }
 
+// newest first: reverse so recently added entries win year ties (sort is stable)
+const latest = <T extends { year: number }>(clients: T[], n: number) =>
+  [...clients].reverse().sort((a, b) => b.year - a.year).slice(0, n)
+
 const projectPreview = [
-  ...vaptClients.slice(0, 4).map(c => ({ ...c, type: 'vapt' })),
-  ...allGRCClients.slice(0, 3).map(c => ({ ...c, type: 'grc' })),
-  ...allSecEngClients.slice(0, 2).map(c => ({ ...c, type: 'sec' })),
+  ...latest(vaptClients, 3).map(c => ({ ...c, type: 'vapt' })),
+  ...latest(allGRCClients, 3).map(c => ({ ...c, type: 'grc' })),
+  ...latest(allSecEngClients, 3).map(c => ({ ...c, type: 'sec' })),
 ]
 
 export default function HomePage() {
