@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { grcCategories } from '@/lib/data'
+import { pageOpenGraph } from '@/lib/seo'
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/FadeIn'
 
 export const metadata: Metadata = {
@@ -7,11 +8,11 @@ export const metadata: Metadata = {
   description:
     'Governance, Risk & Compliance engagements — ISO 27001, surveillance audit, compliance assessment. Proyek Governance, Risk & Compliance — implementasi ISO 27001, audit surveillance, dan asesmen kepatuhan.',
   alternates: { canonical: '/projects/grc' },
-  openGraph: {
-    title: 'GRC Projects',
-    description: 'Governance, Risk & Compliance engagements — ISO 27001, surveillance audit, compliance assessment.',
-    url: '/projects/grc',
-  },
+  openGraph: pageOpenGraph(
+    'GRC Projects',
+    'Governance, Risk & Compliance engagements — ISO 27001, surveillance audit, compliance assessment.',
+    '/projects/grc',
+  ),
 }
 
 export default function GrcPage() {

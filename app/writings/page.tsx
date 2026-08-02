@@ -1,17 +1,18 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { writings } from '@/lib/data'
+import { pageOpenGraph } from '@/lib/seo'
 
 export const metadata: Metadata = {
   title: 'Writings',
   description:
     'Notes and articles on GRC, penetration testing, security operations, and the craft of building security programs. Catatan dan artikel tentang GRC, uji penetrasi, security operations, dan membangun program keamanan.',
   alternates: { canonical: '/writings' },
-  openGraph: {
-    title: 'Writings',
-    description: 'Notes and articles on GRC, penetration testing, security operations, and the craft of building security programs.',
-    url: '/writings',
-  },
+  openGraph: pageOpenGraph(
+    'Writings',
+    'Notes and articles on GRC, penetration testing, security operations, and the craft of building security programs.',
+    '/writings',
+  ),
 }
 
 function formatDate(dateStr: string) {

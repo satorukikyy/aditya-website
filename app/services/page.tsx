@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { services } from '@/lib/data'
+import { pageOpenGraph } from '@/lib/seo'
 import Link from 'next/link'
 import { personalInfo } from '@/lib/data'
 
@@ -8,11 +9,11 @@ export const metadata: Metadata = {
   description:
     'ISO/IEC 27001 GRC consulting and Vulnerability Assessment & Penetration Testing services. Jasa konsultasi GRC ISO/IEC 27001 serta layanan Vulnerability Assessment & Penetration Testing.',
   alternates: { canonical: '/services' },
-  openGraph: {
-    title: 'Services',
-    description: 'ISO/IEC 27001 GRC consulting and Vulnerability Assessment & Penetration Testing services.',
-    url: '/services',
-  },
+  openGraph: pageOpenGraph(
+    'Services',
+    'ISO/IEC 27001 GRC consulting and Vulnerability Assessment & Penetration Testing services.',
+    '/services',
+  ),
 }
 
 const serviceColor: Record<string, string> = {

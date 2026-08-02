@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { secEngCategories } from '@/lib/data'
+import { pageOpenGraph } from '@/lib/seo'
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/FadeIn'
 
 export const metadata: Metadata = {
@@ -7,11 +8,11 @@ export const metadata: Metadata = {
   description:
     'Blue team engagements — SOC monitoring and incident management across regulated industries. Proyek blue team — monitoring SOC dan manajemen insiden di industri teregulasi.',
   alternates: { canonical: '/projects/sec-eng' },
-  openGraph: {
-    title: 'Security Engineering Projects',
-    description: 'Blue team engagements — SOC monitoring and incident management across regulated industries.',
-    url: '/projects/sec-eng',
-  },
+  openGraph: pageOpenGraph(
+    'Security Engineering Projects',
+    'Blue team engagements — SOC monitoring and incident management across regulated industries.',
+    '/projects/sec-eng',
+  ),
 }
 
 export default function SecEngPage() {

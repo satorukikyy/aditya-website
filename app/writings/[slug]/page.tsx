@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { writings } from '@/lib/data'
+import { pageOpenGraph } from '@/lib/seo'
 import registry from '@/lib/writingRegistry'
 
 type Props = { params: Promise<{ slug: string }> }
@@ -19,10 +20,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: post.excerpt,
     alternates: { canonical: `/writings/${post.slug}` },
     openGraph: {
-      title: post.title,
-      description: post.excerpt,
+      ...pageOpenGraph(post.title, post.excerpt, `/writings/${post.slug}`),
       type: 'article',
-      url: `/writings/${post.slug}`,
       publishedTime: `${post.date}-01`,
       tags: post.tags,
     },

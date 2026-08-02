@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { vaptClients } from '@/lib/data'
+import { pageOpenGraph } from '@/lib/seo'
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/FadeIn'
 
 export const metadata: Metadata = {
@@ -7,11 +8,11 @@ export const metadata: Metadata = {
   description:
     'Vulnerability Assessment & Penetration Testing engagements for web, mobile, and API. Proyek Vulnerability Assessment & Penetration Testing untuk aplikasi web, mobile, dan API.',
   alternates: { canonical: '/projects/vapt' },
-  openGraph: {
-    title: 'VAPT Projects',
-    description: 'Vulnerability Assessment & Penetration Testing engagements for web, mobile, and API.',
-    url: '/projects/vapt',
-  },
+  openGraph: pageOpenGraph(
+    'VAPT Projects',
+    'Vulnerability Assessment & Penetration Testing engagements for web, mobile, and API.',
+    '/projects/vapt',
+  ),
 }
 
 export default function VaptPage() {

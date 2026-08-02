@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { vaptClients, grcCategories, secEngCategories } from '@/lib/data'
+import { pageOpenGraph } from '@/lib/seo'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
@@ -7,11 +8,11 @@ export const metadata: Metadata = {
   description:
     'GRC, VAPT, and blue team security engagements across technology, finance, and critical infrastructure. Proyek keamanan siber GRC, VAPT, dan blue team di sektor teknologi, keuangan, dan infrastruktur kritikal.',
   alternates: { canonical: '/projects' },
-  openGraph: {
-    title: 'Projects',
-    description: 'GRC, VAPT, and blue team security engagements across technology, finance, and critical infrastructure.',
-    url: '/projects',
-  },
+  openGraph: pageOpenGraph(
+    'Projects',
+    'GRC, VAPT, and blue team security engagements across technology, finance, and critical infrastructure.',
+    '/projects',
+  ),
 }
 
 function ClientRow({ year, name }: { year: number; name: string }) {

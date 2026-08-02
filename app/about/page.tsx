@@ -1,16 +1,17 @@
 import type { Metadata } from 'next'
 import { certifications } from '@/lib/data'
+import { pageOpenGraph } from '@/lib/seo'
 
 export const metadata: Metadata = {
   title: 'About',
   description:
     'GRC Consultant & Security Engineer based in Indonesia — ISO 27001, ISO 27701, penetration testing. Konsultan GRC & Security Engineer di Indonesia — ISO 27001, ISO 27701, dan uji penetrasi.',
   alternates: { canonical: '/about' },
-  openGraph: {
-    title: 'About',
-    description: 'GRC Consultant & Security Engineer based in Indonesia — ISO 27001, ISO 27701, penetration testing.',
-    url: '/about',
-  },
+  openGraph: pageOpenGraph(
+    'About',
+    'GRC Consultant & Security Engineer based in Indonesia — ISO 27001, ISO 27701, penetration testing.',
+    '/about',
+  ),
 }
 
 const grcAreas = [
