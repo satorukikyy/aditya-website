@@ -16,7 +16,7 @@
 - No cards (no background fills on content blocks, no `rounded-*` containers, no `shadow-*`)
 - Section separators: `border-t border-[#E5E7EB]` with `pt-16` / `mt-16` spacing
 - Section titles: `font-mono text-[11px] text-[#9CA3AF] uppercase tracking-[3px]`
-- Email everywhere: `rizky@nexorasec.asia` only — no whitesec.id email
+- Email everywhere: `aditya@cloudsphere.id` only — no whitesec.id email
 - Remove Framer Motion entirely (delete all `motion.*` imports and wrappers)
 - Delete `app/experience/` and `app/education/` directories
 - Create `app/background/page.tsx`

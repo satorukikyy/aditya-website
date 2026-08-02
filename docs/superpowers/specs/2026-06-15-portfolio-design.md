@@ -151,7 +151,7 @@ Border      #0A0A0A   all component borders
 ### `/contact` — Contact
 1. Hero heading "Get In Touch"
 2. Left col — Direct Contacts:
-   - Email: rizky@nexorasec.asia
+   - Email: aditya@cloudsphere.id
    - LinkedIn: linkedin.com/in/onerrorkx
    - GitHub: github.com/satorukikyy
    - Instagram: @kxs3c
@@ -172,7 +172,7 @@ Border      #0A0A0A   all component borders
 | Nickname | Kiky |
 | Title | GRC Analyst & Security Researcher |
 | Company | Whitesec.id |
-| Email | rizky@nexorasec.asia |
+| Email | aditya@cloudsphere.id |
 | WhatsApp | +62 878 8986 7060 |
 | LinkedIn | linkedin.com/in/onerrorkx |
 | GitHub | github.com/satorukikyy |

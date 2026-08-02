@@ -3,7 +3,7 @@ export const personalInfo = {
   nickname: 'Aditya',
   title: 'GRC Consultant · Penetration Tester · Security Engineer',
   company: 'Whitesec ID',
-  email: 'rizky@nexorasec.asia',
+  email: 'aditya@cloudsphere.id',
   whatsapp: '+62 878 8986 7060',
   whatsappNumber: '6287889867060',
   bio: "I'm Rizky Aditya, a cybersecurity professional based in Indonesia with experience across GRC consulting, penetration testing, and security operations. Currently at Whitesec ID, delivering 24+ engagements spanning ISO 27001/27701/42001 implementation, web/mobile VAPT, SOC monitoring, and incident management.",
@@ -223,6 +223,7 @@ export const grcCategories: GRCCategory[] = [
       { name: 'PT Inovasi Digital Untuk Transformasi', year: 2026 },
       { name: 'PT Mahardika Teknotama Integrasi', year: 2026 },
       { name: 'PT Berlian Sistem Informasi', year: 2026 },
+      { name: 'PT Sonicwave Nusantara Teknologi', year: 2026 },
     ],
   },
   {
@@ -275,6 +276,7 @@ export const secEngCategories: SecEngCategory[] = [
       { name: 'KPK (Komisi Pemberantasan Korupsi)', year: 2023 },
       { name: 'PT Asuransi Jiwa Sequis Life', year: 2023 },
       { name: 'PT HM Sampoerna Tbk', year: 2023 },
+      { name: 'PT Asuransi Jasindo', year: 2023 },
     ],
   },
   {
@@ -346,5 +348,6 @@ export const vaptClients: VAPTClient[] = [
   { name: 'PT Hutama Karya Infrastruktur', year: 2026 },
   { name: 'PT Inspiro', year: 2026 },
   { name: 'PT Lestari Banten Energy', year: 2026 },
+  { name: 'PT Sonicwave Nusantara Teknologi', year: 2026 },
 ]
 

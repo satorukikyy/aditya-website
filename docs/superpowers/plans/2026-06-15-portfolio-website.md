@@ -281,7 +281,7 @@ test('personalInfo has required fields', () => {
   expect(personalInfo.name).toBe('Rizky Aditya')
   expect(personalInfo.nickname).toBe('Kiky')
   expect(personalInfo.whatsappNumber).toBe('6287889867060')
-  expect(personalInfo.email).toBe('rizky@nexorasec.asia')
+  expect(personalInfo.email).toBe('aditya@cloudsphere.id')
 })
 
 test('experience has at least one entry with required fields', () => {
@@ -320,7 +320,7 @@ export const personalInfo = {
   nickname: 'Kiky',
   title: 'GRC Analyst & Security Researcher',
   company: 'Whitesec.id',
-  email: 'rizky@nexorasec.asia',
+  email: 'aditya@cloudsphere.id',
   whatsapp: '+62 878 8986 7060',
   whatsappNumber: '6287889867060',
   bio: "I'm Rizky Aditya, a GRC Analyst & Security Researcher based in Indonesia with 2+ years of experience in information security governance and vulnerability assessment. Currently working at Whitesec.id, specializing in ISO 27001 & ISO 27701 implementation, internal auditing, and web/mobile penetration testing.",

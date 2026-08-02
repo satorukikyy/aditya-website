@@ -4,7 +4,7 @@ test('personalInfo has required fields', () => {
   expect(personalInfo.name).toBe('Rizky Aditya')
   expect(personalInfo.nickname).toBe('Kiky')
   expect(personalInfo.whatsappNumber).toBe('6287889867060')
-  expect(personalInfo.email).toBe('rizky@nexorasec.asia')
+  expect(personalInfo.email).toBe('aditya@cloudsphere.id')
 })
 
 test('experience has at least one entry with required fields', () => {

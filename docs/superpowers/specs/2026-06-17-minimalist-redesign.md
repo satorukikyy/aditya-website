@@ -96,7 +96,7 @@ Whitesec.id · Bandung, Indonesia
 Helping organizations build security programs that are rigorous
 on paper and resilient when put to the test.
 
-rizky@nexorasec.asia  ·  GitHub  ·  LinkedIn  ·  WhatsApp
+aditya@cloudsphere.id  ·  GitHub  ·  LinkedIn  ·  WhatsApp
 
 ──────────────────────────────────────────────
 ABOUT
@@ -202,7 +202,7 @@ CONTACT
 
 Let's work together.
 
-Email        rizky@nexorasec.asia  (mailto link)
+Email        aditya@cloudsphere.id  (mailto link)
 WhatsApp     +62 878 8986 7060
 LinkedIn     onerrorkx
 GitHub       satorukikyy
@@ -214,7 +214,7 @@ Instagram    @kxs3c
 
 - Labels: mono muted (left column, fixed width)
 - Values: body purple as clickable links
-- Email: always `rizky@nexorasec.asia` — no whitesec.id email anywhere in codebase
+- Email: always `aditya@cloudsphere.id` — no whitesec.id email anywhere in codebase
 
 ---
 
@@ -233,7 +233,7 @@ kiky.                          © 2026 Rizky Aditya
 
 ## Content Changes
 
-- **Email:** Replace all instances of `cyber@whitesec.id` with `rizky@nexorasec.asia` in `lib/data.ts` and any hardcoded references
+- **Email:** Replace all instances of `cyber@whitesec.id` with `aditya@cloudsphere.id` in `lib/data.ts` and any hardcoded references
 - **Routes removed:** `/experience` and `/education` — delete `app/experience/` and `app/education/` directories entirely
 - **New route:** `/background` combining experience + education data
 

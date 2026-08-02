@@ -21,7 +21,7 @@ export default function Image() {
         }}
       >
         <div style={{ color: '#7C3AED', fontSize: '18px', marginBottom: '32px', letterSpacing: '0.02em' }}>
-          rizky@nexorasec.asia
+          aditya@cloudsphere.id
         </div>
         <div style={{ color: '#f5f5f5', fontSize: '66px', fontWeight: 700, lineHeight: 1.1, letterSpacing: '-2px' }}>
           Rizky Aditya
