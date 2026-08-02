@@ -29,6 +29,24 @@ export type ExperienceEntry = {
 
 export const experience: ExperienceEntry[] = [
   {
+    role: 'Founder & Chief Executive Officer',
+    company: 'Stealth Company (Cybersecurity Startup)',
+    location: 'Indonesia',
+    startYear: 2026,
+    endYear: null,
+    description:
+      'Building a cybersecurity startup focused on delivering practical security, governance, and enterprise protection solutions. Leading company strategy, product direction, client engagement, and service delivery while developing scalable cybersecurity offerings for modern organizations.',
+    highlights: [
+      "Founded and lead the company's vision, business strategy, and go-to-market initiatives for cybersecurity consulting and enterprise security solutions",
+      'Designed and structured service offerings spanning Governance, Risk & Compliance (GRC), Vulnerability Assessment & Penetration Testing (VAPT), and Security Solutions & Engineering',
+      'Driving the development of a SaaS platform focused on cybersecurity governance, risk management, asset management, vendor security, and organizational security operations',
+      'Leading solution architecture, client discovery sessions, proposal development, project delivery, and strategic partnership initiatives',
+      'Establishing operational processes, consulting methodologies, technical standards, and quality assurance practices to support scalable business growth',
+      "Building relationships with enterprise clients and technology partners while identifying new market opportunities and expanding the company's cybersecurity capabilities",
+    ],
+    tags: ['Cybersecurity Strategy', 'Product Strategy', 'Business Development', 'GRC', 'Security Consulting', 'Solution Architecture', 'Leadership', 'Startup Operations'],
+  },
+  {
     role: 'IT GRC Consultant & Penetration Tester',
     company: 'Whitesec ID (PT Topi Putih Siberindo)',
     location: 'Indonesia',

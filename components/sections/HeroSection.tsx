@@ -28,7 +28,7 @@ export default function HeroSection() {
       </div>
 
       <p className="font-mono text-[13px] text-c-subtle mb-8">
-        Whitesec ID · South Jakarta, Indonesia
+        Stealth Company · South Jakarta, Indonesia
         <span className="scramble-cursor ml-1">|</span>
       </p>
 
