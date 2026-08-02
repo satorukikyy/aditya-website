@@ -4,7 +4,14 @@ import { writings } from '@/lib/data'
 
 export const metadata: Metadata = {
   title: 'Writings',
-  description: 'Notes and articles on GRC, penetration testing, security operations, and the craft of building security programs.',
+  description:
+    'Notes and articles on GRC, penetration testing, security operations, and the craft of building security programs. Catatan dan artikel tentang GRC, uji penetrasi, security operations, dan membangun program keamanan.',
+  alternates: { canonical: '/writings' },
+  openGraph: {
+    title: 'Writings',
+    description: 'Notes and articles on GRC, penetration testing, security operations, and the craft of building security programs.',
+    url: '/writings',
+  },
 }
 
 function formatDate(dateStr: string) {

@@ -3,7 +3,14 @@ import { certifications } from '@/lib/data'
 
 export const metadata: Metadata = {
   title: 'About',
-  description: 'GRC Analyst & Security Researcher based in Indonesia — ISO 27001, ISO 27701, penetration testing.',
+  description:
+    'GRC Consultant & Security Engineer based in Indonesia — ISO 27001, ISO 27701, penetration testing. Konsultan GRC & Security Engineer di Indonesia — ISO 27001, ISO 27701, dan uji penetrasi.',
+  alternates: { canonical: '/about' },
+  openGraph: {
+    title: 'About',
+    description: 'GRC Consultant & Security Engineer based in Indonesia — ISO 27001, ISO 27701, penetration testing.',
+    url: '/about',
+  },
 }
 
 const grcAreas = [

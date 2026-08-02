@@ -5,7 +5,14 @@ import { personalInfo } from '@/lib/data'
 
 export const metadata: Metadata = {
   title: 'Services',
-  description: 'ISO/IEC 27001 GRC consulting and Vulnerability Assessment & Penetration Testing services.',
+  description:
+    'ISO/IEC 27001 GRC consulting and Vulnerability Assessment & Penetration Testing services. Jasa konsultasi GRC ISO/IEC 27001 serta layanan Vulnerability Assessment & Penetration Testing.',
+  alternates: { canonical: '/services' },
+  openGraph: {
+    title: 'Services',
+    description: 'ISO/IEC 27001 GRC consulting and Vulnerability Assessment & Penetration Testing services.',
+    url: '/services',
+  },
 }
 
 export default function ServicesPage() {

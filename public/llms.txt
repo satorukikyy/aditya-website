@@ -1,0 +1,31 @@
+# Rizky Aditya — Cybersecurity Portfolio
+
+> GRC Consultant, Penetration Tester & Security Engineer based in Indonesia.
+> ISO/IEC 27001:2022, ISO/IEC 27701, and ISO/IEC 42001 Lead Auditor at Whitesec ID
+> (PT Topi Putih Siberindo), delivering 24+ engagements across GRC consulting,
+> web/mobile/API penetration testing (VAPT), SOC monitoring, and incident management.
+
+> Konsultan GRC, Penetration Tester & Security Engineer berbasis di Indonesia.
+> Lead Auditor ISO/IEC 27001:2022, ISO/IEC 27701, dan ISO/IEC 42001 di Whitesec ID
+> (PT Topi Putih Siberindo), menangani 24+ proyek konsultasi GRC, uji penetrasi
+> aplikasi web/mobile/API (VAPT), monitoring SOC, dan manajemen insiden.
+
+Contact / Kontak: aditya@cloudsphere.id
+
+## Pages / Halaman
+
+- [Home / Beranda](/): Overview, featured certifications, and selected engagements. Ringkasan profil, sertifikasi utama, dan proyek pilihan.
+- [About / Tentang](/about): Professional profile and expertise. Profil profesional dan keahlian.
+- [Background / Latar Belakang](/background): Work experience and education. Pengalaman kerja dan pendidikan.
+- [Projects / Proyek](/projects): All security engagements. Semua proyek keamanan siber.
+- [VAPT Projects](/projects/vapt): Penetration testing engagements. Proyek uji penetrasi.
+- [GRC Projects](/projects/grc): ISO 27001 implementation, surveillance audit, and compliance assessment. Implementasi ISO 27001, audit surveillance, dan asesmen kepatuhan.
+- [Security Engineering Projects](/projects/sec-eng): SOC monitoring and incident management. Monitoring SOC dan manajemen insiden.
+- [Services / Layanan](/services): VAPT, GRC consulting, security operations, and bug bounty. VAPT, konsultasi GRC, security operations, dan bug bounty.
+- [Writings / Tulisan](/writings): Personal notes and articles. Catatan dan artikel pribadi.
+- [Contact / Kontak](/contact): Inquiry form and social links. Formulir kontak dan tautan media sosial.
+
+## Feeds & Metadata
+
+- [RSS Feed](/rss.xml): Writings and engagement updates. Pembaruan tulisan dan proyek.
+- [Sitemap](/sitemap.xml)

@@ -4,7 +4,14 @@ import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/FadeIn'
 
 export const metadata: Metadata = {
   title: 'VAPT Projects',
-  description: 'Vulnerability Assessment & Penetration Testing engagements.',
+  description:
+    'Vulnerability Assessment & Penetration Testing engagements for web, mobile, and API. Proyek Vulnerability Assessment & Penetration Testing untuk aplikasi web, mobile, dan API.',
+  alternates: { canonical: '/projects/vapt' },
+  openGraph: {
+    title: 'VAPT Projects',
+    description: 'Vulnerability Assessment & Penetration Testing engagements for web, mobile, and API.',
+    url: '/projects/vapt',
+  },
 }
 
 export default function VaptPage() {

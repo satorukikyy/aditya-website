@@ -4,7 +4,14 @@ import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/FadeIn'
 
 export const metadata: Metadata = {
   title: 'GRC Projects',
-  description: 'Governance, Risk & Compliance engagements — ISO 27001, surveillance audit, compliance assessment.',
+  description:
+    'Governance, Risk & Compliance engagements — ISO 27001, surveillance audit, compliance assessment. Proyek Governance, Risk & Compliance — implementasi ISO 27001, audit surveillance, dan asesmen kepatuhan.',
+  alternates: { canonical: '/projects/grc' },
+  openGraph: {
+    title: 'GRC Projects',
+    description: 'Governance, Risk & Compliance engagements — ISO 27001, surveillance audit, compliance assessment.',
+    url: '/projects/grc',
+  },
 }
 
 export default function GrcPage() {

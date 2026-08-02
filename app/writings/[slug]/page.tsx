@@ -14,7 +14,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const post = writings.find(p => p.slug === slug)
   if (!post) return {}
-  return { title: post.title, description: post.excerpt }
+  return {
+    title: post.title,
+    description: post.excerpt,
+    alternates: { canonical: `/writings/${post.slug}` },
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      type: 'article',
+      url: `/writings/${post.slug}`,
+      publishedTime: `${post.date}-01`,
+      tags: post.tags,
+    },
+    twitter: { card: 'summary_large_image', title: post.title, description: post.excerpt },
+  }
 }
 
 function formatDate(dateStr: string) {
@@ -31,8 +44,27 @@ export default async function WritingPost({ params }: Props) {
   if (!loader) notFound()
   const { default: Content } = await loader()
 
+  const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://onerrorkx.pages.dev'
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.excerpt,
+    datePublished: `${post.date}-01`,
+    inLanguage: 'en',
+    keywords: post.tags.join(', '),
+    url: `${base}/writings/${post.slug}`,
+    mainEntityOfPage: `${base}/writings/${post.slug}`,
+    author: { '@id': `${base}/#person` },
+    publisher: { '@id': `${base}/#person` },
+  }
+
   return (
     <div className="max-w-[720px] mx-auto px-6 pt-28 pb-24">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Link
         href="/writings"
         className="font-mono text-[13px] text-c-subtle hover:text-c-purple transition-colors mb-12 inline-block"

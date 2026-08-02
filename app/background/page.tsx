@@ -3,7 +3,14 @@ import { experience, education } from '@/lib/data'
 
 export const metadata: Metadata = {
   title: 'Background',
-  description: 'Work experience and education — GRC consulting, security engineering, and penetration testing.',
+  description:
+    'Work experience and education — GRC consulting, security engineering, and penetration testing. Pengalaman kerja dan pendidikan — konsultasi GRC, security engineering, dan uji penetrasi.',
+  alternates: { canonical: '/background' },
+  openGraph: {
+    title: 'Background',
+    description: 'Work experience and education — GRC consulting, security engineering, and penetration testing.',
+    url: '/background',
+  },
 }
 
 export default function BackgroundPage() {

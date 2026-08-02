@@ -4,7 +4,14 @@ import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/FadeIn'
 
 export const metadata: Metadata = {
   title: 'Security Engineering Projects',
-  description: 'Blue team engagements — SOC monitoring and incident management across regulated industries.',
+  description:
+    'Blue team engagements — SOC monitoring and incident management across regulated industries. Proyek blue team — monitoring SOC dan manajemen insiden di industri teregulasi.',
+  alternates: { canonical: '/projects/sec-eng' },
+  openGraph: {
+    title: 'Security Engineering Projects',
+    description: 'Blue team engagements — SOC monitoring and incident management across regulated industries.',
+    url: '/projects/sec-eng',
+  },
 }
 
 export default function SecEngPage() {

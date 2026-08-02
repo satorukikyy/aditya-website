@@ -4,7 +4,14 @@ import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Projects',
-  description: 'GRC, VAPT, and blue team security engagements across technology, finance, and critical infrastructure.',
+  description:
+    'GRC, VAPT, and blue team security engagements across technology, finance, and critical infrastructure. Proyek keamanan siber GRC, VAPT, dan blue team di sektor teknologi, keuangan, dan infrastruktur kritikal.',
+  alternates: { canonical: '/projects' },
+  openGraph: {
+    title: 'Projects',
+    description: 'GRC, VAPT, and blue team security engagements across technology, finance, and critical infrastructure.',
+    url: '/projects',
+  },
 }
 
 export default function ProjectsPage() {
