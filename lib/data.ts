@@ -303,6 +303,7 @@ export const secEngCategories: SecEngCategory[] = [
     shortLabel: 'Incident Management',
     clients: [
       { name: 'PT Bank Resona Perdania', year: 2024 },
+      { name: 'PT Pupuk Iskandar Muda', year: 2026 },
     ],
   },
 ]
