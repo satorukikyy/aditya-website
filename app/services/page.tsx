@@ -50,10 +50,11 @@ export default function ServicesPage() {
             <p className="font-body text-[14px] text-c-muted leading-[1.75] mb-5">
               {service.description}
             </p>
-            <ul className="space-y-2 border-l-4 border-c-purple pl-4">
+            <ul className="space-y-2">
               {service.items.map((item) => (
-                <li key={item} className="font-body text-[14px] font-medium text-c-text">
-                  {item}
+                <li key={item} className="font-body text-[14px] font-medium text-c-text flex gap-2.5">
+                  <span className="text-c-purple font-bold flex-shrink-0">▪</span>
+                  <span>{item}</span>
                 </li>
               ))}
             </ul>

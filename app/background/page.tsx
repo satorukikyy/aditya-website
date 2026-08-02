@@ -39,10 +39,11 @@ export default function BackgroundPage() {
               <p className="font-mono text-[13px] font-bold text-c-purple mb-3">{exp.company}</p>
               <p className="font-body text-[14px] text-c-muted leading-[1.75] mb-4">{exp.description}</p>
               {exp.highlights && (
-                <ul className="space-y-1.5 mb-4 border-l-4 border-c-purple pl-4">
+                <ul className="space-y-2 mb-4">
                   {exp.highlights.map((h) => (
-                    <li key={h} className="font-body text-[13px] text-c-muted leading-relaxed">
-                      {h}
+                    <li key={h} className="font-body text-[13px] text-c-muted leading-relaxed flex gap-2.5">
+                      <span className="text-c-purple font-bold flex-shrink-0">▪</span>
+                      <span>{h}</span>
                     </li>
                   ))}
                 </ul>
