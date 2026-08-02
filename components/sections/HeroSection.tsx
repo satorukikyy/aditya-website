@@ -34,8 +34,8 @@ export default function HeroSection() {
 
       <div className="nb-card border-l-[10px] border-l-c-purple p-5 max-w-[560px] mb-10">
         <p className="font-body text-[16px] font-medium text-c-text leading-[1.6]">
-          i build security programs that hold up — on paper and when someone&apos;s
-          actually trying.
+          i treat security like a product — build it fast, keep it audit-ready,
+          and break it myself before anyone else can.
         </p>
       </div>
 
