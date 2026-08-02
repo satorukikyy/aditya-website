@@ -29,42 +29,48 @@ export default function WritingsPage() {
   const years = Object.keys(byYear).map(Number).sort((a, b) => b - a)
 
   return (
-    <div className="max-w-[720px] mx-auto px-6 pt-28 pb-24">
-      <h1 className="font-body font-bold text-[36px] md:text-[44px] leading-[1.1] tracking-[-1px] text-c-text mb-4">
-        // writings
+    <div className="max-w-[760px] mx-auto px-6 pt-32 pb-24">
+      <h1 className="font-display text-[34px] md:text-[44px] uppercase leading-[1.05] text-c-text mb-6">
+        Wri
+        <span className="inline-block bg-c-yellow border-2 border-c-text shadow-brutal px-3 rotate-1">
+          tings.
+        </span>
       </h1>
       <p className="font-body text-[15px] text-c-muted leading-[1.75] mb-16 max-w-[520px]">
         Notes on security programs, compliance frameworks, and lessons from the field.
       </p>
 
       {years.length === 0 ? (
-        <p className="font-mono text-[13px] text-c-subtle">No writings yet.</p>
+        <p className="nb-chip">No writings yet.</p>
       ) : (
         <div className="space-y-14">
           {years.map((year) => (
             <div key={year}>
-              <p className="font-mono text-[12px] text-c-subtle mb-6">{year}</p>
-              <div className="space-y-8">
+              <p className="nb-label mb-6">{year}</p>
+              <div className="space-y-6">
                 {byYear[year].map((post) => (
                   <article key={post.slug}>
-                    <Link href={`/writings/${post.slug}`} className="group block">
-                      <h2 className="font-body font-semibold text-[17px] text-c-text group-hover:text-c-purple transition-colors mb-2 leading-snug">
+                    <Link
+                      href={`/writings/${post.slug}`}
+                      className="nb-card block p-5 transition-all duration-100 hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-none"
+                    >
+                      <h2 className="font-body font-bold text-[17px] text-c-text mb-2 leading-snug">
                         {post.title}
                       </h2>
-                    </Link>
-                    <p className="font-body text-[14px] text-c-muted leading-[1.7] mb-3">
-                      {post.excerpt}
-                    </p>
-                    <div className="flex items-center gap-4">
-                      <span className="font-mono text-[12px] text-c-subtle">{formatDate(post.date)}</span>
-                      <div className="flex gap-2">
-                        {post.tags.map(tag => (
-                          <span key={tag} className="font-mono text-[11px] text-c-subtle border border-c-border px-2 py-0.5 rounded">
-                            {tag}
-                          </span>
-                        ))}
+                      <p className="font-body text-[14px] text-c-muted leading-[1.7] mb-4">
+                        {post.excerpt}
+                      </p>
+                      <div className="flex flex-wrap items-center gap-3">
+                        <span className="font-mono text-[11px] font-bold uppercase text-c-subtle">{formatDate(post.date)}</span>
+                        <div className="flex flex-wrap gap-2">
+                          {post.tags.map(tag => (
+                            <span key={tag} className="font-mono text-[10px] font-bold uppercase border-2 border-c-text px-1.5 py-0.5 bg-c-bg">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
                       </div>
-                    </div>
+                    </Link>
                   </article>
                 ))}
               </div>

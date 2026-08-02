@@ -2,8 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { useState } from 'react'
 import { personalInfo } from '@/lib/data'
 
 const navLinks = [
@@ -18,79 +17,63 @@ const navLinks = [
 export default function Navbar() {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
 
   const isActive = (href: string) =>
     pathname === href || pathname.startsWith(href + '/')
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? 'bg-white/80 backdrop-blur-md border-b border-c-border shadow-[0_1px_0_0_rgba(0,0,0,0.04)]'
-          : 'bg-white border-b border-transparent'
-      }`}
-    >
-      <nav className="max-w-[720px] mx-auto px-6 h-14 flex items-center justify-between">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-c-bg border-b-[3px] border-c-text">
+      <nav className="max-w-[760px] mx-auto px-6 h-16 flex items-center justify-between">
 
         <Link
           href="/"
-          className="font-body font-bold text-[16px] text-c-text select-none"
+          className="font-display text-[18px] text-c-text select-none tracking-tight"
         >
           {personalInfo.nickname.toLowerCase()}
           <span className="text-c-purple">.</span>
         </Link>
 
         {/* Desktop links */}
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden md:flex items-center gap-2">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className={`relative font-body text-[13px] transition-colors pb-[3px] ${
-                isActive(link.href) ? 'text-c-text' : 'text-c-muted hover:text-c-text'
+              className={`font-mono text-[11px] font-bold uppercase tracking-wide px-2.5 py-1.5 border-2 transition-all duration-100 ${
+                isActive(link.href)
+                  ? 'bg-c-yellow border-c-text shadow-brutal-sm'
+                  : 'border-transparent text-c-muted hover:border-c-text hover:bg-c-surface hover:text-c-text'
               }`}
             >
               {link.label}
-              {isActive(link.href) && (
-                <motion.span
-                  layoutId="nav-indicator"
-                  className="absolute left-0 right-0 bottom-0 h-[2px] bg-c-purple rounded-full"
-                  transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                />
-              )}
             </Link>
           ))}
         </div>
 
         {/* Mobile toggle */}
         <button
-          className="md:hidden w-8 h-8 flex flex-col items-center justify-center gap-[5px]"
+          className="md:hidden w-10 h-10 flex flex-col items-center justify-center gap-[5px] border-2 border-c-text bg-c-surface shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
           onClick={() => setOpen(!open)}
           aria-label="Toggle menu"
         >
-          <span className={`block w-4 h-px bg-c-text transition-all ${open ? 'rotate-45 translate-y-[6px]' : ''}`} />
-          <span className={`block w-4 h-px bg-c-text transition-opacity ${open ? 'opacity-0' : ''}`} />
-          <span className={`block w-4 h-px bg-c-text transition-all ${open ? '-rotate-45 -translate-y-[6px]' : ''}`} />
+          <span className={`block w-4 h-[2px] bg-c-text transition-all ${open ? 'rotate-45 translate-y-[7px]' : ''}`} />
+          <span className={`block w-4 h-[2px] bg-c-text transition-opacity ${open ? 'opacity-0' : ''}`} />
+          <span className={`block w-4 h-[2px] bg-c-text transition-all ${open ? '-rotate-45 -translate-y-[7px]' : ''}`} />
         </button>
       </nav>
 
       {/* Mobile drawer */}
       {open && (
-        <div className="md:hidden bg-white/90 backdrop-blur-md border-b border-c-border px-6 py-5 flex flex-col gap-4">
+        <div className="md:hidden bg-c-bg border-b-[3px] border-c-text px-6 py-5 flex flex-col gap-3">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               onClick={() => setOpen(false)}
-              className={`font-body text-[14px] ${
-                isActive(link.href) ? 'text-c-text font-semibold' : 'text-c-muted'
+              className={`font-mono text-[12px] font-bold uppercase tracking-wide px-3 py-2 border-2 ${
+                isActive(link.href)
+                  ? 'bg-c-yellow border-c-text shadow-brutal-sm'
+                  : 'border-c-text bg-c-surface text-c-muted'
               }`}
             >
               {link.label}

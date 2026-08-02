@@ -1,39 +1,34 @@
-// Smoke test: verify tailwind config exports custom colors
+// Smoke test: verify tailwind config exports the neobrutalist design tokens
 import config from '../tailwind.config'
 
-test('tailwind config has purple/white minimalist custom colors', () => {
+test('tailwind config has neobrutalist base colors', () => {
   const colors = config.theme?.extend?.colors as Record<string, unknown>
-  expect(colors['c-bg']).toBe('#FFFFFF')
-  expect(colors['c-text']).toBe('#111111')
-  expect(colors['c-muted']).toBe('#6B7280')
-  expect(colors['c-subtle']).toBe('#9CA3AF')
-  expect(colors['c-border']).toBe('#E5E7EB')
+  expect(colors['c-bg']).toBe('#FAF3E8')
+  expect(colors['c-surface']).toBe('#FFFFFF')
+  expect(colors['c-text']).toBe('#0D0D0D')
+  expect(colors['c-border']).toBe('#0D0D0D')
   expect(colors['c-purple']).toBe('#7C3AED')
-  expect(colors['c-purple-hover']).toBe('#8B5CF6')
   expect(colors['c-purple-light']).toBe('#EDE9FE')
 })
 
-test('tailwind config does not contain removed brand-green tokens', () => {
+test('tailwind config has neobrutalist accent colors', () => {
   const colors = config.theme?.extend?.colors as Record<string, unknown>
-  expect(colors['brand-green']).toBeUndefined()
-  expect(colors['brand-bg']).toBeUndefined()
-  expect(colors['brand-text']).toBeUndefined()
-  expect(colors['brand-muted']).toBeUndefined()
-  expect(colors['brand-border']).toBeUndefined()
+  expect(colors['c-yellow']).toBe('#FFD12E')
+  expect(colors['c-pink']).toBe('#FF8FD8')
+  expect(colors['c-cyan']).toBe('#7AE1EA')
+  expect(colors['c-lime']).toBe('#B5F163')
 })
 
-test('tailwind config does not contain removed neo-brut tokens', () => {
-  const colors = config.theme?.extend?.colors as Record<string, unknown>
-  expect(colors['brand-red']).toBeUndefined()
-  expect(colors['brand-yellow']).toBeUndefined()
-  expect(colors['brand-blue']).toBeUndefined()
-  expect(colors['sky-light']).toBeUndefined()
-  expect(colors['sky-mid']).toBeUndefined()
+test('tailwind config has hard brutal shadows (no blur)', () => {
+  const shadows = config.theme?.extend?.boxShadow as Record<string, string>
+  expect(shadows['brutal-sm']).toBe('3px 3px 0 0 #0D0D0D')
+  expect(shadows['brutal']).toBe('5px 5px 0 0 #0D0D0D')
+  expect(shadows['brutal-lg']).toBe('8px 8px 0 0 #0D0D0D')
 })
 
-test('tailwind config does not contain removed neo box shadows', () => {
-  const shadows = config.theme?.extend?.boxShadow as Record<string, string> | undefined
-  expect(shadows?.['neo']).toBeUndefined()
-  expect(shadows?.['neo-sm']).toBeUndefined()
-  expect(shadows?.['neo-lg']).toBeUndefined()
+test('tailwind config has display, body, and mono font stacks', () => {
+  const fonts = config.theme?.extend?.fontFamily as Record<string, string[]>
+  expect(fonts['display'][0]).toBe('var(--font-display)')
+  expect(fonts['body'][0]).toBe('var(--font-body)')
+  expect(fonts['mono'][0]).toBe('var(--font-mono)')
 })

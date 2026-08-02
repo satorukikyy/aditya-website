@@ -15,54 +15,61 @@ export const metadata: Metadata = {
   },
 }
 
+const serviceColor: Record<string, string> = {
+  vapt:      'bg-c-pink',
+  grc:       'bg-c-yellow',
+  seceng:    'bg-c-cyan',
+  bugbounty: 'bg-c-lime',
+}
+
 export default function ServicesPage() {
   return (
-    <div className="max-w-[720px] mx-auto px-6 pt-28 pb-24">
+    <div className="max-w-[760px] mx-auto px-6 pt-32 pb-24">
 
-      <h1 className="font-body font-bold text-[36px] md:text-[44px] leading-[1.1] tracking-[-1px] text-c-text mb-12">
-        Services.
+      <h1 className="font-display text-[34px] md:text-[44px] uppercase leading-[1.05] text-c-text mb-12">
+        Ser
+        <span className="inline-block bg-c-lime border-2 border-c-text shadow-brutal px-3 -rotate-1">
+          vices.
+        </span>
       </h1>
 
-      <div className="space-y-16">
+      <div className="space-y-8">
         {services.map((service, i) => (
-          <div key={service.id}>
-            <div className="flex items-baseline gap-4 mb-4">
-              <span className="font-mono text-[13px] text-c-subtle">{String(i + 1).padStart(2, '0')}</span>
-              <span className="font-mono text-[12px] text-c-purple">{service.id}</span>
+          <div key={service.id} className="nb-card p-5 md:p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="bg-c-text text-c-bg font-display text-[15px] w-10 h-10 flex items-center justify-center flex-shrink-0">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span className={`nb-chip ${serviceColor[service.id] ?? 'bg-c-surface'}`}>
+                {service.id}
+              </span>
             </div>
-            <h2 className="font-body font-semibold text-[20px] text-c-text tracking-tight mb-3">
+            <h2 className="font-body font-bold text-[19px] text-c-text tracking-tight mb-3">
               {service.title}
             </h2>
-            <p className="font-body text-[15px] text-c-muted leading-[1.75] mb-6">
+            <p className="font-body text-[14px] text-c-muted leading-[1.75] mb-5">
               {service.description}
             </p>
-            <ul className="space-y-2">
+            <ul className="space-y-2 border-l-4 border-c-purple pl-4">
               {service.items.map((item) => (
-                <li key={item} className="font-body text-[14px] text-c-muted">
-                  · {item}
+                <li key={item} className="font-body text-[14px] font-medium text-c-text">
+                  {item}
                 </li>
               ))}
             </ul>
-            {i < services.length - 1 && (
-              <div className="border-t border-c-border mt-16" />
-            )}
           </div>
         ))}
       </div>
 
-      <div className="border-t border-c-border mt-16 pt-16">
-        <p className="font-body text-[15px] text-c-muted mb-4">
+      <div className="border-t-[3px] border-c-text mt-14 pt-14">
+        <p className="font-body text-[15px] font-medium text-c-text mb-6">
           Ready to start? Reach out and I&apos;ll respond within 24 hours.
         </p>
-        <div className="flex flex-wrap gap-x-5 gap-y-2 font-mono text-[13px]">
-          <a
-            href={`mailto:${personalInfo.email}`}
-            className="text-c-purple hover:text-c-purple-hover transition-colors"
-          >
+        <div className="flex flex-wrap gap-3">
+          <a href={`mailto:${personalInfo.email}`} className="nb-btn !bg-c-purple !text-white normal-case">
             {personalInfo.email}
           </a>
-          <span className="text-c-border">·</span>
-          <Link href="/contact" className="text-c-muted hover:text-c-text transition-colors">
+          <Link href="/contact" className="nb-btn">
             Contact form →
           </Link>
         </div>

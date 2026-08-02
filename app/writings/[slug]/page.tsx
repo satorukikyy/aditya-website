@@ -60,27 +60,24 @@ export default async function WritingPost({ params }: Props) {
   }
 
   return (
-    <div className="max-w-[720px] mx-auto px-6 pt-28 pb-24">
+    <div className="max-w-[720px] mx-auto px-6 pt-32 pb-24">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <Link
-        href="/writings"
-        className="font-mono text-[13px] text-c-subtle hover:text-c-purple transition-colors mb-12 inline-block"
-      >
+      <Link href="/writings" className="nb-chip hover:bg-c-yellow transition-colors mb-12 inline-block">
         ← writings
       </Link>
 
       <div className="mb-10">
-        <h1 className="font-body font-bold text-[28px] md:text-[34px] leading-[1.2] tracking-[-0.5px] text-c-text mb-5">
+        <h1 className="font-body font-bold text-[26px] md:text-[32px] leading-[1.25] tracking-tight text-c-text mb-5">
           {post.title}
         </h1>
-        <div className="flex flex-wrap items-center gap-4">
-          <span className="font-mono text-[13px] text-c-subtle">{formatDate(post.date)}</span>
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="nb-chip bg-c-yellow">{formatDate(post.date)}</span>
           <div className="flex flex-wrap gap-2">
             {post.tags.map(tag => (
-              <span key={tag} className="font-mono text-[11px] text-c-subtle border border-c-border px-2 py-0.5 rounded">
+              <span key={tag} className="font-mono text-[10px] font-bold uppercase border-2 border-c-text px-1.5 py-0.5 bg-c-bg">
                 {tag}
               </span>
             ))}
@@ -88,7 +85,7 @@ export default async function WritingPost({ params }: Props) {
         </div>
       </div>
 
-      <hr className="border-c-border mb-10" />
+      <hr className="border-t-[3px] border-c-text mb-10" />
 
       <div className="prose-writings">
         <Content />

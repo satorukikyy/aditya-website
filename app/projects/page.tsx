@@ -14,50 +14,58 @@ export const metadata: Metadata = {
   },
 }
 
+function ClientRow({ year, name }: { year: number; name: string }) {
+  return (
+    <div className="flex items-center gap-4 px-4 py-2.5 hover:bg-c-purple-light transition-colors">
+      <span className="font-mono text-[11px] font-bold text-c-text bg-c-bg border-2 border-c-text px-1.5 py-0.5 flex-shrink-0">
+        {year}
+      </span>
+      <span className="font-body text-[14px] font-medium text-c-text">{name}</span>
+    </div>
+  )
+}
+
 export default function ProjectsPage() {
   return (
-    <div className="max-w-[720px] mx-auto px-6 pt-28 pb-24">
+    <div className="max-w-[760px] mx-auto px-6 pt-32 pb-24">
 
-      <h1 className="font-body font-bold text-[36px] md:text-[44px] leading-[1.1] tracking-[-1px] text-c-text mb-12">
-        Projects.
+      <h1 className="font-display text-[34px] md:text-[44px] uppercase leading-[1.05] text-c-text mb-12">
+        Pro
+        <span className="inline-block bg-c-pink border-2 border-c-text shadow-brutal px-3 -rotate-1">
+          jects.
+        </span>
       </h1>
 
       {/* VAPT */}
-      <section className="mb-16">
-        <div className="flex items-baseline justify-between mb-6">
-          <p className="font-mono text-[13px] text-c-subtle">// vapt</p>
-          <Link href="/projects/vapt" className="font-mono text-[12px] text-c-purple hover:text-c-purple-hover transition-colors">
+      <section className="mb-14">
+        <div className="flex items-center justify-between mb-6">
+          <p className="nb-label">VAPT</p>
+          <Link href="/projects/vapt" className="nb-chip bg-c-pink hover:shadow-brutal-sm transition-shadow">
             view all →
           </Link>
         </div>
-        <div className="space-y-2">
+        <div className="nb-card divide-y-2 divide-c-text">
           {vaptClients.map((client) => (
-            <div key={client.name} className="flex items-baseline gap-4">
-              <span className="font-mono text-[12px] text-c-subtle w-12 flex-shrink-0">{client.year}</span>
-              <span className="font-body text-[14px] text-c-text">{client.name}</span>
-            </div>
+            <ClientRow key={client.name} year={client.year} name={client.name} />
           ))}
         </div>
       </section>
 
       {/* GRC */}
-      <section className="border-t border-c-border pt-16 mb-16">
-        <div className="flex items-baseline justify-between mb-6">
-          <p className="font-mono text-[13px] text-c-subtle">// grc</p>
-          <Link href="/projects/grc" className="font-mono text-[12px] text-c-purple hover:text-c-purple-hover transition-colors">
+      <section className="border-t-[3px] border-c-text pt-14 mb-14">
+        <div className="flex items-center justify-between mb-6">
+          <p className="nb-label">GRC</p>
+          <Link href="/projects/grc" className="nb-chip bg-c-yellow hover:shadow-brutal-sm transition-shadow">
             view all →
           </Link>
         </div>
         <div className="space-y-6">
           {grcCategories.map((cat) => (
             <div key={cat.id}>
-              <p className="font-mono text-[12px] text-c-muted mb-3">{cat.shortLabel}</p>
-              <div className="space-y-2">
+              <p className="font-mono text-[12px] font-bold uppercase text-c-muted mb-3">{cat.shortLabel}</p>
+              <div className="nb-card divide-y-2 divide-c-text">
                 {cat.clients.map((client) => (
-                  <div key={client.name} className="flex items-baseline gap-4">
-                    <span className="font-mono text-[12px] text-c-subtle w-12 flex-shrink-0">{client.year}</span>
-                    <span className="font-body text-[14px] text-c-text">{client.name}</span>
-                  </div>
+                  <ClientRow key={client.name} year={client.year} name={client.name} />
                 ))}
               </div>
             </div>
@@ -66,23 +74,20 @@ export default function ProjectsPage() {
       </section>
 
       {/* Sec-Eng / Blue Team */}
-      <section className="border-t border-c-border pt-16">
-        <div className="flex items-baseline justify-between mb-6">
-          <p className="font-mono text-[13px] text-c-subtle">// sec-eng</p>
-          <Link href="/projects/sec-eng" className="font-mono text-[12px] text-c-purple hover:text-c-purple-hover transition-colors">
+      <section className="border-t-[3px] border-c-text pt-14">
+        <div className="flex items-center justify-between mb-6">
+          <p className="nb-label">SEC-ENG</p>
+          <Link href="/projects/sec-eng" className="nb-chip bg-c-cyan hover:shadow-brutal-sm transition-shadow">
             view all →
           </Link>
         </div>
         <div className="space-y-6">
           {secEngCategories.map((cat) => (
             <div key={cat.id}>
-              <p className="font-mono text-[12px] text-c-muted mb-3">{cat.shortLabel}</p>
-              <div className="space-y-2">
+              <p className="font-mono text-[12px] font-bold uppercase text-c-muted mb-3">{cat.shortLabel}</p>
+              <div className="nb-card divide-y-2 divide-c-text">
                 {cat.clients.map((client) => (
-                  <div key={client.name} className="flex items-baseline gap-4">
-                    <span className="font-mono text-[12px] text-c-subtle w-12 flex-shrink-0">{client.year}</span>
-                    <span className="font-body text-[14px] text-c-text">{client.name}</span>
-                  </div>
+                  <ClientRow key={client.name} year={client.year} name={client.name} />
                 ))}
               </div>
             </div>

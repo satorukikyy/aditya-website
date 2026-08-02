@@ -10,27 +10,65 @@ export default function Image() {
     (
       <div
         style={{
-          background: '#0f0f0f',
+          background: '#FAF3E8',
           width: '100%',
           height: '100%',
           display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          padding: '80px',
+          padding: '40px',
           fontFamily: 'monospace',
         }}
       >
-        <div style={{ color: '#7C3AED', fontSize: '18px', marginBottom: '32px', letterSpacing: '0.02em' }}>
-          aditya@cloudsphere.id
-        </div>
-        <div style={{ color: '#f5f5f5', fontSize: '66px', fontWeight: 700, lineHeight: 1.1, letterSpacing: '-2px' }}>
-          Rizky Aditya
-        </div>
-        <div style={{ color: '#888888', fontSize: '24px', marginTop: '20px', lineHeight: 1.5 }}>
-          GRC Consultant · Penetration Tester · Security Engineer
-        </div>
-        <div style={{ color: '#2a2a2a', fontSize: '17px', marginTop: '64px', letterSpacing: '0.05em' }}>
-          onerrorkx.pages.dev
+        <div
+          style={{
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            padding: '72px',
+            background: '#FFFFFF',
+            border: '6px solid #0D0D0D',
+            boxShadow: '16px 16px 0 0 #0D0D0D',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignSelf: 'flex-start',
+              background: '#0D0D0D',
+              color: '#FAF3E8',
+              fontSize: '18px',
+              fontWeight: 700,
+              letterSpacing: '0.15em',
+              padding: '8px 16px',
+              marginBottom: '36px',
+            }}
+          >
+            GRC · VAPT · SECOPS
+          </div>
+          <div style={{ color: '#0D0D0D', fontSize: '76px', fontWeight: 700, lineHeight: 1.05, letterSpacing: '-2px' }}>
+            Rizky Aditya
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              alignSelf: 'flex-start',
+              background: '#FFD12E',
+              border: '4px solid #0D0D0D',
+              boxShadow: '6px 6px 0 0 #0D0D0D',
+              color: '#0D0D0D',
+              fontSize: '24px',
+              fontWeight: 700,
+              padding: '10px 18px',
+              marginTop: '28px',
+            }}
+          >
+            GRC Consultant · Penetration Tester · Security Engineer
+          </div>
+          <div style={{ display: 'flex', gap: '28px', color: '#7C3AED', fontSize: '19px', fontWeight: 700, marginTop: '56px' }}>
+            <span>aditya@cloudsphere.id</span>
+            <span style={{ color: '#7A736A' }}>onerrorkx.pages.dev</span>
+          </div>
         </div>
       </div>
     ),

@@ -16,10 +16,10 @@ export const metadata: Metadata = {
 
 export default function VaptPage() {
   return (
-    <div className="max-w-[720px] mx-auto px-6 pt-28 pb-24">
+    <div className="max-w-[760px] mx-auto px-6 pt-32 pb-24">
       <FadeIn>
-        <p className="font-mono text-[13px] text-c-subtle mb-4">// vapt</p>
-        <h1 className="font-body font-bold text-[36px] md:text-[44px] leading-[1.1] tracking-[-1px] text-c-text mb-12">
+        <p className="nb-label bg-c-pink !text-c-text mb-6">VAPT</p>
+        <h1 className="font-display text-[34px] md:text-[44px] uppercase leading-[1.05] text-c-text mb-10">
           Penetration Testing.
         </h1>
         <p className="font-body text-[15px] text-c-muted leading-[1.75] mb-4">
@@ -33,15 +33,19 @@ export default function VaptPage() {
           Clients span technology, fintech, healthcare, and critical infrastructure sectors.
         </p>
       </FadeIn>
-      <StaggerContainer className="space-y-2">
-        {vaptClients.map((client) => (
-          <StaggerItem key={client.name}>
-            <div className="flex items-baseline gap-4">
-              <span className="font-mono text-[12px] text-c-subtle w-12 flex-shrink-0">{client.year}</span>
-              <span className="font-body text-[14px] text-c-text">{client.name}</span>
-            </div>
-          </StaggerItem>
-        ))}
+      <StaggerContainer>
+        <div className="nb-card divide-y-2 divide-c-text">
+          {vaptClients.map((client) => (
+            <StaggerItem key={client.name}>
+              <div className="flex items-center gap-4 px-4 py-2.5 hover:bg-c-purple-light transition-colors">
+                <span className="font-mono text-[11px] font-bold text-c-text bg-c-bg border-2 border-c-text px-1.5 py-0.5 flex-shrink-0">
+                  {client.year}
+                </span>
+                <span className="font-body text-[14px] font-medium text-c-text">{client.name}</span>
+              </div>
+            </StaggerItem>
+          ))}
+        </div>
       </StaggerContainer>
     </div>
   )

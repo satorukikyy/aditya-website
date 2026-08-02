@@ -43,13 +43,16 @@ export default function ContactPage() {
   const waUrl = `https://wa.me/${personalInfo.whatsappNumber}?text=${encodeURIComponent(waMessage)}`
   const canSubmit = name.trim() !== '' && message.trim() !== ''
 
-  const inputClass = "w-full border-b border-c-border bg-transparent py-2.5 font-body text-[14px] text-c-text placeholder:text-c-subtle focus:outline-none focus:border-c-purple transition-colors"
+  const inputClass = "w-full border-2 border-c-text bg-c-surface px-3 py-2.5 font-body text-[14px] text-c-text placeholder:text-c-subtle focus:outline-none focus:shadow-brutal-sm transition-shadow"
 
   return (
-    <div className="max-w-[720px] mx-auto px-6 pt-28 pb-24">
+    <div className="max-w-[760px] mx-auto px-6 pt-32 pb-24">
 
-      <h1 className="font-body font-bold text-[36px] md:text-[44px] leading-[1.1] tracking-[-1px] text-c-text mb-4">
-        Let&apos;s work together.
+      <h1 className="font-display text-[32px] md:text-[42px] uppercase leading-[1.05] text-c-text mb-6">
+        Let&apos;s work{' '}
+        <span className="inline-block bg-c-cyan border-2 border-c-text shadow-brutal px-3 -rotate-1">
+          together.
+        </span>
       </h1>
       <p className="font-body text-[15px] text-c-muted mb-12">
         Have a project in mind? Fill in the form or reach out directly.
@@ -57,16 +60,16 @@ export default function ContactPage() {
 
       {/* Contact table */}
       <section className="mb-16">
-        <p className="font-mono text-[13px] text-c-subtle mb-6">// contact</p>
-        <div className="space-y-3">
+        <p className="nb-label mb-8">Contact</p>
+        <div className="nb-card divide-y-2 divide-c-text">
           {socials.map((s) => (
-            <div key={s.label} className="flex items-baseline gap-6">
-              <span className="font-mono text-[12px] text-c-subtle w-24 flex-shrink-0">{s.label}</span>
+            <div key={s.label} className="flex items-center gap-6 px-4 py-3">
+              <span className="font-mono text-[11px] font-bold uppercase text-c-subtle w-24 flex-shrink-0">{s.label}</span>
               <a
                 href={s.href}
                 target={s.href.startsWith('mailto') ? undefined : '_blank'}
                 rel="noopener noreferrer"
-                className="font-body text-[14px] text-c-purple hover:text-c-purple-hover transition-colors"
+                className="font-body text-[14px] font-bold text-c-purple hover:underline decoration-2 underline-offset-4"
               >
                 {s.value}
               </a>
@@ -76,13 +79,13 @@ export default function ContactPage() {
       </section>
 
       {/* Form */}
-      <section className="border-t border-c-border pt-16">
-        <p className="font-mono text-[13px] text-c-subtle mb-8">// send a message</p>
+      <section className="border-t-[3px] border-c-text pt-14">
+        <p className="nb-label mb-8">Send a message</p>
         <div className="space-y-8">
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
             <div>
-              <label className="font-mono text-[12px] text-c-subtle block mb-2">
+              <label className="font-mono text-[11px] font-bold uppercase tracking-wide text-c-text block mb-2">
                 Name <span className="text-c-purple">*</span>
               </label>
               <input
@@ -94,7 +97,7 @@ export default function ContactPage() {
               />
             </div>
             <div>
-              <label className="font-mono text-[12px] text-c-subtle block mb-2">
+              <label className="font-mono text-[11px] font-bold uppercase tracking-wide text-c-text block mb-2">
                 Organization
               </label>
               <input
@@ -108,13 +111,13 @@ export default function ContactPage() {
           </div>
 
           <div>
-            <label className="font-mono text-[12px] text-c-subtle block mb-2">
+            <label className="font-mono text-[11px] font-bold uppercase tracking-wide text-c-text block mb-2">
               Service
             </label>
             <select
               value={service}
               onChange={(e) => setService(e.target.value)}
-              className="w-full border-b border-c-border bg-transparent py-2.5 font-body text-[14px] text-c-text focus:outline-none focus:border-c-purple transition-colors cursor-pointer"
+              className={`${inputClass} cursor-pointer`}
             >
               {serviceOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -123,7 +126,7 @@ export default function ContactPage() {
           </div>
 
           <div>
-            <label className="font-mono text-[12px] text-c-subtle block mb-2">
+            <label className="font-mono text-[11px] font-bold uppercase tracking-wide text-c-text block mb-2">
               Message <span className="text-c-purple">*</span>
             </label>
             <textarea
@@ -131,7 +134,7 @@ export default function ContactPage() {
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Describe your project, goals, or questions…"
               rows={5}
-              className="w-full border-b border-c-border bg-transparent py-2.5 font-body text-[14px] text-c-text placeholder:text-c-subtle focus:outline-none focus:border-c-purple transition-colors resize-none"
+              className={`${inputClass} resize-none`}
             />
           </div>
 
@@ -141,12 +144,12 @@ export default function ContactPage() {
                 href={waUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 font-mono text-[13px] px-5 py-2.5 text-white bg-c-purple hover:bg-c-purple-hover transition-colors cursor-pointer"
+                className="nb-btn !bg-c-purple !text-white"
               >
                 Send via WhatsApp →
               </a>
             ) : (
-              <span className="inline-flex items-center gap-2 font-mono text-[13px] px-5 py-2.5 text-c-subtle bg-c-border cursor-not-allowed">
+              <span className="inline-flex items-center gap-2 font-mono text-[12px] font-bold uppercase tracking-wide px-4 py-2.5 border-2 border-dashed border-c-subtle text-c-subtle cursor-not-allowed">
                 Send via WhatsApp →
               </span>
             )}
