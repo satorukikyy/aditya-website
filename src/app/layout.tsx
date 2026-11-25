@@ -24,6 +24,13 @@ const ibmPlexMono = localFont({
   ],
 });
 
+const bricolage = localFont({
+  variable: "--font-bricolage",
+  display: "swap",
+  src: "./fonts/bricolage-grotesque-latin-wght-normal.woff2",
+  weight: "200 800",
+});
+
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
@@ -36,8 +43,8 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_DATA.profile.name} — ${SITE_DATA.profile.role}`,
-    template: `%s — ${SITE_DATA.profile.name}`,
+    default: `${SITE_DATA.profile.name} | ${SITE_DATA.profile.role}`,
+    template: `%s | ${SITE_DATA.profile.name}`,
   },
   description: SITE_DATA.profile.tagline,
   applicationName: SITE_DATA.profile.name,
@@ -47,21 +54,18 @@ export const metadata: Metadata = {
   category: "Cybersecurity",
   keywords: [
     "Rizky Aditya",
-    "Cybersecurity Engineer",
-    "Security Architect",
-    "Penetration Testing",
-    "Pentest Indonesia",
-    "Governance Risk and Compliance",
-    "GRC",
-    "ISO 27001",
+    "IT GRC Consultant",
+    "Penetration Tester",
+    "Bug Hunter",
+    "VAPT Indonesia",
+    "Pentest Jakarta",
+    "ISO 27001 Lead Auditor",
+    "ISO 27701",
+    "ISO 42001",
     "UU PDP",
     "Incident Management",
-    "Incident Response",
-    "DFIR",
     "SOC",
-    "Detection Engineering",
-    "Sigma Rules",
-    "MITRE ATT&CK",
+    "Wazuh",
   ],
   alternates: {
     canonical: SITE_URL,
@@ -86,12 +90,12 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: SITE_URL,
     siteName: SITE_DATA.profile.name,
-    title: `${SITE_DATA.profile.name} — ${SITE_DATA.profile.role}`,
+    title: `${SITE_DATA.profile.name} | ${SITE_DATA.profile.role}`,
     description: SITE_DATA.profile.tagline,
   },
   twitter: {
     card: "summary_large_image",
-    title: `${SITE_DATA.profile.name} — ${SITE_DATA.profile.role}`,
+    title: `${SITE_DATA.profile.name} | ${SITE_DATA.profile.role}`,
     description: SITE_DATA.profile.tagline,
     creator: SITE_DATA.profile.handle,
   },
@@ -119,7 +123,7 @@ export default function RootLayout({
       lang="en"
       data-scroll-behavior="smooth"
       suppressHydrationWarning
-      className={ibmPlexMono.variable}
+      className={`${ibmPlexMono.variable} ${bricolage.variable}`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />

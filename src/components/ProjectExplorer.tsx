@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { motion, MotionConfig } from "motion/react";
 import { ArrowUpRight, Search, X } from "lucide-react";
 import {
+  DOMAIN_COLOR,
   PROJECT_DOMAINS,
   type ProjectDomainId,
   type ProjectItem,
@@ -16,6 +18,7 @@ interface ProjectExplorerProps {
 export function ProjectExplorer({ projects }: ProjectExplorerProps) {
   const [selected, setSelected] = useState<ProjectDomainId | "all">("all");
   const [query, setQuery] = useState("");
+  const hasInteracted = useRef(false);
 
   // Static export has no request-time searchParams: read ?domain= after mount.
   useEffect(() => {
@@ -26,6 +29,7 @@ export function ProjectExplorer({ projects }: ProjectExplorerProps) {
   }, []);
 
   const selectDomain = (next: ProjectDomainId | "all") => {
+    hasInteracted.current = true;
     setSelected(next);
     try {
       const nextUrl = next === "all" ? "/project" : `/project?domain=${next}`;
@@ -109,7 +113,14 @@ export function ProjectExplorer({ projects }: ProjectExplorerProps) {
                     : "border-[var(--border)] bg-[var(--bg)] text-[var(--text)] hover:border-[var(--border-strong)] hover:bg-[var(--hover-bg)]"
                 }`}
               >
-                <span className="text-[13px] font-medium leading-snug tracking-[-0.01em]">
+                <span className="flex items-center gap-2.5 text-[13px] font-medium leading-snug tracking-[-0.01em]">
+                  {tab.id !== "all" ? (
+                    <span
+                      aria-hidden="true"
+                      className="h-2 w-2 shrink-0 rounded-full"
+                      style={{ backgroundColor: DOMAIN_COLOR[tab.id] }}
+                    />
+                  ) : null}
                   {tab.label}
                 </span>
                 <span
@@ -185,12 +196,15 @@ export function ProjectExplorer({ projects }: ProjectExplorerProps) {
           </button>
         </div>
       ) : (
-        <div className="space-y-11">
+        <MotionConfig reducedMotion="user">
+        <motion.div
+          key={selected}
+          className="space-y-11"
+          initial={hasInteracted.current ? { opacity: 0, y: 10 } : false}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+        >
           {visibleSections.map(({ domain, items }) => {
-            const indexNum = String(
-              PROJECT_DOMAINS.findIndex((d) => d.id === domain.id) + 1
-            ).padStart(2, "0");
-
             const showImpactLine =
               domain.id === "bug-bounty" || domain.id === "incident-management";
 
@@ -204,9 +218,11 @@ export function ProjectExplorer({ projects }: ProjectExplorerProps) {
                       id={`domain-${domain.id}`}
                       className="flex items-baseline gap-2.5 text-[15px] font-semibold tracking-[-0.015em] text-[var(--text)]"
                     >
-                      <span className="font-mono text-[11.5px] font-normal tabular-nums text-[var(--text-muted)]">
-                        {indexNum}
-                      </span>
+                      <span
+                        aria-hidden="true"
+                        className="h-2 w-2 shrink-0 translate-y-[-1px] self-center rounded-full"
+                        style={{ backgroundColor: DOMAIN_COLOR[domain.id] }}
+                      />
                       <span>{domain.label}</span>
                     </h2>
                     <span className="shrink-0 font-mono text-[11.5px] tabular-nums text-[var(--text-muted)]">
@@ -268,7 +284,8 @@ export function ProjectExplorer({ projects }: ProjectExplorerProps) {
               </section>
             );
           })}
-        </div>
+        </motion.div>
+        </MotionConfig>
       )}
     </div>
   );

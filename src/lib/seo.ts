@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import {
+  PROJECT_DOMAINS,
   SITE_DATA,
   SITE_URL,
   getDomainInfo,
@@ -7,6 +8,20 @@ import {
   type JournalPost,
   type ProjectItem,
 } from "@/data/site";
+
+const OG_IMAGE = { url: "/opengraph-image", width: 1200, height: 630 };
+
+export const DEFAULT_TITLE = `${SITE_DATA.profile.name} | ${SITE_DATA.profile.role}`;
+
+/** Newest date anywhere in the content (YYYY-MM-DD). Drives sitemap lastmod and llms "last updated". */
+export const LAST_UPDATED = [
+  ...SITE_DATA.projects.map((p) => p.date),
+  ...SITE_DATA.journal.map((j) => j.updatedAt),
+]
+  .sort()
+  .at(-1) as string;
+
+const absolute = (path: string) => `${SITE_URL}${path === "/" ? "" : path}`;
 
 export function buildPageMetadata({
   title,
@@ -25,29 +40,22 @@ export function buildPageMetadata({
   modifiedTime?: string;
   keywords?: string[];
 }): Metadata {
-  const canonicalUrl = `${SITE_URL}${path === "/" ? "" : path}`;
-  const fullTitle = title
-    ? `${title} — ${SITE_DATA.profile.name}`
-    : `${SITE_DATA.profile.name} — ${SITE_DATA.profile.role}`;
+  const canonicalUrl = absolute(path);
+  const fullTitle = title ? `${title} | ${SITE_DATA.profile.name}` : DEFAULT_TITLE;
 
   return {
     title,
     description,
     keywords: [
       "Rizky Aditya",
+      "satorukikyy",
       "onerrorkx",
-      "Cybersecurity Portfolio",
-      "VAPT",
-      "Penetration Testing",
-      "Bug Bounty",
+      "IT GRC Consultant",
+      "Penetration Tester",
       "Bug Hunter",
-      "IT GRC",
-      "Governance Risk and Compliance",
-      "ISO 27001:2022",
-      "Incident Management",
-      "SOC",
-      "Wazuh",
-      "Elastic Stack",
+      "VAPT Indonesia",
+      "ISO 27001 Lead Auditor",
+      "UU PDP",
       ...keywords,
     ],
     alternates: {
@@ -60,6 +68,7 @@ export function buildPageMetadata({
       siteName: SITE_DATA.profile.name,
       locale: "en_US",
       type,
+      images: [{ ...OG_IMAGE, alt: fullTitle }],
       ...(publishedTime ? { publishedTime } : {}),
       ...(modifiedTime ? { modifiedTime } : {}),
     },
@@ -68,26 +77,32 @@ export function buildPageMetadata({
       title: fullTitle,
       description,
       creator: SITE_DATA.profile.handle,
+      images: [OG_IMAGE.url],
     },
   };
 }
 
 /**
- * Root Schema.org Graph (SEO + AEO + GEO Entity Identity)
+ * Root Schema.org graph: the Person entity (credentials, expertise, services) plus the WebSite.
+ * Everything is built from SITE_DATA, so editing data keeps structured data in sync.
  */
 export function buildRootJsonLd() {
+  const personId = `${SITE_URL}/#person`;
+
   return {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "Person",
-        "@id": `${SITE_URL}/#person`,
+        "@id": personId,
         name: SITE_DATA.profile.name,
-        alternateName: SITE_DATA.profile.handle,
+        alternateName: [SITE_DATA.profile.handle, "satorukikyy", "onerrorkx", "kxs3c"],
         url: SITE_URL,
+        mainEntityOfPage: `${SITE_URL}/about`,
         jobTitle: SITE_DATA.profile.role,
         description: SITE_DATA.profile.tagline,
         email: `mailto:${SITE_DATA.profile.email}`,
+        knowsLanguage: ["id", "en"],
         address: {
           "@type": "PostalAddress",
           addressLocality: "South Jakarta",
@@ -98,6 +113,12 @@ export function buildRootJsonLd() {
           "@type": "Organization",
           name: "Whitesec (ID, AU, UK, CA)",
         },
+        hasCredential: SITE_DATA.about.certifications.map((c) => ({
+          "@type": "EducationalOccupationalCredential",
+          name: c.name,
+          credentialCategory: "certification",
+          recognizedBy: { "@type": "Organization", name: c.issuer },
+        })),
         knowsAbout: [
           "IT Governance, Risk, and Compliance (IT GRC)",
           "ISO/IEC 27001:2022",
@@ -115,6 +136,16 @@ export function buildRootJsonLd() {
           "Wazuh SIEM & Elastic Stack (ELK)",
           "pfSense Network Security",
         ],
+        makesOffer: PROJECT_DOMAINS.filter((d) => d.id !== "bug-bounty").map((d) => ({
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: d.label,
+            description: d.description,
+            provider: { "@id": personId },
+            areaServed: ["ID", "AU", "GB", "CA"],
+          },
+        })),
         sameAs: SITE_DATA.profile.sameAs,
       },
       {
@@ -123,17 +154,28 @@ export function buildRootJsonLd() {
         url: SITE_URL,
         name: SITE_DATA.profile.name,
         description: SITE_DATA.profile.tagline,
-        inLanguage: "en-US",
-        publisher: { "@id": `${SITE_URL}/#person` },
-        author: { "@id": `${SITE_URL}/#person` },
+        inLanguage: "en",
+        publisher: { "@id": personId },
+        author: { "@id": personId },
       },
     ],
   };
 }
 
-export function buildBreadcrumbJsonLd(
-  items: { name: string; path: string }[]
-) {
+export function buildProfilePageJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    "@id": `${SITE_URL}/about#profile`,
+    url: `${SITE_URL}/about`,
+    name: `About ${SITE_DATA.profile.name}`,
+    inLanguage: "en",
+    dateModified: LAST_UPDATED,
+    mainEntity: { "@id": `${SITE_URL}/#person` },
+  };
+}
+
+export function buildBreadcrumbJsonLd(items: { name: string; path: string }[]) {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -141,8 +183,42 @@ export function buildBreadcrumbJsonLd(
       "@type": "ListItem",
       position: idx + 1,
       name: item.name,
-      item: `${SITE_URL}${item.path === "/" ? "" : item.path}`,
+      item: absolute(item.path),
     })),
+  };
+}
+
+/** Listing pages (/project, /journal) as a CollectionPage with an ItemList of detail URLs. */
+export function buildItemListJsonLd({
+  name,
+  description,
+  path,
+  items,
+}: {
+  name: string;
+  description: string;
+  path: string;
+  items: { name: string; path: string }[];
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "@id": `${absolute(path)}#collection`,
+    url: absolute(path),
+    name,
+    description,
+    inLanguage: "en",
+    isPartOf: { "@id": `${SITE_URL}/#website` },
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: items.length,
+      itemListElement: items.map((item, idx) => ({
+        "@type": "ListItem",
+        position: idx + 1,
+        name: item.name,
+        url: absolute(item.path),
+      })),
+    },
   };
 }
 
@@ -163,7 +239,7 @@ export function buildFaqJsonLd(faqs: FaqItem[]) {
 
 export function buildProjectJsonLd(project: ProjectItem) {
   const domain = getDomainInfo(project.domain);
-  const url = `${SITE_URL}/project/${project.slug}`;
+  const url = absolute(`/project/${project.slug}`);
 
   return {
     "@context": "https://schema.org",
@@ -175,15 +251,17 @@ export function buildProjectJsonLd(project: ProjectItem) {
     url,
     mainEntityOfPage: url,
     articleSection: domain.label,
+    about: domain.label,
     keywords: [...project.frameworks, ...project.stack].join(", "),
     author: { "@id": `${SITE_URL}/#person` },
     publisher: { "@id": `${SITE_URL}/#person` },
-    inLanguage: "en-US",
+    isPartOf: { "@id": `${SITE_URL}/#website` },
+    inLanguage: "en",
   };
 }
 
 export function buildJournalJsonLd(post: JournalPost) {
-  const url = `${SITE_URL}/journal/${post.slug}`;
+  const url = absolute(`/journal/${post.slug}`);
 
   return {
     "@context": "https://schema.org",
@@ -198,6 +276,7 @@ export function buildJournalJsonLd(post: JournalPost) {
     articleSection: post.category,
     author: { "@id": `${SITE_URL}/#person` },
     publisher: { "@id": `${SITE_URL}/#person` },
-    inLanguage: "en-US",
+    isPartOf: { "@id": `${SITE_URL}/#website` },
+    inLanguage: "en",
   };
 }

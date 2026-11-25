@@ -29,7 +29,7 @@ export async function generateMetadata({
   const domain = getDomainInfo(project.domain);
   return buildPageMetadata({
     title: project.title,
-    description: `${domain.label} — ${project.summary}`,
+    description: `${domain.label}: ${project.summary}`,
     path: `/project/${project.slug}`,
     type: "article",
     publishedTime: project.date,
@@ -80,7 +80,7 @@ export default async function ProjectDetailPage({
           </time>
         </div>
 
-        <h1 className="text-[22px] font-semibold leading-tight tracking-[-0.025em] text-[var(--text)] sm:text-2xl">
+        <h1 className="font-display text-[28px] font-semibold leading-[1.1] tracking-[-0.035em] text-[var(--text)] sm:text-[32px]">
           {project.title}
         </h1>
 
@@ -90,8 +90,8 @@ export default async function ProjectDetailPage({
 
         {/* Key Focus Highlight */}
         <div className="mt-5 rounded-md border border-[var(--border)] bg-[var(--hover-bg)]/60 px-4 py-3">
-          <span className="block font-mono text-[11px] uppercase tracking-wider text-[var(--text-muted)]">
-            TL;DR
+          <span className="block text-xs font-medium text-[var(--text-muted)]">
+            In short
           </span>
           <p className="mt-1 text-sm font-medium text-[var(--text)]">
             {project.impact}

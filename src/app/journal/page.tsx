@@ -1,13 +1,17 @@
 import Link from "next/link";
 import { SITE_DATA } from "@/data/site";
-import { buildBreadcrumbJsonLd, buildPageMetadata } from "@/lib/seo";
+import {
+  buildBreadcrumbJsonLd,
+  buildItemListJsonLd,
+  buildPageMetadata,
+} from "@/lib/seo";
 import { JournalTable } from "@/components/JournalTable";
 import { JsonLd } from "@/components/JsonLd";
 
 export const metadata = buildPageMetadata({
   title: "Journal",
   description:
-    "Chill, no-jargon notes by Rizky Aditya covering IT GRC, VAPT, and bug bounty.",
+    "Plain-English notes by Rizky Aditya on IT GRC, VAPT, and bug bounty. No jargon, no fluff.",
   path: "/journal",
 });
 
@@ -21,14 +25,27 @@ export default function JournalPage() {
         ])}
       />
 
+      <JsonLd
+        data={buildItemListJsonLd({
+          name: "Journal",
+          description:
+            "Plain-English notes on IT GRC, VAPT, and bug bounty by Rizky Aditya.",
+          path: "/journal",
+          items: SITE_DATA.journal.map((post) => ({
+            name: post.title,
+            path: `/journal/${post.slug}`,
+          })),
+        })}
+      />
+
       <header className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-[22px] font-semibold tracking-[-0.025em] text-[var(--text)]">
+          <h1 className="font-display text-[30px] font-semibold leading-[1.05] tracking-[-0.035em] text-[var(--text)]">
             Journal
           </h1>
           <p className="mt-2 text-[14.5px] leading-relaxed text-[var(--text-secondary)]">
-            Chill, no-jargon notes on IT GRC, VAPT, and bug bounty — plain
-            English, zero fluff.
+            Plain-English notes on IT GRC, VAPT, and bug bounty. No jargon, no
+            fluff.
           </p>
         </div>
 

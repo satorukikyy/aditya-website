@@ -6,7 +6,7 @@ import { JsonLd } from "@/components/JsonLd";
 export const metadata = buildPageMetadata({
   title: "Contact",
   description:
-    "Reach out to Rizky Aditya via email (aditya@cloudsphere.id), WhatsApp, LinkedIn, GitHub, X, Instagram, or /.well-known/security.txt for VAPT, Bug Bounty, GRC, Incident Management, and SOC.",
+    "Contact Rizky Aditya by email, WhatsApp, LinkedIn, GitHub, X, or Instagram about VAPT, GRC, incident management, or bug bounty. Security reports go through /.well-known/security.txt.",
   path: "/contact",
 });
 
@@ -21,7 +21,7 @@ export default function ContactPage() {
       />
 
       <header>
-        <h1 className="text-[22px] font-semibold tracking-[-0.025em] text-[var(--text)]">
+        <h1 className="font-display text-[30px] font-semibold leading-[1.05] tracking-[-0.035em] text-[var(--text)]">
           Contact
         </h1>
         <p className="mt-2 text-[14.5px] leading-relaxed text-[var(--text-secondary)]">

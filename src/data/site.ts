@@ -100,9 +100,20 @@ export interface ContactLinkItem {
   internal?: boolean;
 }
 
+// Canonical origin used by every canonical tag, sitemap entry, JSON-LD id, and llms file.
+// When a custom domain goes live, change only this fallback (or set NEXT_PUBLIC_SITE_URL at build time).
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-  "https://rizkyaditya.dev";
+  "https://onerrorkx.pages.dev";
+
+// Colour key for each track (CSS variables defined in globals.css).
+export const DOMAIN_COLOR: Record<ProjectDomainId, string> = {
+  vapt: "var(--pink)",
+  "bug-bounty": "var(--yellow)",
+  grc: "var(--purple)",
+  "incident-management": "var(--sky)",
+  "security-engineering": "var(--purple)",
+};
 
 export const PROJECT_DOMAINS: ProjectDomain[] = [
   {
@@ -110,7 +121,7 @@ export const PROJECT_DOMAINS: ProjectDomain[] = [
     label: "Vulnerability Assessment & Penetration Testing",
     shortLabel: "Vulnerability Assessment & Penetration Testing",
     description:
-      "Breaking web apps, mobile apps, and APIs on purpose (OWASP WSTG & PTES) so teams can patch real bugs before anyone else finds them.",
+      "Testing web apps, mobile apps, and APIs the way an attacker would (OWASP WSTG and PTES), so teams fix real bugs before someone else finds them.",
     highlights: ["OWASP WSTG", "PTES", "Web / Mobile / API", "CVSS Scoring"],
   },
   {
@@ -118,7 +129,7 @@ export const PROJECT_DOMAINS: ProjectDomain[] = [
     label: "Bug Bounty",
     shortLabel: "Bug Bounty",
     description:
-      "Hunting real vulnerabilities across Google VRP, HackerOne, Bugcrowd, and GitHub Security Advisories — clean PoCs, honest impact, and zero-drama responsible disclosure.",
+      "Hunting real vulnerabilities on Google VRP, HackerOne, Bugcrowd, and GitHub Security Advisories. Clean PoCs, honest impact, responsible disclosure.",
     highlights: [
       "Google VRP & HackerOne",
       "Bugcrowd & GHSA",
@@ -131,7 +142,7 @@ export const PROJECT_DOMAINS: ProjectDomain[] = [
     label: "Governance, Risk & Compliance",
     shortLabel: "Governance, Risk & Compliance",
     description:
-      "Taking ISO/IEC 27001:2022, 27701, 42001 & ISO 9001:2015 from scratch to audit-ready — plus 2013→2022 migrations, surveillance audits, UU PDP, and compliance tooling.",
+      "Taking ISO/IEC 27001:2022, 27701, 42001, and ISO 9001:2015 from zero to audit-ready, including 2013 to 2022 migrations, surveillance audits, UU PDP, and compliance tooling.",
     highlights: [
       "ISO/IEC 27001:2022",
       "ISO/IEC 27701 & 42001",
@@ -144,7 +155,7 @@ export const PROJECT_DOMAINS: ProjectDomain[] = [
     label: "Incident Management",
     shortLabel: "Incident Management",
     description:
-      "Stepping in when alerts turn real — investigating what happened, mapping the attack timeline, finding the root cause, and locking things down.",
+      "Stepping in when an alert turns real: working out what happened, rebuilding the attack timeline, finding the root cause, and locking things down.",
     highlights: [
       "Incident Response",
       "Root Cause Analysis",
@@ -157,7 +168,7 @@ export const PROJECT_DOMAINS: ProjectDomain[] = [
     label: "Security Engineering",
     shortLabel: "Security Engineering",
     description:
-      "Building and running Wazuh & Elastic Stack (ELK) SIEM pipelines, custom Linux/Windows detection rules, firewall telemetry, and real-time alert triage.",
+      "Building and running Wazuh and Elastic Stack (ELK) SIEM pipelines, custom Linux and Windows detection rules, firewall telemetry, and live alert triage.",
     highlights: [
       "Wazuh SIEM",
       "Elastic Stack (ELK)",
@@ -177,13 +188,18 @@ function makeVaptEngagement({
   year,
   sector,
   featured = false,
+  scope = "full",
 }: {
   slug: string;
   client: string;
   year: string;
   sector: string;
   featured?: boolean;
+  /** "web" for web-application-only tests, "full" for web + mobile + API. */
+  scope?: "full" | "web";
 }): ProjectItem {
+  const webOnly = scope === "web";
+  const scopeText = webOnly ? "web application" : "web apps, mobile apps, and APIs";
   return {
     slug,
     year,
@@ -193,27 +209,29 @@ function makeVaptEngagement({
     tag: "VAPT",
     domain: "vapt",
     featured,
-    summary: `Hands-on web, mobile, and API pentesting for ${client} (${sector}) — real manual testing, clean PoCs, and practical fixes devs can actually ship.`,
+    summary: `Manual ${webOnly ? "web application" : "web, mobile, and API"} pentest for ${client} (${sector}): testing that goes past scanners, reproducible PoCs, and fixes developers can ship.`,
     role: "Penetration Tester",
     organization: client,
-    impact: "Manual OWASP WSTG & PTES testing · CVSS-rated PoC report & dev-friendly fix guide",
+    impact: "Manual OWASP WSTG and PTES testing, with a CVSS-rated report and developer-friendly fixes",
     frameworks: ["OWASP WSTG", "OWASP Top 10", "PTES", "CVSS"],
-    stack: ["Web App VAPT", "API Security", "Mobile Security", "Attack Surface Analysis"],
+    stack: webOnly
+      ? ["Web App VAPT", "Attack Surface Analysis", "Business Logic Testing"]
+      : ["Web App VAPT", "API Security", "Mobile Security", "Attack Surface Analysis"],
     deliverables: [
       "Technical VAPT Findings & Reproducible PoC Report",
       "CVSS-Rated Risk Prioritization",
       "Stack-Specific Remediation & Retest Support",
     ],
-    overview: `Ran a full vulnerability assessment and pentest for ${client} (${sector}), digging into their web apps, APIs, and the subtle business-logic edge cases automated tools usually miss.`,
-    challenge: `Pushing production-critical ${sector.toLowerCase()} apps way past basic scanner checks to find real exploitable bugs — all without breaking live operations.`,
+    overview: `Ran a vulnerability assessment and pentest on the ${scopeText} at ${client} (${sector}), going past automated scanners to the business-logic edge cases they usually miss.`,
+    challenge: `Testing production-critical ${sector.toLowerCase()} systems well beyond basic scanner checks to find exploitable bugs, without disrupting live operations.`,
     approach: [
-      "Worked through the full attack flow — recon, mapping, controlled exploitation, and impact checks — backed by OWASP WSTG and PTES.",
-      "Manually poked at auth flows, sessions, access control (IDOR/BOLA), input handling, and tricky API logic.",
-      "Wrote up every confirmed bug with dead-simple repro steps, honest CVSS scores, and fixes tailored to the dev team's actual stack.",
+      "Followed the full attack flow (recon, mapping, controlled exploitation, impact checks) using OWASP WSTG and PTES.",
+      "Tested authentication, sessions, access control (IDOR/BOLA), input handling, and business logic by hand.",
+      "Documented every confirmed bug with simple repro steps, honest CVSS scores, and fixes that match the team's stack.",
     ],
     outcome: [
-      `Handed ${client} a clean, zero-fluff report so engineering could jump straight to patching what actually mattered.`,
-      "Connected technical findings back to real business risk and audit readiness so leadership had the full picture too.",
+      `Gave ${client} a clear report so engineering could go straight to patching what mattered.`,
+      "Tied technical findings back to business risk and audit readiness so leadership saw the whole picture.",
     ],
   };
 }
@@ -240,10 +258,10 @@ function makeSocEngagement({
     tag: "Security Engineering",
     domain: "security-engineering",
     featured,
-    summary: `Day-to-day SOC monitoring and SIEM ops for ${client} (${sector}) on Wazuh & Elastic Stack (ELK) — custom detection rules, log tuning, and alert triage.`,
+    summary: `Day-to-day SOC monitoring and SIEM operations for ${client} (${sector}) on Wazuh and Elastic Stack (ELK): custom detection rules, log tuning, and alert triage.`,
     role: "Security Engineer",
     organization: client,
-    impact: "Centralized Wazuh/ELK visibility, custom detection rules & real-time triage",
+    impact: "Central Wazuh/ELK visibility, custom detection rules, and live alert triage",
     frameworks: ["SOC Operations", "SIEM Correlation", "Threat Detection"],
     stack: ["Wazuh SIEM", "Elastic Stack (ELK)", "Linux/Windows Telemetry", "Log Analysis"],
     deliverables: [
@@ -251,22 +269,23 @@ function makeSocEngagement({
       "Custom Detection & Correlation Rules",
       "Alert Triage & Escalation Reporting",
     ],
-    overview: `Ran ongoing SOC monitoring and SIEM operations for ${client} (${sector}) so weird activity didn't slip through the cracks.`,
+    overview: `Ran ongoing SOC monitoring and SIEM operations for ${client} (${sector}) so unusual activity didn't slip through.`,
     challenge: `Cutting through noisy ${sector.toLowerCase()} endpoint, server, and network logs to catch real threats fast without alert fatigue.`,
     approach: [
-      "Kept Wazuh SIEM + Elastic Stack (ELK) ingestion healthy across Linux and Windows telemetry.",
-      "Wrote and tuned custom detection and correlation rules so sketchy behavior popped up early.",
-      "Triaged daily alerts, dug into suspicious events, and escalated cleanly with internal IT teams.",
+      "Kept Wazuh SIEM and Elastic Stack (ELK) ingestion healthy across Linux and Windows telemetry.",
+      "Wrote and tuned custom detection and correlation rules so suspicious behavior surfaced early.",
+      "Triaged alerts daily, dug into suspicious events, and escalated cleanly to internal IT teams.",
     ],
     outcome: [
-      `Gave ${client} sharper day-to-day visibility into what was actually happening across their infrastructure.`,
+      `Gave ${client} a sharper day-to-day view of what was actually happening across their infrastructure.`,
       "Cleaned up noisy logs and sped up alert triage so the team could focus on real signals.",
     ],
   };
 }
 
 /* --------------------------------------------------------------------------
-   All Projects (42 Clean Projects Across 5 Tracks — No Company Affiliations)
+   All projects, grouped by track. Add new work to the matching array below;
+   counts, sitemap, llms files, and JSON-LD all update from here.
    -------------------------------------------------------------------------- */
 
 const VAPT_PROJECTS: ProjectItem[] = [
@@ -381,6 +400,27 @@ const VAPT_PROJECTS: ProjectItem[] = [
     year: "2025",
     sector: "Technology",
   }),
+  makeVaptEngagement({
+    slug: "vapt-pt-asuransi-bina-dana-arta-tbk",
+    client: "PT Asuransi Bina Dana Arta Tbk",
+    year: "2025",
+    sector: "Insurance",
+    scope: "web",
+  }),
+  makeVaptEngagement({
+    slug: "vapt-pt-asuransi-tugu-pratama-indonesia-tbk",
+    client: "PT Asuransi Tugu Pratama Indonesia Tbk",
+    year: "2025",
+    sector: "Insurance",
+    scope: "web",
+  }),
+  makeVaptEngagement({
+    slug: "vapt-pt-semesta-indovest-sekuritas",
+    client: "PT Semesta Indovest Sekuritas",
+    year: "2025",
+    sector: "Securities & Capital Markets",
+    scope: "web",
+  }),
 ];
 
 const BUG_BOUNTY_PROJECTS: ProjectItem[] = [
@@ -394,7 +434,7 @@ const BUG_BOUNTY_PROJECTS: ProjectItem[] = [
     domain: "bug-bounty",
     featured: true,
     summary:
-      "An SSRF filter bypass in google-gemini/gemini-cli's web fetch tool reachable through indirect prompt injection in a repo README — filed with Google OSS VRP.",
+      "An SSRF filter bypass in google-gemini/gemini-cli's web fetch tool reachable through indirect prompt injection in a repo README, filed with Google OSS VRP.",
     role: "Security Researcher",
     organization: "Google VRP (OSS VRP) · google-gemini/gemini-cli",
     impact: "SSRF filter bypass via indirect prompt injection in gemini-cli · reported to Google VRP",
@@ -407,9 +447,9 @@ const BUG_BOUNTY_PROJECTS: ProjectItem[] = [
     overview:
       "Reported a high-level SSRF filter bypass in google-gemini/gemini-cli to Google's OSS VRP. When a developer runs the agent inside a cloned repo with crafted setup steps in a README, workspace text is treated as trusted instructions and can push the web fetch tool toward internal or local targets.",
     challenge:
-      "The fetch guard judged hostnames as plain text instead of resolving where they actually point, and redirect destinations weren't re-checked — plus if one fetch tool hit a block, the agent could pivot to another tool to finish the task.",
+      "The fetch guard judged hostnames as plain text instead of resolving where they actually point, and redirect destinations weren't re-checked, plus if one fetch tool hit a block, the agent could pivot to another tool to finish the task.",
     approach: [
-      "Traced how the fetch guard checked whether a hostname looked like a private address — a normal domain resolving to loopback or private IPs still slipped through, and redirect hops bypassed re-validation.",
+      "Traced how the fetch guard checked whether a hostname looked like a private address, a normal domain resolving to loopback or private IPs still slipped through, and redirect hops bypassed re-validation.",
       "Demonstrated how ordinary-looking setup instructions planted in a repository README could act as indirect prompt injection once a developer asked the agent to follow setup.",
       "Recommended four layered guards instead of relying on the model alone: resolve DNS first then check the IP, re-validate every redirect hop, treat workspace file text as untrusted, and never route around a blocked fetch with a shell tool.",
     ],
@@ -428,7 +468,7 @@ const BUG_BOUNTY_PROJECTS: ProjectItem[] = [
     domain: "bug-bounty",
     featured: true,
     summary:
-      "Critical (9.6) settings-injection SSRF with silent credential and customer event exfiltration in Segment Action destinations — reported to Twilio via HackerOne.",
+      "Critical (9.6) settings-injection SSRF with silent credential and customer event exfiltration in Segment Action destinations, reported to Twilio via HackerOne.",
     role: "Security Researcher",
     organization: "Twilio (HackerOne) · Segment Action Destinations",
     impact: "Critical (9.6) SSRF & credential exfiltration · verified safely on prod with a harmless sentinel",
@@ -441,7 +481,7 @@ const BUG_BOUNTY_PROJECTS: ProjectItem[] = [
     overview:
       "Reported a Critical (9.6) settings-injection SSRF class in Twilio Segment Action destinations via HackerOne. Because a destination setting directly shaped the outbound request host without strict host validation, stored secrets and live customer event data could be routed straight to an attacker-controlled host.",
     challenge:
-      "A single unvalidated host setting meant stored destination API keys, OAuth client secrets, and every forwarded customer event (user IDs, IPs, user agents, page URLs, properties) rode along silently — and responses could still look like normal successful deliveries.",
+      "A single unvalidated host setting meant stored destination API keys, OAuth client secrets, and every forwarded customer event (user IDs, IPs, user agents, page URLs, properties) rode along silently, and responses could still look like normal successful deliveries.",
     approach: [
       "Identified the unvalidated host-shaping pattern where no host allowlist or legitimate-endpoint verification ran when enabling the destination.",
       "Verified the behavior safely on production using only a harmless sentinel value inside a throwaway workspace (requiring destination-config permissions, with zero impact to real tenants).",
@@ -461,7 +501,7 @@ const BUG_BOUNTY_PROJECTS: ProjectItem[] = [
     tag: "High 8.4",
     domain: "bug-bounty",
     summary:
-      "High (8.4) missing postMessage origin, source, and nonce validation in @privy-io/react-auth 3.42.0's 120-second cross-app signing listener — reported to Privy via HackerOne.",
+      "High (8.4) missing postMessage origin, source, and nonce validation in @privy-io/react-auth 3.42.0's 120-second cross-app signing listener, reported to Privy via HackerOne.",
     role: "Security Researcher",
     organization: "Privy Bounty (HackerOne) · @privy-io/react-auth 3.42.0",
     impact: "High (8.4) · CWE-346 / CWE-345 cross-app signing channel integrity break",
@@ -474,7 +514,7 @@ const BUG_BOUNTY_PROJECTS: ProjectItem[] = [
     overview:
       "Found a High (8.4) origin validation gap in @privy-io/react-auth 3.42.0 and reported it to Privy via HackerOne. Every time sendCrossAppRequest ran, it registered a top-level window message listener that stayed open for ~120 seconds without checking who sent the message.",
     challenge:
-      "While other parts of the same SDK strictly pinned origins (embedded wallet iframe and Apple's CloudKit branch), the cross-app handler checked no origin, no event.source, and no nonce — letting any third-party iframe, script, or window reference spoof four control commands from any origin.",
+      "While other parts of the same SDK strictly pinned origins (embedded wallet iframe and Apple's CloudKit branch), the cross-app handler checked no origin, no event.source, and no nonce, letting any third-party iframe, script, or window reference spoof four control commands from any origin.",
     approach: [
       "Audited sendCrossAppRequest and confirmed four unauthenticated commands accepted from any origin: token.action = 'set' (overwrite provider token), token.action = 'clear' (wipe token), PRIVY_CROSS_APP_ACTION_RESPONSE (resolve signing with forged data), and PRIVY_CROSS_APP_ACTION_ERROR (force failure).",
       "Built both a Node test and a live cross-origin browser PoC proving token poisoning and forged signing resolution.",
@@ -494,7 +534,7 @@ const BUG_BOUNTY_PROJECTS: ProjectItem[] = [
     tag: "GHSA",
     domain: "bug-bounty",
     summary:
-      "A cubic ReDoS in conventional-commits-parser (<= 7.1.2) where 4,000 spaces on a commit body line stall Node for ~103 seconds — filed as GHSA-53jp-mg8h-xjfh.",
+      "A cubic ReDoS in conventional-commits-parser (<= 7.1.2) where 4,000 spaces on a commit body line stall Node for ~103 seconds, filed as GHSA-53jp-mg8h-xjfh.",
     role: "Security Researcher",
     organization: "GitHub Security Advisories · conventional-commits-parser",
     impact: "GHSA-53jp-mg8h-xjfh (Moderate) · 4,000 spaces -> 103.5s stall, fix drops 20,000 spaces to ~0.1ms",
@@ -507,9 +547,9 @@ const BUG_BOUNTY_PROJECTS: ProjectItem[] = [
     overview:
       "Discovered and filed GHSA-53jp-mg8h-xjfh for a regular expression denial of service (ReDoS) in conventional-commits-parser (<= 7.1.2). Feeding a single commit body line of plain spaces with no '#' triggers catastrophic backtracking and locks up the Node event loop.",
     challenge:
-      "CommitParser.parseReferences() runs on every commit message line; when no reference keyword is present, fallback /()(.+)/gi hands the entire line to referenceParts.exec(line), where three overlapping matchers — (?:.*?)??, \\s*, and ([\\w-.\\/]*)?? — fight over the exact same characters.",
+      "CommitParser.parseReferences() runs on every commit message line; when no reference keyword is present, fallback /()(.+)/gi hands the entire line to referenceParts.exec(line), where three overlapping matchers ((?:.*?)??, \\s*, and ([\\w-.\\/]*)??) fight over the exact same characters.",
     approach: [
-      "Benchmarked default options on Node 24: 500 spaces took 210 ms, 1,000 took 1,671 ms, 2,000 took 13,051 ms, 3,000 took 43,468 ms, and 4,000 spaces stalled for 103,493 ms (roughly cubic growth — double the input, ~8x the wait).",
+      "Benchmarked default options on Node 24: 500 spaces took 210 ms, 1,000 took 1,671 ms, 2,000 took 13,051 ms, 3,000 took 43,468 ms, and 4,000 spaces stalled for 103,493 ms (roughly cubic growth, double the input, ~8x the wait).",
       "Tested a targeted fix dropping the leading catch-all and doubled lazy/optional quantifiers so backtracking disappears.",
       "Verified locally that 20,000 spaces finished in ~0.1 ms while real commit references like angular/angular#456 still parsed cleanly.",
     ],
@@ -520,7 +560,7 @@ const BUG_BOUNTY_PROJECTS: ProjectItem[] = [
     },
     outcome: [
       "Filed through GitHub Security Advisories on Sep 2 as GHSA-53jp-mg8h-xjfh (Moderate severity, affecting <= 7.1.2).",
-      "Kept impact transparent: CPU exhaustion and event-loop DoS on apps parsing attacker-influenced commit messages (availability only — no code execution, no data leak).",
+      "Kept impact transparent: CPU exhaustion and event-loop DoS on apps parsing attacker-influenced commit messages (availability only, no code execution, no data leak).",
     ],
   },
   {
@@ -532,7 +572,7 @@ const BUG_BOUNTY_PROJECTS: ProjectItem[] = [
     tag: "High 8.6",
     domain: "bug-bounty",
     summary:
-      "Unauthenticated arbitrary file read in serve-handler 6.1.7 (used by serve 14.2.6 / npx serve) where default symlinks: false still follows mid-path symlinks — reported to Vercel via HackerOne.",
+      "Unauthenticated arbitrary file read in serve-handler 6.1.7 (used by serve 14.2.6 / npx serve) where default symlinks: false still follows mid-path symlinks, reported to Vercel via HackerOne.",
     role: "Security Researcher",
     organization: "Vercel Open Source (HackerOne) · serve-handler 6.1.7",
     impact: "CVSS 3.1: 8.6 High / 6.8 Medium · CWE-59 & CWE-22 symlink boundary bypass",
@@ -545,11 +585,11 @@ const BUG_BOUNTY_PROJECTS: ProjectItem[] = [
     overview:
       "Reported an unauthenticated arbitrary file read in Vercel's serve-handler 6.1.7 (pinned by serve 14.2.6, meaning default npx serve ran affected) via HackerOne. Even with symlinks: false enabled by default, a symlink placed in the middle of a directory path bypassed the server's path checks completely.",
     challenge:
-      "serve-handler checked lexical ../ traversal up front (returning 400) and ran lstat only on the final path component (returning 404 for a direct symlink file), leaving a blind spot for intermediate directory symlinks — so createReadStream happily followed the mid-path link and streamed files from outside the root.",
+      "serve-handler checked lexical ../ traversal up front (returning 400) and ran lstat only on the final path component (returning 404 for a direct symlink file), leaving a blind spot for intermediate directory symlinks, so createReadStream happily followed the mid-path link and streamed files from outside the root.",
     approach: [
       "Verified the behavior matrix under default symlinks: false: /../etc/passwd -> 400, /%2e%2e/etc/passwd -> 400, /assets/abs-file (final-component symlink) -> 404, but /assets/backup/etc/passwd (mid-path symlink) -> 200 OK serving the file.",
       "Confirmed downstream impact on serve 14.2.6, where symlinks stays unset and defaults straight into the vulnerable mode.",
-      "Proposed resolving realpath for both target and root before checking isPathInside(real, root) in both symlink modes — plus handling missing paths, symlink loops, and TOCTOU races on the opened file descriptor.",
+      "Proposed resolving realpath for both target and root before checking isPathInside(real, root) in both symlink modes, plus handling missing paths, symlink loops, and TOCTOU races on the opened file descriptor.",
     ],
     codeSnippet: {
       title: "Simplified realpath boundary check",
@@ -570,7 +610,7 @@ const BUG_BOUNTY_PROJECTS: ProjectItem[] = [
     tag: "High",
     domain: "bug-bounty",
     summary:
-      "High severity (7.0–8.9) authentication gate bypass on a -dev staging host where page routes redirected to corporate login but /api/* responded 200 OK to anyone — reported to NBA via HackerOne.",
+      "High severity (7.0–8.9) authentication gate bypass on a -dev staging host where page routes redirected to corporate login but /api/* responded 200 OK to anyone, reported to NBA via HackerOne.",
     role: "Security Researcher",
     organization: "NBA Public Bug Bounty (HackerOne) · -dev Staging",
     impact: "High (7.0–8.9) · unauthenticated /api/* exposure on -dev staging (host redacted)",
@@ -586,7 +626,7 @@ const BUG_BOUNTY_PROJECTS: ProjectItem[] = [
       "Comparing the -dev host against its -qa sibling made the root cause unmistakable: on -qa, GET /api/heartbeat redirected 302 to login, whereas on -dev, GET /api/heartbeat and GET /api/content answered 200 OK with zero cookies or tokens.",
     approach: [
       "Verified the mismatch across route classes: GET / and GET /scaffolding returned 302 login redirects, while /api/* endpoints bypassed auth completely.",
-      "Documented the exposed non-production surface — staging CMS posts, internal non-production hostnames, and pre-release endpoints (content, schedule, teams, players, transactions, games, search, streaming, standings) — then stopped immediately without touching any PII, credentials, or secrets.",
+      "Documented the exposed non-production surface: staging CMS posts, internal non-production hostnames, and pre-release endpoints (content, schedule, teams, players, transactions, games, search, streaming, standings). Then stopped immediately without touching any PII, credentials, or secrets.",
       "Recommended enforcing default-deny authentication at the edge or origin across the entire non-production host (including /api/*) rather than matching page routes only.",
     ],
     outcome: [
@@ -603,7 +643,7 @@ const BUG_BOUNTY_PROJECTS: ProjectItem[] = [
     tag: "P2",
     domain: "bug-bounty",
     summary:
-      "P2 OAuth account-linking CSRF in Mattermost Confluence plugin 1.19.1 where one crafted completion link binds a victim's Mattermost account to an attacker's Confluence identity — reported via Bugcrowd.",
+      "P2 OAuth account-linking CSRF in Mattermost Confluence plugin 1.19.1 where one crafted completion link binds a victim's Mattermost account to an attacker's Confluence identity, reported via Bugcrowd.",
     role: "Security Researcher",
     organization: "Mattermost Public Bug Bounty (Bugcrowd) · Confluence Plugin 1.19.1",
     impact: "P2 (VRT) · OAuth state not bound to initiating user or burned after first use",
@@ -616,7 +656,7 @@ const BUG_BOUNTY_PROJECTS: ProjectItem[] = [
     overview:
       "Found an OAuth account-linking CSRF in Mattermost's Confluence plugin (v1.19.1) and reported it via Bugcrowd. If a logged-in Mattermost user opens a single crafted completion URL, the plugin links their Mattermost account straight to the attacker's Confluence Cloud identity.",
     challenge:
-      "The completion endpoint (GET /plugins/com.mattermost.confluence/api/v1/oauth2/complete.html) checked whether the OAuth state existed in its store, but never checked if that state belonged to the logged-in Mattermost user — and left the state reusable until expiry.",
+      "The completion endpoint (GET /plugins/com.mattermost.confluence/api/v1/oauth2/complete.html) checked whether the OAuth state existed in its store, but never checked if that state belonged to the logged-in Mattermost user, and left the state reusable until expiry.",
     approach: [
       "Started the OAuth flow using an attacker-controlled Mattermost and Confluence Cloud test account to obtain a valid authorization code and state.",
       "Visited the completion URL from a logged-in victim session in a redacted test tenant and verified /confluence connect immediately showed the victim linked to the attacker's Confluence identity.",
@@ -640,7 +680,7 @@ const GRC_PROJECTS: ProjectItem[] = [
     domain: "grc",
     featured: true,
     summary:
-      "Hands-on IT GRC and security compliance work for a securities & capital markets environment — tightening governance, risk tracking, and audit readiness.",
+      "Hands-on IT GRC and security compliance work for a securities & capital markets environment: tightening governance, risk tracking, and audit readiness.",
     role: "IT GRC Consultant",
     organization: "PT Shinhan Sekuritas Indonesia",
     impact: "Capital-markets security governance, risk alignment & compliance readiness",
@@ -675,7 +715,7 @@ const GRC_PROJECTS: ProjectItem[] = [
     domain: "grc",
     featured: true,
     summary:
-      "Building out info-sec governance and an ISO/IEC 27001:2022 ISMS — practical policies, real risk checks, control reviews, and audit readiness.",
+      "Building out info-sec governance and an ISO/IEC 27001:2022 ISMS: practical policies, real risk checks, control reviews, and audit readiness.",
     role: "IT GRC Consultant",
     organization: "PT Berlian Sistem Informasi",
     impact: "ISMS governance, risk checks & ISO/IEC 27001:2022 rollout",
@@ -710,7 +750,7 @@ const GRC_PROJECTS: ProjectItem[] = [
     tag: "ISMS + QMS",
     domain: "grc",
     summary:
-      "Rolling out ISO/IEC 27001:2022 and ISO 9001:2015 together under one roof — gap checks, unified risk workflows, and internal audit prep.",
+      "Rolling out ISO/IEC 27001:2022 and ISO 9001:2015 together under one roof: gap checks, unified risk workflows, and internal audit prep.",
     role: "IT GRC Consultant",
     organization: "PT Mahardika Teknotama Integrasi",
     impact: "Unified ISMS (ISO 27001:2022) & QMS (ISO 9001:2015) setup",
@@ -745,7 +785,7 @@ const GRC_PROJECTS: ProjectItem[] = [
     tag: "Implementation",
     domain: "grc",
     summary:
-      "Led ISMS scoping and rollout — figuring out org context, spotting real risks, mapping controls, and writing lean docs that fit fast ops.",
+      "Led ISMS scoping and rollout: figuring out org context, spotting real risks, mapping controls, and writing lean docs that fit fast ops.",
     role: "IT GRC Consultant",
     organization: "PT Inovasi Digital Untuk Transformasi",
     impact: "ISMS scoping, risk mapping & practical control alignment",
@@ -781,7 +821,7 @@ const GRC_PROJECTS: ProjectItem[] = [
     domain: "grc",
     featured: true,
     summary:
-      "Helped get ISO/IEC 27001:2022 live — ISMS docs, risk assessments, Annex A control alignment, and internal audit prep.",
+      "Helped get ISO/IEC 27001:2022 live: ISMS docs, risk assessments, Annex A control alignment, and internal audit prep.",
     role: "IT GRC Consultant",
     organization: "PT Sonicwave Nusantara Teknologi",
     impact: "ISMS docs, risk checks & internal audit readiness",
@@ -816,7 +856,7 @@ const GRC_PROJECTS: ProjectItem[] = [
     domain: "grc",
     featured: true,
     summary:
-      "Honest security compliance check — looking at real controls, spotting gaps, and mapping out what to fix first without checklist bloat.",
+      "Honest security compliance check: looking at real controls, spotting gaps, and mapping out what to fix first without checklist bloat.",
     role: "IT GRC Consultant",
     organization: "PT Solusi Dwi Satya",
     impact: "Clear gap snapshot, compliance readiness & prioritized fix roadmap",
@@ -852,7 +892,7 @@ const GRC_PROJECTS: ProjectItem[] = [
     domain: "grc",
     featured: true,
     summary:
-      "Surveillance audit work at BDx Data Centers — checking physical & environmental security, access control, and live audit evidence.",
+      "Surveillance audit work at BDx Data Centers: checking physical & environmental security, access control, and live audit evidence.",
     role: "IT GRC Consultant",
     organization: "PT Starone Mitra Telekomunikasi (BDx Data Centers)",
     impact: "Data center physical, environmental & access-control review",
@@ -887,7 +927,7 @@ const GRC_PROJECTS: ProjectItem[] = [
     tag: "Implementation",
     domain: "grc",
     summary:
-      "Full ISO/IEC 27001:2022 rollout — policies, risk registers, SoA, internal audits, plus asset, incident, and vendor security controls.",
+      "Full ISO/IEC 27001:2022 rollout: policies, risk registers, SoA, internal audits, plus asset, incident, and vendor security controls.",
     role: "IT GRC Consultant",
     organization: "PT Arta MediaTek Transformasi",
     impact: "Full ISMS build: policies, risk register, SoA, asset, incident & vendor controls",
@@ -910,6 +950,40 @@ const GRC_PROJECTS: ProjectItem[] = [
     outcome: [
       "Shipped a complete ISO/IEC 27001:2022 governance and operational toolkit.",
       "Tightened coverage across internal assets, incident response, and external vendors.",
+    ],
+  },
+  {
+    slug: "security-compliance-pt-solusi-dwi-satya-2025",
+    year: "2025",
+    period: "2025",
+    date: "2025-08-01",
+    title: "Security Compliance – PT Solusi Dwi Satya",
+    tag: "Compliance",
+    domain: "grc",
+    summary:
+      "Security compliance work for PT Solusi Dwi Satya: checking real controls against requirements, finding gaps, and lining up evidence for audit.",
+    role: "IT GRC Consultant",
+    organization: "PT Solusi Dwi Satya",
+    impact: "Security compliance review, gap visibility, and audit-ready evidence",
+    frameworks: ["IT GRC", "Security Compliance"],
+    stack: ["Control Review", "Gap Analysis", "Compliance Advisory"],
+    deliverables: [
+      "Security Compliance Review",
+      "Gap & Priority Summary",
+      "Audit Evidence Support",
+    ],
+    overview:
+      "Worked with PT Solusi Dwi Satya on security compliance, looking at how their day-to-day controls held up against the requirements in scope.",
+    challenge:
+      "Getting an honest picture of where controls stood without burying the team in checklists.",
+    approach: [
+      "Reviewed existing policies, technical controls, and the evidence behind them.",
+      "Mapped gaps against the compliance requirements in scope.",
+      "Turned the gaps into a short, prioritized list the team could act on.",
+    ],
+    outcome: [
+      "Gave PT Solusi Dwi Satya a clear view of its compliance position and what to fix first.",
+      "Kept evidence organized so audit conversations were easier.",
     ],
   },
   {
@@ -990,7 +1064,7 @@ const GRC_PROJECTS: ProjectItem[] = [
     tag: "Implementation",
     domain: "grc",
     summary:
-      "Fast-track ISO/IEC 27001:2022 rollout and audit prep — ISMS docs, risk management, control checks, and getting the team audit-ready.",
+      "Fast-track ISO/IEC 27001:2022 rollout and audit prep: ISMS docs, risk management, control checks, and getting the team audit-ready.",
     role: "IT GRC Consultant",
     organization: "PT Covena Teknologi Global",
     impact: "Fast-track ISMS rollout & certification audit prep",
@@ -1024,7 +1098,7 @@ const GRC_PROJECTS: ProjectItem[] = [
     tag: "Implementation",
     domain: "grc",
     summary:
-      "Year-long ISMS build from scratch — security policies, risk management, Statement of Applicability (SoA), and Annex A alignment.",
+      "Year-long ISMS build from scratch: security policies, risk management, Statement of Applicability (SoA), and Annex A alignment.",
     role: "IT GRC Consultant",
     organization: "PT Navios Evolusi Solusindo",
     impact: "Ground-up ISMS setup, policy suite & SoA alignment",
@@ -1038,7 +1112,7 @@ const GRC_PROJECTS: ProjectItem[] = [
     overview:
       "Helped build out PT Navios Evolusi Solusindo's ISO/IEC 27001:2022 ISMS from the ground up over the full year.",
     challenge:
-      "Standing up an ISMS from zero — policies, risk criteria, and honest Annex A justifications in the SoA without overcomplicating daily ops.",
+      "Standing up an ISMS from zero: policies, risk criteria, and honest Annex A justifications in the SoA without overcomplicating daily ops.",
     approach: [
       "Drafted straightforward info-sec policies and day-to-day procedures.",
       "Ran risk management cycles and built out the Statement of Applicability (SoA).",
@@ -1059,7 +1133,7 @@ const GRC_PROJECTS: ProjectItem[] = [
     tag: "Transition",
     domain: "grc",
     summary:
-      "Migrated an existing ISMS from ISO/IEC 27001:2013 to 2022 — delta gap checks, refreshed docs, updated risk maps, and revised Annex A controls.",
+      "Migrated an existing ISMS from ISO/IEC 27001:2013 to 2022: delta gap checks, refreshed docs, updated risk maps, and revised Annex A controls.",
     role: "IT GRC Consultant",
     organization: "PT Autopedia Sukses Lestari",
     impact: "Smooth ISO/IEC 27001:2013 → 2022 upgrade & Annex A refresh",
@@ -1094,7 +1168,7 @@ const GRC_PROJECTS: ProjectItem[] = [
     tag: "Transition",
     domain: "grc",
     summary:
-      "Helped upgrade from ISO/IEC 27001:2013 to 2022 — reviewing current ISMS habits, checking what changed, updating docs, and mapping revised Annex A.",
+      "Helped upgrade from ISO/IEC 27001:2013 to 2022: reviewing current ISMS habits, checking what changed, updating docs, and mapping revised Annex A.",
     role: "IT GRC Consultant",
     organization: "PT JBA Indonesia",
     impact: "ISMS delta review & clean revised Annex A upgrade",
@@ -1129,7 +1203,7 @@ const GRC_PROJECTS: ProjectItem[] = [
     tag: "Surveillance",
     domain: "grc",
     summary:
-      "Ongoing ISO/IEC 27001:2022 surveillance support — making sure controls actually hold up, checking live audit evidence, and spotting easy wins.",
+      "Ongoing ISO/IEC 27001:2022 surveillance support: making sure controls actually hold up, checking live audit evidence, and spotting easy wins.",
     role: "IT GRC Consultant",
     organization: "PT Manpro Teknologi Indonesia",
     impact: "Keeping the ISMS sharp & audit-ready year over year",
@@ -1163,7 +1237,7 @@ const GRC_PROJECTS: ProjectItem[] = [
     tag: "Implementation",
     domain: "grc",
     summary:
-      "Helped build an ISO/IEC 27001:2022 ISMS from the ground up — core docs, risk checks, control rollouts, and governance basics.",
+      "Helped build an ISO/IEC 27001:2022 ISMS from the ground up, core docs, risk checks, control rollouts, and governance basics.",
     role: "IT GRC Consultant",
     organization: "PT Pallav Kredit Makmur",
     impact: "ISMS foundation & financial info-sec governance baseline",
@@ -1197,7 +1271,7 @@ const GRC_PROJECTS: ProjectItem[] = [
     tag: "Awareness",
     domain: "grc",
     summary:
-      "Built and ran a security awareness program that actually sticks — real phishing red flags, everyday cyber hygiene, and zero boring slide-reading.",
+      "Built and ran a security awareness program that actually sticks, real phishing red flags, everyday cyber hygiene, and zero boring slide-reading.",
     role: "IT GRC Consultant",
     organization: "PT Kilang Pertama Internasional",
     impact: "Practical security habits & human-layer risk reduction",
@@ -1230,7 +1304,7 @@ const GRC_PROJECTS: ProjectItem[] = [
     tag: "Product",
     domain: "grc",
     summary:
-      "Built a web app to ditch messy compliance spreadsheets — unifying ISO/IEC 27001, 27701, SOC Type 2, Essential Eight, and UU PDP in one dashboard.",
+      "Built a web app to ditch messy compliance spreadsheets, unifying ISO/IEC 27001, 27701, SOC Type 2, Essential Eight, and UU PDP in one dashboard.",
     role: "Product & GRC Architect",
     organization: "Multi-Framework Compliance App",
     impact: "One clean workspace tracking 5 security & privacy frameworks",
@@ -1285,7 +1359,7 @@ const INCIDENT_PROJECTS: ProjectItem[] = [
       "Containment & Post-Incident Hardening Plan",
     ],
     overview:
-      "Jumped in on incident management and response for PT Javan Cipta Solusi — tracing what happened, finding the root cause, and guiding calm containment.",
+      "Jumped in on incident management and response for PT Javan Cipta Solusi, tracing what happened, finding the root cause, and guiding calm containment.",
     challenge:
       "Piecing together application, server, and access logs quickly to separate signal from noise while keeping live client operations steady.",
     approach: [
@@ -1320,7 +1394,7 @@ const INCIDENT_PROJECTS: ProjectItem[] = [
       "Containment & Post-Incident Hardening Plan",
     ],
     overview:
-      "Stepped in on incident management and response for PT Pupuk Iskandar Muda — digging through evidence, finding the root cause, and guiding containment.",
+      "Stepped in on incident management and response for PT Pupuk Iskandar Muda, digging through evidence, finding the root cause, and guiding containment.",
     challenge:
       "Piecing together what happened quickly inside a critical industrial environment while keeping response steps calm, structured, and traceable.",
     approach: [
@@ -1447,7 +1521,7 @@ export const SITE_DATA = {
     role: "IT GRC Consultant · Penetration Tester · Bug Hunter",
     motto: "Good security starts with asking what could go wrong.",
     tagline:
-      "South Jakarta-based IT GRC Consultant, Penetration Tester, and Bug Hunter — building audit-ready security programs and breaking real-world apps.",
+      "IT GRC consultant, pentester, and bug hunter in South Jakarta. I get teams audit-ready on paper and hard to break in production.",
     location: "South Jakarta, Indonesia",
     timezone: "WIB (UTC+7)",
     email: "aditya@cloudsphere.id",
@@ -1457,7 +1531,7 @@ export const SITE_DATA = {
     instagramUrl: "https://www.instagram.com/kxs3c/",
     whatsappUrl: "https://wa.me/6287889867060",
     availability:
-      "Always down to chat about IT GRC (ISO 27001/27701/42001), pentesting, bug bounty, or just nerd out about security. Hit me up anytime.",
+      "Got a project, an audit coming up, or a bug you want a second pair of eyes on? Message me about IT GRC (ISO 27001, 27701, 42001), pentesting, or bug bounty. I read every message.",
     stats: [
       {
         value: `${Math.floor(ALL_PROJECTS.length / 10) * 10}+`,
@@ -1484,14 +1558,14 @@ export const SITE_DATA = {
 
   about: {
     summary:
-      "Rizky Aditya — South Jakarta-based IT GRC Consultant, Penetration Tester, and Bug Hunter. Building at a stealth cybersecurity startup, running ISO 27001/27701/42001 & VAPT across Whitesec ID, AU, CA & UK, and hunting bugs across Google VRP, HackerOne, and Bugcrowd.",
+      "Rizky Aditya is an IT GRC consultant, penetration tester, and bug hunter based in South Jakarta. He builds ISO 27001, 27701, and 42001 programs and runs VAPT across Whitesec ID, AU, CA, and UK, reports bugs to Google VRP, HackerOne, and Bugcrowd, and is building a GRC platform at a stealth cybersecurity startup.",
     paragraphs: [
-      "Hey, I’m Rizky Aditya — based in South Jakarta, spending my days across IT GRC, pentesting, and bug bounty. Short version: I help teams stay audit-ready on paper and genuinely tough to break in production.",
-      "On the IT GRC side, I take ISO/IEC 27001, 27701, and 42001 work from zero to certified — gap checks, risk registers, SoA, UU PDP alignment, and surveillance audits — minus the dusty 200-page paperwork nobody ever touches again.",
-      "On the offensive side, I run hands-on web, mobile, and API pentests (OWASP WSTG & PTES) so teams catch real flaws before launch. Outside client work, I spend my free cycles hunting bugs across programs like Google VRP, HackerOne, Bugcrowd, and GitHub Security Advisories — digging past automated scanners for real-world impact.",
-      "Build it clean, keep it audit-ready, and break it yourself before anyone else does. Always curious, always leveling up.",
+      "Hi, I’m Rizky. I work in IT GRC, pentesting, and bug bounty from South Jakarta. In short, I help teams look solid to auditors and actually be solid when someone attacks them.",
+      "On the GRC side, I take ISO/IEC 27001, 27701, and 42001 from a blank page to certified: gap assessments, risk registers, Statements of Applicability, UU PDP alignment, and surveillance audits. The goal is documents people actually use, not a 200-page binder nobody opens.",
+      "On the offensive side, I test web, mobile, and API apps with OWASP WSTG and PTES so real flaws get fixed before launch. Outside client work I hunt bugs on Google VRP, HackerOne, Bugcrowd, and GitHub Security Advisories, mostly the kind that scanners don’t catch.",
+      "My rule of thumb: build it clean, keep the evidence ready, and try to break it yourself before someone else does.",
     ],
-    now: "Right now I’m building a GRC SaaS product at a stealth startup, running ISO 27001/27701/42001 & VAPT projects across Whitesec ID, AU, CA & UK, and hunting web, API, and open-source bugs across bug bounty programs.",
+    now: "Right now I’m building a GRC platform at a stealth startup, running ISO 27001, 27701, 42001, and VAPT projects across Whitesec ID, AU, CA, and UK, and hunting web, API, and open source bugs on the side.",
     facts: [
       { label: "Based in", value: "South Jakarta, Indonesia (WIB / UTC+7)" },
       {
@@ -1519,7 +1593,7 @@ export const SITE_DATA = {
       {
         label: "Languages",
         value:
-          "Indonesian (Native) · English (Professional — TOEFL 567 / Duolingo 100)",
+          "Indonesian (Native) · English (Professional, TOEFL 567 / Duolingo 100)",
       },
     ],
     skills: [
@@ -1642,24 +1716,34 @@ export const SITE_DATA = {
     ] as CertificationItem[],
     faqs: [
       {
-        question: "Who is Rizky Aditya and what do you actually do?",
+        question: "Who is Rizky Aditya, and what does he do?",
         answer:
-          "I’m based in South Jakarta, focused on IT GRC, pentesting, and bug bounty. I’m Founder & CEO at a stealth cybersecurity startup, IT GRC Consultant & Pentester across Whitesec ID, AU, CA & UK, and an active bug hunter across Google VRP, HackerOne, Bugcrowd, and GitHub Security Advisories.",
+          "Rizky Aditya is an IT GRC consultant, penetration tester, and bug hunter based in South Jakarta. He is the founder of a stealth cybersecurity startup, consults and pentests across Whitesec ID, AU, CA, and UK, and reports bugs to Google VRP, HackerOne, Bugcrowd, and GitHub Security Advisories.",
       },
       {
-        question: "Which ISO Lead Auditor certifications do you hold?",
+        question: "Which ISO Lead Auditor certifications does Rizky hold?",
         answer:
-          "I hold two ISO Lead Auditor credentials — ISO/IEC 27001:2022 (Information Security, via Mastermind Assurance & SGS) and ISO/IEC 27701:2025 (Privacy, via Mastermind Assurance) — plus AIQI ISO/IEC 42001:2023 (UKAS).",
+          "Two Lead Auditor credentials: ISO/IEC 27001:2022 (information security, from Mastermind Assurance and SGS) and ISO/IEC 27701:2025 (privacy, from Mastermind Assurance). He also holds the AIQI ISO/IEC 42001:2023 certificate from UKAS.",
       },
       {
-        question: "What kind of industries have you worked with?",
+        question: "What does an ISO 27001 project with Rizky look like?",
         answer:
-          "Pretty wide mix — banking, insurance, healthcare, fintech, data centers, government, energy, and critical infrastructure. Clients include BDx Data Centers, PT Bank Resona Perdania, PT Bank Hibank Indonesia, PT Bank Saqu Indonesia, PT Kalbe Farma, PT Prodia Widyahusada, KPK, PT Pupuk Iskandar Muda, and PT Hutama Karya Infrastruktur.",
+          "Usually scoping, a gap assessment, a risk assessment and treatment plan, policies and the Statement of Applicability, an internal audit, and then support through the certification audit and later surveillance audits. The paperwork is tied to what the team already does, so evidence comes out of daily work instead of a last-minute scramble.",
       },
       {
-        question: "Best way to reach you?",
+        question: "What do you get from a VAPT engagement?",
         answer:
-          "Shoot an email to aditya@cloudsphere.id, or DM me on LinkedIn (linkedin.com/in/onerrorkx), GitHub (github.com/satorukikyy), X (@kxgapapa), or Instagram (@kxs3c). If it’s a security disclosure, check /.well-known/security.txt.",
+          "A report with reproducible steps for every confirmed finding, CVSS-based severity, and fix guidance matched to your stack, plus a retest after your team patches. Testing follows OWASP WSTG and PTES and is done by hand, not just with scanners.",
+      },
+      {
+        question: "Which industries has Rizky worked in?",
+        answer:
+          "Banking, insurance, securities, healthcare, fintech, data centers, government, energy, and critical infrastructure. Clients include BDx Data Centers, PT Bank Resona Perdania, PT Bank Hibank Indonesia, PT Bank Saqu Indonesia, PT Kalbe Farma, PT Prodia Widyahusada, KPK, PT Pupuk Iskandar Muda, and PT Hutama Karya Infrastruktur.",
+      },
+      {
+        question: "What is the best way to contact Rizky?",
+        answer:
+          "Email aditya@cloudsphere.id, or message on LinkedIn (linkedin.com/in/onerrorkx), GitHub (github.com/satorukikyy), X (@kxgapapa), or Instagram (@kxs3c). Security reports go through /.well-known/security.txt.",
       },
     ] as FaqItem[],
   },
@@ -1672,11 +1756,11 @@ export const SITE_DATA = {
       company: "Stealth Company (Cybersecurity Startup)",
       location: "South Jakarta, Indonesia",
       summary:
-        "Building a cybersecurity startup from scratch — pairing real-world security consulting with a modern SaaS platform for GRC, risk, asset, and vendor security.",
+        "Building a cybersecurity startup from scratch, mixing hands-on security consulting with a SaaS platform for GRC, risk, assets, and vendor security.",
       highlights: [
-        "Steering product direction, go-to-market, and hands-on consulting across GRC, VAPT, and Security Engineering.",
-        "Building a cybersecurity governance SaaS platform that replaces messy compliance spreadsheets for risk, asset, vendor security, and security ops.",
-        "Leading solution architecture, client discovery, proposals, partnerships, and making sure every delivery actually holds up.",
+        "Setting product direction and go-to-market, while still doing hands-on consulting across GRC, VAPT, and security engineering.",
+        "Building a governance platform meant to replace the compliance spreadsheets teams keep fighting with: risk, assets, vendor security, and security operations.",
+        "Leading solution design, client discovery, proposals, and partnerships, and making sure each delivery holds up.",
       ],
       tags: [
         "Cybersecurity Strategy",
@@ -1694,11 +1778,11 @@ export const SITE_DATA = {
       company: "HackerOne",
       location: "South Jakarta · Remote",
       summary:
-        "Hunting real bugs across authorized web apps and APIs — digging past automated scanners to report clean, reproducible issues.",
+        "Hunting bugs in authorized web apps and APIs, going past automated scanners to report issues that reproduce cleanly.",
       highlights: [
-        "Hunt for web and API vulnerabilities across authorized public and private bug bounty scopes.",
-        "Verify every bug manually with crisp PoCs, realistic impact notes, and fixes devs can actually use.",
-        "Stick strictly to scope and responsible disclosure so security teams can patch production systems cleanly.",
+        "Testing public and private bug bounty scopes for web and API vulnerabilities.",
+        "Verifying every finding by hand, with a minimal PoC, an honest impact note, and a fix developers can use.",
+        "Staying inside scope and following responsible disclosure so teams can patch safely.",
       ],
       tags: ["Bug Hunter", "Security Research", "Web & API", "Responsible Disclosure"],
     },
@@ -1710,13 +1794,13 @@ export const SITE_DATA = {
         "Whitesec ID (PT Topi Putih Siberindo) · Whitesec AU · Whitesec UK · Whitesec CA",
       location: "Indonesia · Australia · UK · Canada",
       summary:
-        "Running IT GRC consulting, penetration testing, and compliance tooling across Whitesec’s regional entities — Whitesec ID (Indonesia), Whitesec AU (Australia), Whitesec UK (United Kingdom), and Whitesec CA (Canada).",
+        "IT GRC consulting, penetration testing, and compliance tooling across Whitesec’s regional entities: Whitesec ID (Indonesia), AU (Australia), UK (United Kingdom), and CA (Canada).",
       highlights: [
-        "Support cross-region security consulting and offensive security engagements across Whitesec ID, Whitesec AU, Whitesec UK, and Whitesec CA.",
-        "Lead end-to-end ISO/IEC 27001:2022, 27701, 42001, and ISO 9001:2015 rollouts — gap checks, risk registers, SoA, internal audits, and surveillance reviews.",
-        "Break web, mobile, and API apps using OWASP Top 10, OWASP WSTG, and PTES, then hand over clean CVSS-rated PoC reports.",
-        "Built GRC One Dashboard — an internal web app unifying control tracking across ISO 27001, 27701, SOC Type 2, Essential Eight, and UU PDP.",
-        "Run practical security awareness sessions and work directly with founders and engineers so findings turn into real fixes.",
+        "Supporting consulting and offensive security engagements across Whitesec ID, AU, UK, and CA.",
+        "Leading ISO/IEC 27001:2022, 27701, 42001, and ISO 9001:2015 projects end to end: gap assessments, risk registers, SoA, internal audits, and surveillance reviews.",
+        "Testing web, mobile, and API apps against the OWASP Top 10, OWASP WSTG, and PTES, and delivering CVSS-rated reports with proof-of-concept steps.",
+        "Built GRC One Dashboard, an internal web app that tracks controls across ISO 27001, 27701, SOC Type 2, Essential Eight, and UU PDP in one place.",
+        "Running security awareness sessions and working directly with founders and engineers so findings turn into fixes.",
       ],
       tags: [
         "ISO 27001/27701/42001",
@@ -1734,12 +1818,12 @@ export const SITE_DATA = {
       company: "Defenxor (PT Defender Nusa Semesta)",
       location: "South Jakarta · Hybrid",
       summary:
-        "Ran Wazuh & Elastic Stack (ELK) SIEM stacks across 9 enterprise SOC clients, built custom detection rules, and handled real banking incident response.",
+        "Ran Wazuh and Elastic Stack (ELK) SIEM for 9 enterprise SOC clients, wrote custom detection rules, and handled real incident response for banks.",
       highlights: [
-        "Deployed and ran Wazuh SIEM + Elastic Stack (ELK) monitoring for clients across banking, healthcare, insurance, government, and port infrastructure.",
-        "Wrote custom Linux & Windows detection rules, tuned noisy alerts, and piped pfSense firewall logs into one centralized view.",
-        "Jumped into live incident management, log forensics, and attack timeline reconstruction for enterprise banking environments.",
-        "Helped build internal SOC tooling for incident tracking and event correlation across multiple live clients.",
+        "Deployed and operated Wazuh SIEM and Elastic Stack monitoring for clients in banking, healthcare, insurance, government, and port infrastructure.",
+        "Wrote custom Linux and Windows detection rules, tuned noisy alerts, and fed pfSense firewall logs into one central view.",
+        "Worked live incidents for enterprise banking clients: incident management, log forensics, and attack timeline reconstruction.",
+        "Helped build internal SOC tooling for incident tracking and event correlation across live clients.",
       ],
       tags: [
         "Wazuh SIEM",
@@ -1757,11 +1841,11 @@ export const SITE_DATA = {
       company: "FMIPA Universitas Indonesia (UI)",
       location: "Depok · On-site",
       summary:
-        "Kept campus computer labs, Windows machines, Microsoft 365 accounts, local switches, and IT asset logs running smoothly.",
+        "Kept campus computer labs, Windows machines, Microsoft 365 accounts, local switches, and IT asset records running.",
       highlights: [
-        "Handled Windows workstation setup, OS patching, baseline security configs, and Microsoft 365 user admin.",
-        "Helped with cabling, switch setup, and network troubleshooting so lab downtime stayed close to zero.",
-        "Kept IT asset inventories and day-to-day operational docs clean and up to date.",
+        "Set up Windows workstations, handled OS patching and baseline security settings, and administered Microsoft 365 users.",
+        "Helped with cabling, switch setup, and network troubleshooting to keep lab downtime close to zero.",
+        "Kept IT asset inventories and day-to-day operations docs accurate and current.",
       ],
       tags: ["Windows", "Microsoft 365", "Networking", "IT Support", "Asset Management"],
     },
@@ -1773,166 +1857,166 @@ export const SITE_DATA = {
     {
       slug: "what-is-it-grc-actually",
       date: "2026-11-18",
-      updatedAt: "2026-11-18",
+      updatedAt: "2026-11-25",
       displayDate: "Nov 18, 2026",
       year: "2026",
-      title: "What Even Is IT GRC? (A Chill, No-Jargon Breakdown)",
+      title: "IT GRC, Explained Like You're Not in a Meeting",
       description:
-        "A relaxed, plain-English walkthrough of IT Governance, Risk & Compliance — what it actually means, why companies need it, and how to keep it from turning into boring paperwork.",
+        "What governance, risk, and compliance actually mean, why companies need them, and how to do GRC without turning it into a paperwork graveyard.",
       category: "GRC",
       readTime: "4 min read",
-      tldr: "IT GRC is basically the operating system behind your security — Governance sets the rules, Risk figures out what could actually hurt you, and Compliance proves to clients and regulators that you're not just winging it.",
+      tldr: "GRC is how a company sets its rules (governance), figures out what could hurt it (risk), and proves it follows through (compliance). Do it right and audit week gets boring in a good way.",
       keyTakeaways: [
-        "Governance = clear house rules and ownership so nobody guesses how security works.",
-        "Risk = prioritizing what could actually break the business instead of panicking over everything.",
-        "Compliance = backing up your security claims with real evidence for standards like ISO 27001, 27701, 42001, or UU PDP.",
+        "Governance is deciding who owns what, so nobody has to guess.",
+        "Risk is ranking problems. You can't fix everything, so fix the scary stuff first.",
+        "Compliance is receipts. ISO 27001, SOC 2, UU PDP, they all boil down to \"show me\".",
       ],
       sections: [
         {
           paragraphs: [
-            "Whenever people hear 'IT GRC', their brain immediately pictures endless spreadsheets, 200-page Word docs, and boring audit meetings. Honestly? When it's done badly, that's pretty accurate. When it's done right, IT GRC is lowkey the backbone that keeps a growing company from stepping on security landmines.",
-            "Here's the no-jargon breakdown of what those three letters actually mean in real life.",
+            "Say \"IT GRC\" at a party and people picture spreadsheets, a 200-page Word doc, and someone named Dave asking for evidence. When it's done badly, that's honestly accurate.",
+            "When it's done well, it's the boring backbone that keeps a growing company from walking into problems it could have seen coming. Here's what the three letters mean once you take the corporate voice off.",
           ],
         },
         {
-          heading: "The Three Letters, Minus the Corporate Fluff",
+          heading: "G, R, and C in normal words",
           bullets: [
-            "Governance (The House Rules): Deciding who owns what, how access gets approved, how incidents get escalated, and what baseline security looks like across teams. Without governance, every team invents its own chaos.",
-            "Risk Management (Picking Your Battles): You can't fix every single issue overnight. Risk management helps you spot what could genuinely wreck your company — like leaked customer data or downtime on a core payment API — and spend your energy there first.",
-            "Compliance (Bringing the Receipts): Clients, partners, and regulators don't just take 'trust me bro, we're secure' as an answer. Frameworks like ISO/IEC 27001, ISO 27701, ISO 42001, SOC 2, and Indonesia's UU PDP give everyone a shared way to verify your controls actually work.",
+            "Governance is who owns what. Who approves access, who gets paged when something breaks, what \"secure enough\" means for each team. Without it, every team makes up its own rules and you get chaos with good intentions.",
+            "Risk is what could actually hurt you, ranked. Leaked customer data or downtime on your payment API matters way more than a typo in an internal wiki. Risk work tells you where to spend your time first.",
+            "Compliance is proof. Clients and regulators won't accept \"trust us, we're secure\". Frameworks like ISO/IEC 27001, 27701, 42001, SOC 2, and Indonesia's UU PDP give everyone the same way to check that your controls are real.",
           ],
         },
         {
-          heading: "Why Teams Lowkey Dread GRC (And How to Fix That)",
+          heading: "Why people hate GRC (fair) and how to fix it",
           paragraphs: [
-            "Most teams hate GRC because someone copy-pasted generic policy templates off the internet and forced engineers to fill out forms that have zero connection to how they actually ship code.",
-            "Good GRC flips that completely. Instead of slowing product teams down, you wire compliance straight into habits they already do — PR reviews, MFA, automated backups, access offboarding, and regular pentests. When audit week rolls around, the evidence is already sitting there.",
+            "Most people hate GRC because someone pasted generic templates from the internet and made engineers fill out forms that have nothing to do with how they ship code. I'd hate that too.",
+            "The fix is to hook compliance into things teams already do: PR reviews, MFA, backups, offboarding people properly, regular pentests. Then when audit week shows up, the evidence is already sitting there and nobody is panic-screenshotting at midnight.",
           ],
           quote:
-            "Policies without technical controls are just vibes. Technical controls without governance fall apart the moment someone leaves.",
+            "A policy with no real control behind it is just a nice document. A control with no owner stops working the day someone quits.",
         },
       ],
       faqs: [
         {
-          question: "Is IT GRC just writing policies and spreadsheets all day?",
+          question: "Is GRC just writing policies and filling spreadsheets all day?",
           answer:
-            "Not if you're doing it right. Modern IT GRC means working closely with engineering, IT, legal, and leadership to map real risks, automate evidence collection, and make sure controls actually protect live systems.",
+            "It shouldn't be. Good GRC means working with engineering, IT, legal, and leadership to find the risks that matter and collect evidence from systems that already exist. If your GRC person never talks to engineers, something is off.",
         },
         {
-          question: "Do early-stage startups even need GRC?",
+          question: "Does an early-stage startup need GRC?",
           answer:
-            "You don't need a massive enterprise setup on day one, but getting basic house rules right early (access control, backups, incident contacts, and vendor checks) saves you a huge headache the moment your first enterprise client asks for ISO 27001 or a security questionnaire.",
+            "Not the full enterprise version. But getting the basics right early (who has access to what, backups that actually restore, who to call during an incident, a quick check on your vendors) saves a lot of pain when your first big client sends a security questionnaire or asks about ISO 27001.",
         },
       ],
     },
     {
       slug: "what-is-vapt-actually",
       date: "2026-11-15",
-      updatedAt: "2026-11-15",
+      updatedAt: "2026-11-25",
       displayDate: "Nov 15, 2026",
       year: "2026",
-      title: "VAPT Explained Simply: Breaking Your Own Stuff Before Hackers Do",
+      title: "What a Pentest Actually Is (and Why a Scanner Doesn't Count)",
       description:
-        "A straightforward guide to Vulnerability Assessment & Penetration Testing — how VA and PT differ, what happens during a real test, and why scanners alone aren't enough.",
+        "VA vs PT, what really happens during a pentest, and why running a scanner and calling it a day won't cut it.",
       category: "VAPT",
       readTime: "4 min read",
-      tldr: "VAPT combines two things: Vulnerability Assessment (mapping out all your weak spots) and Penetration Testing (safely exploiting them like a real attacker) so your devs can patch real risks before bad actors find them.",
+      tldr: "VAPT is two things. A vulnerability assessment lists your weak spots, and a penetration test tries to use them like a real attacker would. The point is to find and fix the bad stuff before someone else does.",
       keyTakeaways: [
-        "VA goes wide to list known weaknesses; PT goes deep to prove real-world exploitability and impact.",
-        "Good pentesting is manual — automated scanners miss broken access control, auth bypasses, and business logic bugs.",
-        "A great VAPT report doesn't flex hacker jargon; it gives developers clear repro steps and clean fixes.",
+        "VA goes wide and lists what looks weak. PT goes deep and proves what an attacker can actually do.",
+        "Scanners miss the best bugs: broken access control, auth bypasses, business logic. A human has to poke at those.",
+        "A good report is boring in the best way: clear steps, clear impact, clear fix. No hacker flexing.",
       ],
       sections: [
         {
           paragraphs: [
-            "You can ship the cleanest app in the world and still leave one tiny authorization bug wide open in production. That's where VAPT — Vulnerability Assessment and Penetration Testing — comes in. Think of it as hiring an ethical hacker to stress-test your house before a burglar tries the doors.",
+            "You can build a really clean app and still leave one tiny authorization bug open in production. It happens all the time. That's what VAPT (vulnerability assessment and penetration testing) is for: someone friendly tries your doors before someone unfriendly does.",
           ],
         },
         {
-          heading: "VA vs. PT: What's Actually the Difference?",
+          heading: "VA vs PT in one minute",
           bullets: [
-            "Vulnerability Assessment (VA): Going broad across your web apps, mobile apps, APIs, or servers to spot misconfigurations, outdated components, and known weak spots. It answers: 'What looks exposed?'",
-            "Penetration Testing (PT): Going deep with an attacker mindset. Instead of stopping at a scanner alert, a pentester safely chains flaws together — like turning a sneaky IDOR/BOLA bug into full account takeover — to prove real impact. It answers: 'How bad is it if someone actually abuses this?'",
+            "A vulnerability assessment is wide and shallow. You scan the web apps, mobile apps, APIs, or servers and list what looks off, like misconfigs, old components, and known weak spots. The question is \"what looks exposed?\"",
+            "A penetration test is narrow and deep. A pentester takes a bug and keeps going. A small IDOR/BOLA turns into reading other people's data, then maybe taking over an account. The question is \"how bad is this if someone abuses it?\"",
           ],
         },
         {
-          heading: "How a Real VAPT Engagement Flows",
+          heading: "How an engagement usually goes",
           bullets: [
-            "Scope & Rules of Engagement: Locking down exactly what's in scope, test accounts, timing, and guardrails so nothing breaks production.",
-            "Recon & Attack Surface Mapping: Understanding how the app really works — endpoints, user roles, API flows, and where sensitive data moves.",
-            "Manual Testing (OWASP WSTG & PTES): Poking at auth, sessions, role permissions, input handling, and business logic way past what automated tools see.",
-            "PoC Report & Retest: Handing over clean proof-of-concept steps, honest CVSS risk ratings, stack-specific fixes, and then retesting after devs patch to verify the bug is truly gone.",
+            "Scope and rules come first. What's in, what's out, which test accounts, when we test, and what we won't touch. Boring, but it keeps production safe.",
+            "Then recon. Figure out how the app really works: endpoints, user roles, API flows, and where the sensitive data lives.",
+            "Next is manual testing with OWASP WSTG and PTES. Auth, sessions, permissions, inputs, business logic. This is where the real findings come from.",
+            "Last, the report and retest. Every bug gets repro steps, an honest CVSS score, and a fix that fits your stack. Once your devs patch, I test again to make sure it's actually gone.",
           ],
           quote:
-            "Automated scanners check boxes. Manual pentesting finds the bugs that actually wake CISOs up at 2 AM.",
+            "Scanners tick boxes. Humans find the bug that ruins your Friday.",
         },
       ],
       faqs: [
         {
-          question: "How often should a team run VAPT?",
+          question: "How often should we run a pentest?",
           answer:
-            "At minimum once a year (most compliance frameworks like ISO 27001 and banking/fintech regs expect it), plus anytime you ship a major release, new API, or big architecture change.",
+            "At least once a year. ISO 27001 and most banking and fintech rules expect that. Also run one after big releases, new APIs, or major architecture changes.",
         },
         {
-          question: "Will a pentest crash our production app?",
+          question: "Will a pentest take down our app?",
           answer:
-            "No — legit VAPT runs under strict rules of engagement (and ideally on staging or controlled prod windows) with zero destructive payloads and constant communication with your engineering team.",
+            "It shouldn't. A proper test follows agreed rules, ideally runs on staging or in a controlled production window, avoids destructive payloads, and keeps your engineers in the loop the whole time.",
         },
       ],
     },
     {
       slug: "what-is-bug-bounty-actually",
       date: "2026-11-12",
-      updatedAt: "2026-11-12",
+      updatedAt: "2026-11-25",
       displayDate: "Nov 12, 2026",
       year: "2026",
-      title: "Bug Bounty 101: Getting Paid to Ethically Break the Internet",
+      title: "Bug Bounty for Beginners: Yes, You Can Get Paid to Break Stuff",
       description:
-        "A chill intro to how bug bounty programs work, how they compare to regular VAPT, and the unwritten rules of hunting bugs ethically on platforms like HackerOne.",
+        "How bug bounty works, how it differs from a pentest, and the ground rules for hunting bugs without getting yourself in trouble.",
       category: "Bug Bounty",
       readTime: "4 min read",
-      tldr: "Bug bounty programs let companies invite independent security researchers to hunt for real bugs in authorized targets — report a valid flaw responsibly, help them patch it, and earn a bounty (or Hall of Fame).",
+      tldr: "Companies invite researchers to find real bugs in specific, authorized targets. You report a valid one privately, they fix it, and you get paid or at least a spot on their Hall of Fame.",
       keyTakeaways: [
-        "Bug bounty is legal, authorized hacking — always stick strictly to the program's published scope and policy.",
-        "Unlike VAPT (paid per engagement), bug bounty is pay-for-impact: you only earn when your bug is valid and unique.",
-        "Clean, reproducible PoCs and honest severity writeups get triaged and paid way faster than bloated reports.",
+        "It's legal because it's authorized. Stay inside the program's scope, always.",
+        "A pentest pays for your time. Bug bounty pays for results. No valid, unique bug means no payout.",
+        "Short, clear reports get triaged and paid faster than long ones stuffed with filler.",
       ],
       sections: [
         {
           paragraphs: [
-            "Every big tech company knows one truth: even with a great internal security team and yearly pentests, fresh eyes from around the world will always spot edge cases you missed. That's the whole idea behind bug bounty.",
-            "Through platforms like HackerOne, Bugcrowd, or self-hosted security policies (like /.well-known/security.txt), organizations say: 'Here are the domains you're allowed to test, here are the rules — if you find something real and tell us privately, we'll reward you.'",
+            "Big companies already know this: even with a great security team and yearly pentests, people outside will find things you missed. That's the whole idea behind bug bounty.",
+            "On platforms like HackerOne and Bugcrowd, or with a plain /.well-known/security.txt, a company basically says: here's what you can test, here are the rules, and if you find something real and tell us privately, we'll reward you.",
           ],
         },
         {
-          heading: "Bug Bounty vs. VAPT — Same Vibe, Different Game",
+          heading: "Bug bounty vs pentest: same skills, different game",
           bullets: [
-            "VAPT is a scheduled, fixed-scope deep dive where a company hires a tester to review an app thoroughly within a set window and pays for the full assessment.",
-            "Bug Bounty is continuous and crowdsourced. Hundreds of hunters can look at the same target anytime, and payouts only happen when you find a legit, non-duplicate security bug with real impact.",
-            "Honestly, doing both is a cheat code: bug bounty sharpens your creativity against hardened real-world apps, and that attacker instinct makes your VAPT and GRC work 10x stronger.",
+            "A pentest is scheduled with a fixed scope. A company hires someone to look at an app for a set window and pays for the whole thing.",
+            "Bug bounty is open all the time. Lots of hunters look at the same target, and you only get paid when you find a valid bug that nobody reported yet.",
+            "Doing both helps. Bounty hunting teaches you to get creative against hardened, real apps, and that instinct makes your pentests and GRC work better.",
           ],
         },
         {
-          heading: "The Golden Rules So You Don't Fumble",
+          heading: "Ground rules so you don't mess up",
           bullets: [
-            "Read the scope twice: Never touch out-of-scope domains, third-party services, or real users' data. Stick to your own test accounts.",
-            "Show, don't wreck: Prove impact with the smallest safe PoC possible — zero DoS, zero data dumping, zero social engineering unless explicitly allowed.",
-            "Write reports triagers actually enjoy reading: Clear summary, exact endpoint, minimal step-by-step repro, realistic impact, and a practical fix. Skip the copy-paste filler.",
+            "Read the scope twice. Don't touch out-of-scope domains, third-party services, or real users' data. Use your own test accounts.",
+            "Prove it small. Use the smallest safe PoC that shows the impact. No DoS, no dumping data, no social engineering unless the program says it's fine.",
+            "Write the report you'd want to triage: short summary, exact endpoint, minimal steps, realistic impact, and a suggested fix. Skip the filler.",
           ],
           quote:
-            "In bug bounty, patience and curiosity beat noisy automated scanners every single time.",
+            "Patience beats noisy scanners in bug bounty, every single time.",
         },
       ],
       faqs: [
         {
-          question: "Can beginners actually get into bug bounty?",
+          question: "Can beginners actually do bug bounty?",
           answer:
-            "For sure — just start with solid web/HTTP fundamentals (PortSwigger Web Security Academy is gold), pick one bug class like IDOR or auth flaws, and focus on understanding how a target app actually works instead of spraying random scanners.",
+            "Yep. Get solid at web and HTTP basics first (PortSwigger's Web Security Academy is great), pick one bug class like IDOR or auth issues, and focus on understanding how one app works instead of blasting scanners at everything.",
         },
         {
-          question: "Do you get paid for every bug you report?",
+          question: "Do you get paid for every report?",
           answer:
-            "Not always. Some programs are VDP (Vulnerability Disclosure Programs) that give reputation or Hall of Fame instead of cash, and paid programs won't pay for duplicates, out-of-scope findings, or theoretical low-impact issues.",
+            "Nope. Some programs are VDPs, which give you credit or a Hall of Fame spot instead of cash. Paid programs also skip duplicates, out-of-scope stuff, and low-impact theory.",
         },
       ],
     },

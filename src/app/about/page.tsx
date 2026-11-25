@@ -3,6 +3,7 @@ import {
   buildBreadcrumbJsonLd,
   buildFaqJsonLd,
   buildPageMetadata,
+  buildProfilePageJsonLd,
 } from "@/lib/seo";
 import { LogoA } from "@/components/LogoA";
 import { JsonLd } from "@/components/JsonLd";
@@ -23,13 +24,14 @@ export default function AboutPage() {
           { name: "About", path: "/about" },
         ])}
       />
+      <JsonLd data={buildProfilePageJsonLd()} />
       <JsonLd data={buildFaqJsonLd(SITE_DATA.about.faqs)} />
 
       {/* Identity Block */}
       <header className="flex items-center gap-4">
         <LogoA size={48} variant="badge" className="shrink-0" />
         <div>
-          <h1 className="text-xl font-semibold tracking-[-0.025em] text-[var(--text)]">
+          <h1 className="font-display text-2xl font-semibold tracking-[-0.03em] text-[var(--text)]">
             {SITE_DATA.profile.name}
           </h1>
           <p className="mt-0.5 text-sm text-[var(--text-muted)]">

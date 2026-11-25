@@ -3,7 +3,7 @@ import { SITE_DATA, SITE_URL } from "@/data/site";
 
 const SITE_HOST = new URL(SITE_URL).host;
 
-export const alt = `${SITE_DATA.profile.name} — ${SITE_DATA.profile.role}`;
+export const alt = `${SITE_DATA.profile.name} | ${SITE_DATA.profile.role}`;
 export const size = {
   width: 1200,
   height: 630,

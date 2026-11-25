@@ -36,7 +36,7 @@ export function ContactActions() {
     const subject = encodeURIComponent(
       `[${topic || "Hey"}] Message from ${name}`
     );
-    const body = encodeURIComponent(`${message}\n\n— ${name} (${email})`);
+    const body = encodeURIComponent(`${message}\n\nFrom ${name} (${email})`);
     window.location.href = `mailto:${SITE_DATA.profile.email}?subject=${subject}&body=${body}`;
     setStatus("Opening your mail app...");
     form.reset();

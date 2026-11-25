@@ -1,38 +1,34 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/data/site";
 
-/**
- * robots.txt optimized for SEO, AEO, and GEO:
- * - Welcomes traditional search engines & modern AI answer/search bots
- * - Protects private/internal paths (/api/, /_next/static chunks not needed for indexing)
- * - Advertises canonical sitemap & host
- */
+// Everything on this site is public on purpose, and AI search and answer engines are
+// welcome: being quoted accurately is part of the goal. Crawlers are named explicitly so
+// the intent is unambiguous.
+const AI_AND_SEARCH_BOTS = [
+  "GPTBot",
+  "OAI-SearchBot",
+  "ChatGPT-User",
+  "ClaudeBot",
+  "Claude-User",
+  "Claude-SearchBot",
+  "PerplexityBot",
+  "Perplexity-User",
+  "Google-Extended",
+  "Applebot-Extended",
+  "Bingbot",
+  "DuckAssistBot",
+  "CCBot",
+  "Amazonbot",
+  "meta-externalagent",
+];
+
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
-      {
-        userAgent: "*",
-        allow: ["/", "/llms.txt", "/llms-full.txt", "/.well-known/security.txt"],
-        disallow: ["/api/", "/private/", "/admin/"],
-      },
-      {
-        userAgent: [
-          "GPTBot",
-          "OAI-SearchBot",
-          "ChatGPT-User",
-          "ClaudeBot",
-          "Claude-Web",
-          "PerplexityBot",
-          "Google-Extended",
-          "Applebot-Extended",
-          "Bingbot",
-        ],
-        allow: ["/", "/llms.txt", "/llms-full.txt"],
-        disallow: ["/api/", "/private/"],
-      },
+      { userAgent: "*", allow: "/" },
+      { userAgent: AI_AND_SEARCH_BOTS, allow: "/" },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,
-    host: SITE_URL,
   };
 }
 

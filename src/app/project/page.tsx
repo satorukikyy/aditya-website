@@ -1,12 +1,16 @@
 import { SITE_DATA } from "@/data/site";
-import { buildBreadcrumbJsonLd, buildPageMetadata } from "@/lib/seo";
+import {
+  buildBreadcrumbJsonLd,
+  buildItemListJsonLd,
+  buildPageMetadata,
+} from "@/lib/seo";
 import { ProjectExplorer } from "@/components/ProjectExplorer";
 import { JsonLd } from "@/components/JsonLd";
 
 export const metadata = buildPageMetadata({
   title: "Project",
   description:
-    "Cybersecurity work by Rizky Aditya organized across five tracks: Vulnerability Assessment & Penetration Testing, Bug Bounty, Governance, Risk & Compliance, Incident Management, and Security Engineering.",
+    "Cybersecurity projects by Rizky Aditya across five tracks: VAPT, bug bounty, GRC, incident management, and security engineering.",
   path: "/project",
 });
 
@@ -20,13 +24,26 @@ export default function ProjectPage() {
         ])}
       />
 
+      <JsonLd
+        data={buildItemListJsonLd({
+          name: "Projects",
+          description:
+            "Cybersecurity projects by Rizky Aditya across VAPT, bug bounty, GRC, incident management, and security engineering.",
+          path: "/project",
+          items: SITE_DATA.projects.map((p) => ({
+            name: p.title,
+            path: `/project/${p.slug}`,
+          })),
+        })}
+      />
+
       <header>
-        <h1 className="text-[22px] font-semibold tracking-[-0.025em] text-[var(--text)]">
+        <h1 className="font-display text-[30px] font-semibold leading-[1.05] tracking-[-0.035em] text-[var(--text)]">
           Project
         </h1>
         <p className="mt-2 text-[14.5px] leading-relaxed text-[var(--text-secondary)]">
-          Real client work and hands-on security research across five tracks —
-          pick a track below or search across all{" "}
+          Client work and security research across five tracks. Pick a track
+          or search all{" "}
           <span className="font-mono text-[13.5px] tabular-nums text-[var(--text)]">
             {SITE_DATA.projects.length}
           </span>{" "}

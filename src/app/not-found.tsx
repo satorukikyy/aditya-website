@@ -8,13 +8,13 @@ export default function NotFound() {
         Page not found
       </h1>
       <p className="mt-2 text-sm text-[var(--text-secondary)]">
-        Looks like this link doesn’t exist or moved somewhere else.
+        Nothing here. The link might be old, or the page moved.
       </p>
       <Link
         href="/"
         className="mt-6 inline-flex items-center rounded-md border border-[var(--border-strong)] px-3 py-1.5 text-xs font-medium text-[var(--text)] transition-colors hover:bg-[var(--hover-bg)]"
       >
-        ← Back home
+        Back to home
       </Link>
     </div>
   );

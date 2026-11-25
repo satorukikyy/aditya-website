@@ -67,7 +67,7 @@ export default async function JournalDetailPage({
       </Link>
 
       <header className="mb-8">
-        <h1 className="text-[22px] font-semibold leading-tight tracking-[-0.025em] text-[var(--text)] sm:text-2xl">
+        <h1 className="font-display text-[28px] font-semibold leading-[1.1] tracking-[-0.035em] text-[var(--text)] sm:text-[32px]">
           {post.title}
         </h1>
 
@@ -84,12 +84,10 @@ export default async function JournalDetailPage({
 
       {/* Direct-Answer Summary Box (AEO & GEO Optimized) */}
       <aside
-        aria-label="TL;DR summary"
+        aria-label="Summary"
         className="mb-8 rounded-md border border-[var(--border)] bg-[var(--hover-bg)]/50 p-4"
       >
-        <p className="font-mono text-[11px] uppercase tracking-wider text-[var(--text-muted)]">
-          TL;DR
-        </p>
+        <p className="text-xs font-medium text-[var(--text-muted)]">In short</p>
         <p className="mt-1.5 text-sm leading-relaxed text-[var(--text)]">
           {post.tldr}
         </p>

@@ -1,16 +1,7 @@
 import Link from "next/link";
-import { Bug, Lock, Radar, ShieldCheck, Terminal } from "lucide-react";
 import { SITE_DATA } from "@/data/site";
 import { LogoA } from "@/components/LogoA";
 import { FooterHorizon } from "@/components/FooterHorizon";
-
-const CRAFT_ICONS = [
-  { Icon: ShieldCheck, label: "IT GRC & ISO Audits" },
-  { Icon: Terminal, label: "Penetration Testing" },
-  { Icon: Bug, label: "Bug Bounty Research" },
-  { Icon: Lock, label: "Security Hardening" },
-  { Icon: Radar, label: "Detection & Response" },
-] as const;
 
 export function Footer() {
   return (
@@ -64,28 +55,13 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Subtle Cyber / Tech Craft Icon Row */}
-          <div className="mt-4 flex items-center justify-between gap-3 text-[11px] text-[var(--text-faint)]">
-            <span className="font-mono">
-              South Jakarta · IT GRC · Pentest · Bug Bounty
-            </span>
-            <div className="flex items-center gap-2.5" aria-label="Security domains">
-              {CRAFT_ICONS.map(({ Icon, label }) => (
-                <span
-                  key={label}
-                  title={label}
-                  className="inline-flex items-center transition-colors hover:text-[var(--text)]"
-                >
-                  <Icon className="h-3.5 w-3.5" strokeWidth={1.65} />
-                  <span className="sr-only">{label}</span>
-                </span>
-              ))}
-            </div>
-          </div>
+          <p className="mt-4 font-mono text-[11px] text-[var(--text-faint)]">
+            South Jakarta &middot; IT GRC &middot; Pentest &middot; Bug Bounty
+          </p>
         </div>
       </div>
 
-      {/* Wide Animated Bayer-Dithered Cyber Horizon Artwork ("Rizky Aditya") */}
+      {/* Animated dithered dev-room artwork ("satorukikyy") */}
       <FooterHorizon />
     </footer>
   );

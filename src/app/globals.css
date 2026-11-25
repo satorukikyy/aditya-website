@@ -3,6 +3,7 @@
 @theme inline {
   --font-sans: Menlo, var(--font-ibm-plex-mono), "SFMono-Regular", ui-monospace, Monaco, Consolas, monospace;
   --font-mono: Menlo, var(--font-ibm-plex-mono), "SFMono-Regular", ui-monospace, Monaco, Consolas, monospace;
+  --font-display: var(--font-bricolage), var(--font-ibm-plex-mono), ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
@@ -13,12 +14,24 @@
   --text-faint: #a3a3a3;
   --border: #eaeaea;
   --border-strong: #d4d4d4;
-  --hover-bg: #f4f4f4;
+  --hover-bg: #f5f3ff;
   --code-bg: #f3f3f3;
   --logo-bg: #141414;
   --logo-fg: #fcfcfc;
-  --selection-bg: #171717;
-  --selection-text: #fcfcfc;
+  --selection-bg: #ddd6fe;
+  --selection-text: #1e1b4b;
+  /* Palette roles: purple = brand, pink = finding, sky = patched, yellow = highlight.
+     Bare tokens are for graphics; *-ink tokens are text-safe (>= 4.5:1 on --bg). */
+  --purple: #7c3aed;
+  --purple-ink: #6d28d9;
+  --pink: #ec4899;
+  --pink-ink: #be185d;
+  --sky: #38bdf8;
+  --sky-ink: #0369a1;
+  --yellow: #eab308;
+  --yellow-ink: #854d0e;
+  --accent: var(--purple);
+  --accent-ink: var(--purple-ink);
 }
 
 html.dark {
@@ -29,12 +42,20 @@ html.dark {
   --text-faint: #555555;
   --border: #2c2c2c;
   --border-strong: #3f3f3f;
-  --hover-bg: #242424;
+  --hover-bg: #25232f;
   --code-bg: #252525;
   --logo-bg: #f2f2f2;
   --logo-fg: #141414;
-  --selection-bg: #ededed;
-  --selection-text: #1c1c1c;
+  --selection-bg: #6d28d9;
+  --selection-text: #ffffff;
+  --purple: #a78bfa;
+  --purple-ink: #c4b5fd;
+  --pink: #f472b6;
+  --pink-ink: #f9a8d4;
+  --sky: #7dd3fc;
+  --sky-ink: #bae6fd;
+  --yellow: #fde047;
+  --yellow-ink: #fde68a;
 }
 
 html {
@@ -99,4 +120,47 @@ pre {
   padding: 0.12rem 0.35rem;
   border-radius: 4px;
   color: var(--text);
+}
+
+/* ---------------------------------------------------------------------------
+   Motion
+   Everything below is disabled/flattened under prefers-reduced-motion.
+   --------------------------------------------------------------------------- */
+
+.live-dot {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 9999px;
+  background: var(--purple);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--purple) 55%, transparent);
+  animation: live-pulse 1.8s ease-out infinite;
+}
+
+.live-dot.is-paused {
+  animation: none;
+  background: var(--text-faint);
+}
+
+@keyframes live-pulse {
+  70% {
+    box-shadow: 0 0 0 6px transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-dot {
+    animation: none;
+  }
+}
+
+/* Browser surfaces that belong to the palette, not the UA */
+:focus-visible {
+  outline-color: var(--accent-ink);
+}
+
+html {
+  scrollbar-color: var(--border-strong) transparent;
 }

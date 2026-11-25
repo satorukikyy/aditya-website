@@ -5,7 +5,7 @@ import { JsonLd } from "@/components/JsonLd";
 export const metadata = buildPageMetadata({
   title: "Experience",
   description:
-    "Where Rizky Aditya has worked — Founder & CEO at a stealth cybersecurity startup, Bug Hunter at HackerOne, IT GRC & Pentester across Whitesec ID, AU, UK & CA, Security Engineer at Defenxor, and IT Support at FMIPA UI.",
+    "Where Rizky Aditya has worked: founder of a stealth cybersecurity startup, bug hunter at HackerOne, IT GRC consultant and pentester across Whitesec ID, AU, UK, and CA, security engineer at Defenxor, and IT support at FMIPA UI.",
   path: "/experience",
 });
 
@@ -20,12 +20,12 @@ export default function ExperiencePage() {
       />
 
       <header>
-        <h1 className="text-[22px] font-semibold tracking-[-0.025em] text-[var(--text)]">
+        <h1 className="font-display text-[30px] font-semibold leading-[1.05] tracking-[-0.035em] text-[var(--text)]">
           Experience
         </h1>
         <p className="mt-2 text-[14.5px] leading-relaxed text-[var(--text-secondary)]">
-          Where I’ve been putting in the reps — from startup building and bug
-          hunting to IT GRC, VAPT, security engineering, and IT ops.
+          Where I&rsquo;ve put in the reps, from building a startup and hunting
+          bugs to IT GRC, VAPT, security engineering, and IT ops.
         </p>
       </header>
 
