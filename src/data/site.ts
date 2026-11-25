@@ -1509,13 +1509,20 @@ const SOC_PROJECTS: ProjectItem[] = [
   }),
 ];
 
-const ALL_PROJECTS: ProjectItem[] = [
+const COMBINED_PROJECTS: ProjectItem[] = [
   ...VAPT_PROJECTS,
   ...BUG_BOUNTY_PROJECTS,
   ...GRC_PROJECTS,
   ...INCIDENT_PROJECTS,
   ...SOC_PROJECTS,
 ];
+
+// Two engagements for the same client share a title; add the year so every page title stays unique.
+const ALL_PROJECTS: ProjectItem[] = COMBINED_PROJECTS.map((p) =>
+  COMBINED_PROJECTS.filter((x) => x.title === p.title).length > 1
+    ? { ...p, title: `${p.title} (${p.year})` }
+    : p
+);
 
 export const SITE_DATA = {
   profile: {

@@ -44,7 +44,8 @@ export function buildPageMetadata({
   const fullTitle = title ? `${title} | ${SITE_DATA.profile.name}` : DEFAULT_TITLE;
 
   return {
-    title,
+    // Omit the key entirely when there is no page title, so the layout's default title applies.
+    ...(title ? { title } : {}),
     description,
     keywords: [
       "Rizky Aditya",
