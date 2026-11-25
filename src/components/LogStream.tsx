@@ -3,74 +3,92 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, MotionConfig, motion, useReducedMotion } from "motion/react";
 
+// Five feeds, colored by the site palette. `id` drives the mute toggle, `label` is what the
+// legend shows (named like real pipeline sources).
 type Source = "ATTACK" | "SIEM" | "AWS" | "GRC" | "FIX";
 
-// Colors follow the site palette: pink = attack, sky = SIEM, purple = cloud, yellow = audit.
-const SOURCES: { id: Source; tag: string; dot: string; ink: string; hint: string }[] = [
-  { id: "ATTACK", tag: "ATTACK", dot: "var(--pink)", ink: "var(--pink-ink)", hint: "Attack and probe logs" },
-  { id: "SIEM", tag: "SIEM", dot: "var(--sky)", ink: "var(--sky-ink)", hint: "SIEM and firewall alerts" },
-  { id: "AWS", tag: "AWS", dot: "var(--purple)", ink: "var(--purple-ink)", hint: "Cloud audit logs" },
-  { id: "GRC", tag: "GRC", dot: "var(--yellow)", ink: "var(--yellow-ink)", hint: "Compliance and audit evidence" },
-  { id: "FIX", tag: "FIX", dot: "var(--text-muted)", ink: "var(--text)", hint: "Patches and retests" },
+const SOURCES: { id: Source; label: string; dot: string; ink: string; hint: string }[] = [
+  { id: "ATTACK", label: "nginx/waf", dot: "var(--pink)", ink: "var(--pink-ink)", hint: "Edge access logs and WAF hits" },
+  { id: "SIEM", label: "wazuh/siem", dot: "var(--sky)", ink: "var(--sky-ink)", hint: "Wazuh, Suricata, pfSense, Elastic" },
+  { id: "AWS", label: "aws", dot: "var(--purple)", ink: "var(--purple-ink)", hint: "CloudTrail, GuardDuty, VPC Flow, Config" },
+  { id: "GRC", label: "grc", dot: "var(--yellow)", ink: "var(--yellow-ink)", hint: "Audit evidence and risk register" },
+  { id: "FIX", label: "patch", dot: "var(--text-muted)", ink: "var(--text)", hint: "Patches and retests" },
 ];
 
-// Everything here is made up. IPs come from the RFC 5737 documentation ranges,
-// hosts and users are fictional, and the AWS key is AWS's own published example.
-const POOL: Record<Source, string[]> = {
+interface Line {
+  /** Source name shown in the log, like a real collector would tag it. */
+  tag: string;
+  msg: string;
+}
+
+// Everything here is made up. IPs are RFC 5737 documentation ranges, hosts and users are
+// fictional, and 123456789012 is AWS's own example account ID. Tool names, rule IDs, region
+// codes, and MITRE ATT&CK IDs are real, so the shapes match what analysts actually read.
+const POOL: Record<Source, Line[]> = {
   ATTACK: [
-    "WAF blocked SQLi attempt from 203.0.113.42 on /api/v2/login",
-    "brute force: 14 failed logins for admin from 198.51.100.7",
-    "path traversal probe ../../etc/passwd from 192.0.2.88 (blocked)",
-    "reflected XSS payload in q= param rejected, session 7f3a",
-    "port scan from 198.51.100.23 hit 41 ports in 6s",
-    "nmap -sV fingerprint from 203.0.113.19 (22, 80, 443, 3306)",
-    "JWT with alg=none rejected on /api/orders",
-    "credential stuffing burst: 220 req/min from 192.0.2.141",
-    "SSRF attempt to 169.254.169.254 via url= param (blocked)",
-    "IDOR probe /invoice/1043 as user 1042 returned 403",
-    "directory fuzz hit /.git/config on staging-02 (404)",
+    { tag: "nginx", msg: '203.0.113.42 "POST /api/v2/login" 403 sqlmap/1.7.2' },
+    { tag: "nginx", msg: '192.0.2.88 "GET /download?f=../../etc/passwd" 400 curl/8.4.0' },
+    { tag: "nginx", msg: '198.51.100.23 "GET /.git/config" 404 gobuster/3.6' },
+    { tag: "nginx", msg: '203.0.113.77 "GET /wp-login.php" 404 Nikto/2.5.0' },
+    { tag: "nginx", msg: '192.0.2.141 "POST /api/auth" 429 python-requests/2.31.0' },
+    { tag: "nginx", msg: '198.51.100.9 "GET /actuator/env" 403 Nuclei/3.1.0' },
+    { tag: "nginx", msg: '192.0.2.61 "GET /api/orders" 401 jwt alg=none rejected' },
+    { tag: "modsec", msg: "[id 942100] SQLi libinjection ARGS:email 203.0.113.42 -> BLOCK" },
+    { tag: "modsec", msg: "[id 941100] XSS libinjection ARGS:q 192.0.2.15 -> BLOCK" },
+    { tag: "modsec", msg: "[id 930120] OS file access ARGS:f 192.0.2.88 -> BLOCK" },
+    { tag: "modsec", msg: "[id 931130] SSRF url=169.254.169.254 from 203.0.113.33 -> BLOCK" },
+    { tag: "sshd", msg: "Failed password for invalid user oracle from 198.51.100.7 port 51522" },
+    { tag: "sshd", msg: "Failed password for root from 203.0.113.19 port 40122 ssh2" },
   ],
   SIEM: [
-    "wazuh rule 5710 sshd: login attempt using a non-existent user",
-    "wazuh rule 100002 custom: encoded PowerShell on win-fin-04",
-    "elastic alert: 5 failed logins then success for svc-backup",
-    "pfSense: blocked tcp 198.51.100.7:51522 -> 10.0.0.12:3389",
-    "wazuh FIM: /etc/passwd modified on web-03",
-    "correlation: impossible travel for user dev.kai (ID -> NL)",
-    "elastic: DNS query to newly registered domain from lab-11",
-    "wazuh rule 31151 web: multiple 400s from one source",
-    "sysmon: lsass.exe memory read by unsigned process on win-hr-02",
-    "alert triaged: false positive, rule tuned, noise -38%",
+    { tag: "wazuh", msg: 'rule=5710 lvl=5 agent=web-03 sshd: non-existent user "oracle"' },
+    { tag: "wazuh", msg: "rule=100002 lvl=12 agent=win-fin-04 encoded PowerShell T1059.001" },
+    { tag: "wazuh", msg: "rule=550 lvl=7 agent=web-03 FIM: /etc/passwd modified" },
+    { tag: "wazuh", msg: "rule=31151 lvl=10 agent=lb-01 multiple 400s from 203.0.113.42" },
+    { tag: "suricata", msg: "ET SCAN Potential SSH Scan sid=2001219 198.51.100.7 -> 10.0.0.12:22" },
+    { tag: "suricata", msg: "ET INFO DNS query to .top TLD sid=2027758 src=10.0.4.21" },
+    { tag: "pfsense", msg: "filterlog block in em0 tcp 198.51.100.7:51522 > 10.0.0.12:3389" },
+    { tag: "pfsense", msg: "filterlog block in em0 udp 203.0.113.60:5353 > 10.0.0.1:161" },
+    { tag: "elastic", msg: 'rule="Multiple Logon Failure Then Success" host=win-fin-04 user=svc-backup' },
+    { tag: "elastic", msg: 'rule="Impossible Travel" user=dev.kai geo=ID>NL sev=high' },
+    { tag: "sysmon", msg: "eid=10 lsass.exe accessed by unsigned proc host=win-hr-02 T1003.001" },
+    { tag: "auditd", msg: 'type=EXECVE comm=nc args="-e /bin/sh" auid=1002 host=lab-11' },
   ],
   AWS: [
-    "CloudTrail ConsoleLogin MFA=false user=audit-ro region=ap-southeast-3",
-    "GuardDuty UnauthorizedAccess:EC2/SSHBruteForce i-0abc123def",
-    "S3 PutBucketAcl public-read on logs-demo-bucket (reverted by policy)",
-    "IAM key AKIAIOSFODNN7EXAMPLE rotated, previous age 91d",
-    "Config: sg-0demo allows 0.0.0.0/0 on 22 (non-compliant)",
-    "CloudWatch: lambda auth-handler error rate 4.2%",
-    "CloudTrail AssumeRole denied for role dev-sandbox from new IP",
-    "Security Hub: 3 new MEDIUM findings in ap-southeast-3",
-    "KMS key rotation enabled on prod-data-key",
+    { tag: "cloudtrail", msg: "ap-southeast-3 ConsoleLogin user=audit-ro mfa=false src=203.0.113.24" },
+    { tag: "cloudtrail", msg: "ap-south-1 sts:AssumeRole AccessDenied role=dev-sandbox src=198.51.100.14" },
+    { tag: "cloudtrail", msg: "ap-southeast-1 s3:PutBucketAcl bucket=logs-demo acl=public-read" },
+    { tag: "cloudtrail", msg: "us-east-1 iam:CreateAccessKey user=ci-deploy acct=123456789012" },
+    { tag: "cloudtrail", msg: "eu-west-1 ec2:AuthorizeSecurityGroupIngress sg=sg-0demo 0.0.0.0/0:22" },
+    { tag: "cloudtrail", msg: "ap-southeast-3 kms:DisableKeyRotation key=prod-data AccessDenied" },
+    { tag: "guardduty", msg: "ap-southeast-3 UnauthorizedAccess:EC2/SSHBruteForce i-0abc123def sev=2" },
+    { tag: "guardduty", msg: "ap-south-1 Recon:EC2/PortProbeUnprotectedPort i-0def456abc sev=2" },
+    { tag: "guardduty", msg: "ap-southeast-1 CryptoCurrency:EC2/BitcoinTool.B!DNS i-0a1b2c3d sev=8" },
+    { tag: "vpcflow", msg: "ap-southeast-3 eni-0a1b2c 10.0.3.14:49152 > 203.0.113.9:22 REJECT tcp" },
+    { tag: "awsconfig", msg: "ap-southeast-1 s3-bucket-public-read-prohibited NON_COMPLIANT logs-demo" },
+    { tag: "securityhub", msg: "ap-south-1 3 new MEDIUM findings acct=123456789012" },
+    { tag: "aws-waf", msg: "ap-southeast-3 rule=AWSManagedRulesSQLiRuleSet action=BLOCK 203.0.113.42" },
+    { tag: "lambda", msg: "ap-southeast-3 auth-handler errors=4.2% p99=1840ms alarm=ALARM" },
+    { tag: "inspector", msg: "ap-southeast-1 CVE-2021-44228 log4j-core 2.14.1 i-0fa12 sev=CRITICAL" },
   ],
   GRC: [
-    "audit: control A.8.15 logging evidence collected",
-    "access review completed: 3 findings, owners assigned",
-    "risk register: R-017 vendor SaaS rescored 12 -> 8",
-    "evidence uploaded: backup-restore-test.pdf (A.8.13)",
-    "DPIA for HR portal marked approved",
-    "SoA updated: A.5.23 cloud services now in scope",
-    "internal audit: 2 minor NCs raised, due in 14 days",
-    "policy review: incident response plan v3 signed off",
+    { tag: "evidence", msg: "ISO27001:A.8.15 logging collected src=cloudtrail+wazuh owner=secops" },
+    { tag: "evidence", msg: "ISO27001:A.8.13 backup-restore-test.pdf uploaded status=ok" },
+    { tag: "risk", msg: "R-017 vendor=saas-crm score 12 -> 8 treatment=mitigate" },
+    { tag: "audit", msg: "internal NC-minor ref=A.5.15 due=14d owner=it-ops" },
+    { tag: "audit", msg: "access-review q4 scope=prod-aws reviewed=48 revoked=3" },
+    { tag: "dpia", msg: "hr-portal status=approved reviewer=dpo law=UU-PDP" },
+    { tag: "soa", msg: "A.5.23 cloud services in scope, justification updated" },
+    { tag: "policy", msg: "incident-response-plan v3.0 signed owner=ciso" },
   ],
   FIX: [
-    "patch applied: openssl on web-03, restart ok",
-    "retest passed: IDOR on /invoice no longer reproduces",
-    "WAF rule 942100 tuned, false positives down",
-    "MFA enforced for audit-ro, ticket closed",
-    "bucket policy hardened, public access blocked",
-    "rate limit added to /api/v2/login (10/min per IP)",
-    "secret rotated, old key revoked, deploy green",
+    { tag: "patch", msg: "web-03 openssl 3.0.13 -> 3.0.15 restart=ok" },
+    { tag: "retest", msg: "IDOR /invoice/{id} not-reproducible build=2026.11.3" },
+    { tag: "waf", msg: "rule 942100 tuned fp=-62% ticket=SEC-214" },
+    { tag: "iam", msg: "audit-ro mfa=enforced ticket=SEC-219 closed" },
+    { tag: "s3", msg: "logs-demo block-public-access=on region=ap-southeast-1" },
+    { tag: "nginx", msg: "limit_req zone=login rate=10r/m burst=5 reloaded" },
+    { tag: "secrets", msg: "ci-deploy key rotated, old key revoked, deploy green" },
   ],
 };
 
@@ -78,22 +96,24 @@ interface Entry {
   id: number;
   time: string;
   src: Source;
+  tag: string;
   msg: string;
 }
 
 const VISIBLE = 9;
+const keyOf = (l: Line) => `${l.tag}|${l.msg}`;
 
 // Fixed order so server HTML and the first client render match exactly.
 const SEED_PICKS: [Source, number][] = [
-  ["SIEM", 0],
-  ["ATTACK", 1],
-  ["AWS", 0],
+  ["SIEM", 4],
   ["ATTACK", 0],
+  ["AWS", 6],
+  ["ATTACK", 7],
+  ["SIEM", 0],
+  ["AWS", 9],
   ["GRC", 0],
-  ["SIEM", 3],
   ["FIX", 1],
-  ["AWS", 4],
-  ["ATTACK", 3],
+  ["AWS", 0],
 ];
 
 const fmt = (d: Date) => d.toLocaleTimeString("en-GB", { hour12: false });
@@ -102,18 +122,26 @@ const SEED: Entry[] = SEED_PICKS.map(([src, i], n) => ({
   id: n,
   time: `21:41:${String(10 + n * 2).padStart(2, "0")}`,
   src,
-  msg: POOL[src][i],
+  ...POOL[src][i],
 }));
 
 const rand = (n: number) => Math.floor(Math.random() * n);
 
+// Highlighting: key= prefixes dim, IPs bright, HTTP errors and block verdicts pink,
+// good outcomes sky.
 const TOKEN =
-  /(\b\d{1,3}(?:\.\d{1,3}){3}(?::\d+)?\b|\b(?:blocked|rejected|denied|failed|non-compliant|public-read)\b|\b(?:passed|approved|rotated|enforced|applied|hardened|completed|collected|approved|revoked)\b)/gi;
-const BAD = /^(?:blocked|rejected|denied|failed|non-compliant|public-read)$/i;
-const GOOD = /^(?:passed|approved|rotated|enforced|applied|hardened|completed|collected|revoked)$/i;
+  /(\b\d{1,3}(?:\.\d{1,3}){3}(?::\d+)?\b|(?<=" )\d{3}(?= )|\b[A-Za-z_][\w.-]*=|\b(?:BLOCK|blocked|block|REJECT|AccessDenied|NON_COMPLIANT|CRITICAL|ALARM|rejected|denied|Failed)\b|\b(?:not-reproducible|enforced|rotated|revoked|approved|collected|tuned|reloaded|closed|signed|green)\b)/gi;
+const BAD = /^(?:BLOCK|blocked|block|REJECT|AccessDenied|NON_COMPLIANT|CRITICAL|ALARM|rejected|denied|Failed)$/i;
+const GOOD = /^(?:not-reproducible|enforced|rotated|revoked|approved|collected|tuned|reloaded|closed|signed|green)$/i;
 
 function renderMsg(msg: string) {
   return msg.split(TOKEN).map((part, i) => {
+    if (!part) return null;
+    if (/^[A-Za-z_][\w.-]*=$/.test(part)) return <span key={i} className="text-[var(--text-muted)]">{part}</span>;
+    if (/^\d{3}$/.test(part)) {
+      const bad = part.startsWith("4") || part.startsWith("5");
+      return <span key={i} style={{ color: bad ? "var(--pink-ink)" : "var(--sky-ink)" }}>{part}</span>;
+    }
     if (BAD.test(part)) return <span key={i} style={{ color: "var(--pink-ink)" }}>{part}</span>;
     if (GOOD.test(part)) return <span key={i} style={{ color: "var(--sky-ink)" }}>{part}</span>;
     if (/^\d{1,3}(?:\.\d{1,3}){3}/.test(part)) return <span key={i} className="text-[var(--text)]">{part}</span>;
@@ -138,7 +166,7 @@ export function LogStream() {
   const hovering = useRef(false);
   const enabledRef = useRef(enabled);
   const rootRef = useRef<HTMLElement>(null);
-  const shown = useRef<string[]>(SEED.map((e) => e.msg));
+  const shown = useRef<string[]>(SEED.map(keyOf));
 
   useEffect(() => {
     enabledRef.current = enabled;
@@ -173,17 +201,17 @@ export function LogStream() {
       if (visible.current && !hovering.current && !document.hidden) {
         const on = SOURCES.filter((s) => enabledRef.current[s.id]).map((s) => s.id);
         if (on.length > 0) {
-          // ATTACK and SIEM are the loudest sources, like a real feed.
-          const weighted = on.flatMap((id) => (id === "ATTACK" || id === "SIEM" ? [id, id] : [id]));
+          // Edge and SIEM feeds are the loudest, like a real pipeline.
+          const weighted = on.flatMap((id) => (id === "ATTACK" || id === "SIEM" || id === "AWS" ? [id, id] : [id]));
           const src = weighted[rand(weighted.length)];
           const onScreen = new Set(shown.current);
-          const fresh = POOL[src].filter((m) => !onScreen.has(m));
+          const fresh = POOL[src].filter((l) => !onScreen.has(keyOf(l)));
           const choices = fresh.length > 0 ? fresh : POOL[src];
-          const msg = choices[rand(choices.length)];
-          const entry: Entry = { id: nextId.current++, time: fmt(new Date()), src, msg };
+          const line = choices[rand(choices.length)];
+          const entry: Entry = { id: nextId.current++, time: fmt(new Date()), src, ...line };
           setEntries((prev) => {
             const next = [...prev, entry].slice(-VISIBLE);
-            shown.current = next.map((n) => n.msg);
+            shown.current = next.map(keyOf);
             return next;
           });
         }
@@ -220,7 +248,7 @@ export function LogStream() {
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-[var(--border)] px-3 py-2 text-[11.5px] text-[var(--text-muted)]">
           <span className="flex items-center gap-2">
             <span className={paused || prefersReduced ? "live-dot is-paused" : "live-dot"} aria-hidden="true" />
-            {paused ? "paused" : "live log stream"}
+            {paused ? "paused" : "tail -f /var/log/*"}
           </span>
           <div className="flex flex-wrap items-center gap-x-1 gap-y-1" role="group" aria-label="Log sources">
             {SOURCES.map((s) => (
@@ -235,7 +263,7 @@ export function LogStream() {
                 }`}
               >
                 <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: s.dot }} />
-                {s.tag}
+                {s.label}
               </button>
             ))}
           </div>
@@ -260,8 +288,8 @@ export function LogStream() {
                     className="flex items-baseline gap-2.5 whitespace-nowrap"
                   >
                     <span className="shrink-0 tabular-nums text-[var(--text-faint)]">{e.time}</span>
-                    <span className="w-[52px] shrink-0 font-medium" style={{ color: m.ink }}>
-                      {m.tag}
+                    <span className="w-[78px] shrink-0 truncate font-medium" style={{ color: m.ink }}>
+                      {e.tag}
                     </span>
                     <span className="min-w-0 flex-1 truncate text-[var(--text-secondary)]">{renderMsg(e.msg)}</span>
                   </motion.li>
@@ -272,7 +300,8 @@ export function LogStream() {
         </MotionConfig>
       </div>
       <figcaption className="mt-2 font-mono text-[11.5px] text-[var(--text-muted)]">
-        Sample logs, all made up (documentation IPs, fictional hosts). Hover to pause, tap a source to mute it.
+        Sample logs, all made up: documentation IPs, fictional hosts, AWS&rsquo;s example account ID. Hover to pause,
+        tap a source to mute it.
       </figcaption>
     </figure>
   );
