@@ -37,7 +37,7 @@ export function JournalTable({ posts, sortable = true }: JournalTableProps) {
             <button
               type="button"
               onClick={toggleSort}
-              className="inline-flex cursor-pointer items-center gap-1 text-[var(--text)] transition-colors hover:text-[var(--text)]"
+              className="-my-1.5 inline-flex cursor-pointer items-center gap-1 py-1.5 text-[var(--text)] transition-colors hover:text-[var(--text)]"
             >
               date <span>{arrow}</span>
             </button>

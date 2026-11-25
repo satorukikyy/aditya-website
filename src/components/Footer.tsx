@@ -21,34 +21,34 @@ export function Footer() {
               </span>
             </div>
 
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11.5px]">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-0 font-mono text-[11.5px]">
               <Link
                 href="/llms.txt"
-                className="transition-colors hover:text-[var(--text)]"
+                className="inline-block py-1.5 transition-colors hover:text-[var(--text)]"
               >
                 llms.txt
               </Link>
               <Link
                 href="/llms-full.txt"
-                className="transition-colors hover:text-[var(--text)]"
+                className="inline-block py-1.5 transition-colors hover:text-[var(--text)]"
               >
                 llms-full.txt
               </Link>
               <Link
                 href="/.well-known/security.txt"
-                className="transition-colors hover:text-[var(--text)]"
+                className="inline-block py-1.5 transition-colors hover:text-[var(--text)]"
               >
                 security.txt
               </Link>
               <Link
                 href="/feed.xml"
-                className="transition-colors hover:text-[var(--text)]"
+                className="inline-block py-1.5 transition-colors hover:text-[var(--text)]"
               >
                 rss
               </Link>
               <Link
                 href="/sitemap.xml"
-                className="transition-colors hover:text-[var(--text)]"
+                className="inline-block py-1.5 transition-colors hover:text-[var(--text)]"
               >
                 sitemap
               </Link>

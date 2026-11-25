@@ -145,7 +145,7 @@ export function ContactActions() {
           </h2>
           <Link
             href="/.well-known/security.txt"
-            className="inline-flex items-center gap-1 rounded border border-[var(--border)] bg-[var(--bg)] px-2 py-0.5 font-mono text-[11px] text-[var(--text-muted)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--text)]"
+            className="inline-flex items-center gap-1 rounded border border-[var(--border)] bg-[var(--bg)] px-2.5 py-1.5 font-mono text-[11px] text-[var(--text-muted)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--text)]"
           >
             security.txt ↗
           </Link>

@@ -51,7 +51,7 @@ export default function JournalPage() {
 
         <Link
           href="/feed.xml"
-          className="shrink-0 font-mono text-xs text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
+          className="shrink-0 py-2 font-mono text-xs text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
         >
           RSS Feed ↗
         </Link>

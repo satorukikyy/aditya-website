@@ -66,7 +66,7 @@ export default async function ProjectDetailPage({
 
       <Link
         href={`/project?domain=${domain.id}`}
-        className="mb-6 inline-flex items-center gap-1.5 text-xs text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
+        className="mb-4 inline-flex items-center gap-1.5 py-2 text-xs text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
       >
         ← Back to {domain.label}
       </Link>
@@ -156,12 +156,12 @@ export default async function ProjectDetailPage({
       {/* Prev / Next Navigation */}
       <nav
         aria-label="Project navigation"
-        className="mt-12 flex flex-col gap-3 border-t border-[var(--border)] pt-5 text-xs sm:flex-row sm:items-center sm:justify-between"
+        className="mt-12 flex flex-col gap-0 border-t border-[var(--border)] pt-4 text-xs sm:flex-row sm:items-center sm:justify-between"
       >
         {prevProject ? (
           <Link
             href={`/project/${prevProject.slug}`}
-            className="text-[var(--text-muted)] transition-colors hover:text-[var(--text)] sm:max-w-[48%]"
+            className="py-2 text-[var(--text-muted)] transition-colors hover:text-[var(--text)] sm:max-w-[48%]"
           >
             ← {prevProject.title}
           </Link>
@@ -172,7 +172,7 @@ export default async function ProjectDetailPage({
         {nextProject ? (
           <Link
             href={`/project/${nextProject.slug}`}
-            className="text-[var(--text-muted)] transition-colors hover:text-[var(--text)] sm:max-w-[48%] sm:text-right"
+            className="py-2 text-[var(--text-muted)] transition-colors hover:text-[var(--text)] sm:max-w-[48%] sm:text-right"
           >
             {nextProject.title} →
           </Link>

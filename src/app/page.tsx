@@ -130,7 +130,7 @@ export default function HomePage() {
           </h2>
           <Link
             href="/project"
-            className="text-xs text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
+            className="-my-2 py-2 text-xs text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
           >
             See all {SITE_DATA.projects.length} projects
           </Link>
@@ -189,7 +189,7 @@ export default function HomePage() {
           </h2>
           <Link
             href="/journal"
-            className="text-xs text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
+            className="-my-2 py-2 text-xs text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
           >
             Read all posts
           </Link>

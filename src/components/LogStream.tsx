@@ -273,7 +273,7 @@ export function LogStream() {
             <span className={paused || prefersReduced ? "live-dot is-paused" : "live-dot"} aria-hidden="true" />
             {paused ? "paused" : "tail -f /var/log/*"}
           </span>
-          <div className="flex flex-wrap items-center gap-x-1 gap-y-1" role="group" aria-label="Log sources">
+          <div className="flex flex-wrap items-center gap-x-0.5 gap-y-0" role="group" aria-label="Log sources">
             {SOURCES.map((s) => (
               <button
                 key={s.id}
@@ -281,7 +281,7 @@ export function LogStream() {
                 aria-pressed={enabled[s.id]}
                 title={s.hint}
                 onClick={() => toggle(s.id)}
-                className={`flex cursor-pointer items-center gap-1.5 rounded px-1.5 py-0.5 font-mono transition-opacity hover:bg-[var(--hover-bg)] focus-visible:outline-2 ${
+                className={`flex cursor-pointer items-center gap-1.5 rounded px-2 py-1.5 font-mono transition-opacity hover:bg-[var(--hover-bg)] focus-visible:outline-2 ${
                   enabled[s.id] ? "text-[var(--text-secondary)]" : "opacity-40"
                 }`}
               >
@@ -310,8 +310,8 @@ export function LogStream() {
                     transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
                     className="flex items-baseline gap-2.5 whitespace-nowrap"
                   >
-                    <span className="shrink-0 tabular-nums text-[var(--text-faint)]">{e.time}</span>
-                    <span className="w-[78px] shrink-0 truncate font-medium" style={{ color: m.ink }}>
+                    <span className="hidden shrink-0 tabular-nums text-[var(--text-faint)] sm:inline">{e.time}</span>
+                    <span className="w-[72px] shrink-0 truncate font-medium sm:w-[78px]" style={{ color: m.ink }}>
                       {e.tag}
                     </span>
                     <span className="min-w-0 flex-1 truncate text-[var(--text-secondary)]">{renderMsg(e.msg)}</span>
