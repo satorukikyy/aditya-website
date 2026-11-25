@@ -4,11 +4,12 @@ import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Check, Copy } from "lucide-react";
 import { DOMAIN_COLOR, PROJECT_DOMAINS, SITE_DATA } from "@/data/site";
+import { TopicSelect } from "@/components/TopicSelect";
 
 // Topic choices come from the project tracks, so a new track shows up here automatically.
 const TOPICS = [
-  ...PROJECT_DOMAINS.map((d) => ({ value: d.label, label: d.tabLabel, color: DOMAIN_COLOR[d.id] })),
-  { value: "Just saying hi", label: "Say hi", color: "var(--text-muted)" },
+  ...PROJECT_DOMAINS.map((d) => ({ value: d.label, label: d.label, color: DOMAIN_COLOR[d.id] })),
+  { value: "Just saying hi", label: "Collab / just saying hi", color: "var(--text-muted)" },
 ];
 const DEFAULT_TOPIC = "Governance, Risk & Compliance";
 
@@ -207,32 +208,12 @@ export function ContactActions() {
             </div>
           </div>
 
-          <fieldset>
-            <legend className="mb-1.5 block text-xs text-[var(--text-muted)]">
-              What’s it about?
-            </legend>
-            <div className="flex flex-wrap gap-2">
-              {TOPICS.map((t) => (
-                <label key={t.value} className="cursor-pointer">
-                  <input
-                    type="radio"
-                    name="topic"
-                    value={t.value}
-                    defaultChecked={t.value === DEFAULT_TOPIC}
-                    className="peer sr-only"
-                  />
-                  <span className="flex items-center gap-2 rounded-md border border-[var(--border-strong)] px-3 py-1.5 text-[13px] text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover-bg)] peer-checked:border-[var(--purple)] peer-checked:bg-[var(--hover-bg)] peer-checked:text-[var(--text)] peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--accent-ink)]">
-                    <span
-                      aria-hidden="true"
-                      className="h-1.5 w-1.5 shrink-0 rounded-full"
-                      style={{ backgroundColor: t.color }}
-                    />
-                    {t.label}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
+          <TopicSelect
+            name="topic"
+            label="What’s it about?"
+            options={TOPICS}
+            defaultValue={DEFAULT_TOPIC}
+          />
 
           <div>
             <label
