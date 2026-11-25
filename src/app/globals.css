@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: Menlo, var(--font-ibm-plex-mono), "SFMono-Regular", ui-monospace, Monaco, Consolas, monospace;
+  --font-mono: Menlo, var(--font-ibm-plex-mono), "SFMono-Regular", ui-monospace, Monaco, Consolas, monospace;
+}
+
+:root {
+  --bg: #fcfcfc;
+  --text: #171717;
+  --text-secondary: #4a4a4a;
+  --text-muted: #737373;
+  --text-faint: #a3a3a3;
+  --border: #eaeaea;
+  --border-strong: #d4d4d4;
+  --hover-bg: #f4f4f4;
+  --code-bg: #f3f3f3;
+  --logo-bg: #141414;
+  --logo-fg: #fcfcfc;
+  --selection-bg: #171717;
+  --selection-text: #fcfcfc;
+}
+
+html.dark {
+  --bg: #1c1c1c;
+  --text: #ededed;
+  --text-secondary: #b0b0b0;
+  --text-muted: #808080;
+  --text-faint: #555555;
+  --border: #2c2c2c;
+  --border-strong: #3f3f3f;
+  --hover-bg: #242424;
+  --code-bg: #252525;
+  --logo-bg: #f2f2f2;
+  --logo-fg: #141414;
+  --selection-bg: #ededed;
+  --selection-text: #1c1c1c;
+}
+
+html {
+  background-color: var(--bg);
+  color: var(--text);
+  font-size: 14.5px;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  letter-spacing: -0.012em;
+  font-feature-settings: "zero" 1;
+  overflow-x: hidden;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+::selection {
+  background-color: var(--selection-bg);
+  color: var(--selection-text);
+}
+
+/* Theme toggle icon visibility driven purely by html.dark (zero hydration mismatch) */
+.theme-icon-sun {
+  display: none;
+}
+
+.theme-icon-moon {
+  display: block;
+}
+
+html.dark .theme-icon-sun {
+  display: block;
+}
+
+html.dark .theme-icon-moon {
+  display: none;
+}
+
+/* Code blocks & editorial prose */
+pre {
+  background-color: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.9rem 1rem;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.65;
+  color: var(--text);
+}
+
+:not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background-color: var(--code-bg);
+  padding: 0.12rem 0.35rem;
+  border-radius: 4px;
+  color: var(--text);
+}

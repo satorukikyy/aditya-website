@@ -1,0 +1,22 @@
+interface JsonLdProps {
+  data: Record<string, unknown>;
+}
+
+/**
+ * Injects clean JSON-LD structured data for SEO, AEO, and GEO.
+ * Escapes HTML/script-sensitive characters and JS line separators per OWASP guidance.
+ */
+export function JsonLd({ data }: JsonLdProps) {
+  const safeJson = JSON.stringify(data)
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029");
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: safeJson }}
+    />
+  );
+}
