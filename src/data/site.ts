@@ -9,6 +9,8 @@ export interface ProjectDomain {
   id: ProjectDomainId;
   label: string;
   shortLabel: string;
+  /** Short name for the compact filter bar. */
+  tabLabel: string;
   description: string;
   highlights: string[];
 }
@@ -120,6 +122,7 @@ export const PROJECT_DOMAINS: ProjectDomain[] = [
     id: "vapt",
     label: "Vulnerability Assessment & Penetration Testing",
     shortLabel: "Vulnerability Assessment & Penetration Testing",
+    tabLabel: "VAPT",
     description:
       "Testing web apps, mobile apps, and APIs the way an attacker would (OWASP WSTG and PTES), so teams fix real bugs before someone else finds them.",
     highlights: ["OWASP WSTG", "PTES", "Web / Mobile / API", "CVSS Scoring"],
@@ -128,6 +131,7 @@ export const PROJECT_DOMAINS: ProjectDomain[] = [
     id: "bug-bounty",
     label: "Bug Bounty",
     shortLabel: "Bug Bounty",
+    tabLabel: "Bug Bounty",
     description:
       "Hunting real vulnerabilities on Google VRP, HackerOne, Bugcrowd, and GitHub Security Advisories. Clean PoCs, honest impact, responsible disclosure.",
     highlights: [
@@ -141,6 +145,7 @@ export const PROJECT_DOMAINS: ProjectDomain[] = [
     id: "grc",
     label: "Governance, Risk & Compliance",
     shortLabel: "Governance, Risk & Compliance",
+    tabLabel: "GRC",
     description:
       "Taking ISO/IEC 27001:2022, 27701, 42001, and ISO 9001:2015 from zero to audit-ready, including 2013 to 2022 migrations, surveillance audits, UU PDP, and compliance tooling.",
     highlights: [
@@ -154,6 +159,7 @@ export const PROJECT_DOMAINS: ProjectDomain[] = [
     id: "incident-management",
     label: "Incident Management",
     shortLabel: "Incident Management",
+    tabLabel: "Incident",
     description:
       "Stepping in when an alert turns real: working out what happened, rebuilding the attack timeline, finding the root cause, and locking things down.",
     highlights: [
@@ -167,6 +173,7 @@ export const PROJECT_DOMAINS: ProjectDomain[] = [
     id: "security-engineering",
     label: "Security Engineering",
     shortLabel: "Security Engineering",
+    tabLabel: "Security Eng",
     description:
       "Building and running Wazuh and Elastic Stack (ELK) SIEM pipelines, custom Linux and Windows detection rules, firewall telemetry, and live alert triage.",
     highlights: [

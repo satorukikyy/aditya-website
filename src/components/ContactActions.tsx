@@ -3,7 +3,14 @@
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Check, Copy } from "lucide-react";
-import { SITE_DATA } from "@/data/site";
+import { DOMAIN_COLOR, PROJECT_DOMAINS, SITE_DATA } from "@/data/site";
+
+// Topic choices come from the project tracks, so a new track shows up here automatically.
+const TOPICS = [
+  ...PROJECT_DOMAINS.map((d) => ({ value: d.label, label: d.tabLabel, color: DOMAIN_COLOR[d.id] })),
+  { value: "Just saying hi", label: "Say hi", color: "var(--text-muted)" },
+];
+const DEFAULT_TOPIC = "Governance, Risk & Compliance";
 
 export function ContactActions() {
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
@@ -177,7 +184,7 @@ export function ContactActions() {
                 required
                 maxLength={100}
                 placeholder="Your name"
-                className="w-full rounded-md border border-[var(--border-strong)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] placeholder:text-[var(--text-faint)] focus:border-[var(--text)] focus:outline-none"
+                className="w-full rounded-md border border-[var(--border-strong)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] placeholder:text-[var(--text-faint)] focus:border-[var(--purple)] focus:outline-none"
               />
             </div>
 
@@ -195,36 +202,37 @@ export function ContactActions() {
                 required
                 maxLength={160}
                 placeholder="you@domain.com"
-                className="w-full rounded-md border border-[var(--border-strong)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] placeholder:text-[var(--text-faint)] focus:border-[var(--text)] focus:outline-none"
+                className="w-full rounded-md border border-[var(--border-strong)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] placeholder:text-[var(--text-faint)] focus:border-[var(--purple)] focus:outline-none"
               />
             </div>
           </div>
 
-          <div>
-            <label
-              htmlFor="contact-topic"
-              className="mb-1.5 block text-xs text-[var(--text-muted)]"
-            >
+          <fieldset>
+            <legend className="mb-1.5 block text-xs text-[var(--text-muted)]">
               What’s it about?
-            </label>
-            <select
-              id="contact-topic"
-              name="topic"
-              defaultValue="Governance, Risk & Compliance"
-              className="w-full rounded-md border border-[var(--border-strong)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] focus:border-[var(--text)] focus:outline-none"
-            >
-              <option value="Vulnerability Assessment & Penetration Testing">
-                Vulnerability Assessment &amp; Penetration Testing
-              </option>
-              <option value="Bug Bounty">Bug Bounty / Security Research</option>
-              <option value="Governance, Risk & Compliance">
-                Governance, Risk &amp; Compliance
-              </option>
-              <option value="Incident Management">Incident Management</option>
-              <option value="Security Engineering">Security Engineering</option>
-              <option value="Just saying hi">Collab / Just saying hi</option>
-            </select>
-          </div>
+            </legend>
+            <div className="flex flex-wrap gap-2">
+              {TOPICS.map((t) => (
+                <label key={t.value} className="cursor-pointer">
+                  <input
+                    type="radio"
+                    name="topic"
+                    value={t.value}
+                    defaultChecked={t.value === DEFAULT_TOPIC}
+                    className="peer sr-only"
+                  />
+                  <span className="flex items-center gap-2 rounded-md border border-[var(--border-strong)] px-3 py-1.5 text-[13px] text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover-bg)] peer-checked:border-[var(--purple)] peer-checked:bg-[var(--hover-bg)] peer-checked:text-[var(--text)] peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--accent-ink)]">
+                    <span
+                      aria-hidden="true"
+                      className="h-1.5 w-1.5 shrink-0 rounded-full"
+                      style={{ backgroundColor: t.color }}
+                    />
+                    {t.label}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
 
           <div>
             <label
@@ -240,7 +248,7 @@ export function ContactActions() {
               required
               maxLength={2000}
               placeholder="Tell me what you're building, auditing, or wanna chat about..."
-              className="w-full resize-y rounded-md border border-[var(--border-strong)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] placeholder:text-[var(--text-faint)] focus:border-[var(--text)] focus:outline-none"
+              className="w-full resize-y rounded-md border border-[var(--border-strong)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] placeholder:text-[var(--text-faint)] focus:border-[var(--purple)] focus:outline-none"
             />
           </div>
 

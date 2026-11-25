@@ -49,16 +49,22 @@ export function ProjectExplorer({ projects }: ProjectExplorerProps) {
 
   const normalizedQuery = query.trim().toLowerCase();
 
+  useEffect(() => {
+    document
+      .querySelector('[role="tab"][aria-selected="true"]')
+      ?.scrollIntoView({ inline: "center", block: "nearest" });
+  }, [selected]);
+
   const filterTabs: {
     id: ProjectDomainId | "all";
     label: string;
     count: number;
   }[] = useMemo(
     () => [
-      { id: "all", label: "All Projects", count: counts.all },
+      { id: "all", label: "All", count: counts.all },
       ...PROJECT_DOMAINS.map((d) => ({
         id: d.id,
-        label: d.label,
+        label: d.tabLabel,
         count: counts[d.id] ?? 0,
       })),
     ],
@@ -92,70 +98,78 @@ export function ProjectExplorer({ projects }: ProjectExplorerProps) {
   return (
     <div className="space-y-8">
       {/* Controls: Balanced 2x3 Track Selector + Minimal Search */}
-      <div className="space-y-3">
-        <div
-          role="tablist"
-          aria-label="Filter cybersecurity project domains"
-          className="grid grid-cols-1 gap-2 sm:grid-cols-2"
-        >
-          {filterTabs.map((tab) => {
-            const active = selected === tab.id;
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                role="tab"
-                aria-selected={active}
-                onClick={() => selectDomain(tab.id)}
-                className={`group flex cursor-pointer items-center justify-between gap-3 rounded-lg border px-3.5 py-2.5 text-left transition-all duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--text)] ${
-                  active
-                    ? "border-[var(--text)] bg-[var(--text)] text-[var(--bg)]"
-                    : "border-[var(--border)] bg-[var(--bg)] text-[var(--text)] hover:border-[var(--border-strong)] hover:bg-[var(--hover-bg)]"
-                }`}
-              >
-                <span className="flex items-center gap-2.5 text-[13px] font-medium leading-snug tracking-[-0.01em]">
-                  {tab.id !== "all" ? (
-                    <span
-                      aria-hidden="true"
-                      className="h-2 w-2 shrink-0 rounded-full"
-                      style={{ backgroundColor: DOMAIN_COLOR[tab.id] }}
-                    />
-                  ) : null}
-                  {tab.label}
-                </span>
-                <span
-                  className={`shrink-0 font-mono text-xs tabular-nums ${
-                    active ? "opacity-80" : "text-[var(--text-muted)]"
-                  }`}
-                >
-                  {tab.count}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+      <div className="space-y-2.5">
+        <MotionConfig reducedMotion="user">
+          <div className="-mx-4 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden">
+            <div
+              role="tablist"
+              aria-label="Filter projects by track"
+              className="flex min-w-max gap-0.5 border-b border-[var(--border)]"
+            >
+              {filterTabs.map((tab) => {
+                const active = selected === tab.id;
+                const color = tab.id === "all" ? "var(--text)" : DOMAIN_COLOR[tab.id];
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={active}
+                    onClick={() => selectDomain(tab.id)}
+                    className={`relative flex cursor-pointer items-center gap-1.5 whitespace-nowrap px-2.5 py-2 text-[13px] transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] ${
+                      active
+                        ? "font-medium text-[var(--text)]"
+                        : "text-[var(--text-muted)] hover:text-[var(--text)]"
+                    }`}
+                  >
+                    {tab.id !== "all" ? (
+                      <span
+                        aria-hidden="true"
+                        className="h-1.5 w-1.5 shrink-0 rounded-full"
+                        style={{ backgroundColor: color }}
+                      />
+                    ) : null}
+                    {tab.label}
+                    <span className="font-mono text-[11px] tabular-nums text-[var(--text-muted)]">
+                      {tab.count}
+                    </span>
+                    {active ? (
+                      <motion.span
+                        layoutId="track-underline"
+                        aria-hidden="true"
+                        className="absolute inset-x-1.5 -bottom-px h-0.5 rounded-full"
+                        style={{ backgroundColor: color }}
+                        transition={{ type: "spring", duration: 0.35, bounce: 0.15 }}
+                      />
+                    ) : null}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </MotionConfig>
 
-        {/* Minimal Search Input */}
         <div className="relative">
           <Search
-            className="pointer-events-none absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 text-[var(--text-muted)]"
+            className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-[var(--text-muted)]"
             strokeWidth={1.8}
+            aria-hidden="true"
           />
           <input
             type="search"
             value={query}
             maxLength={80}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Filter by client, company, vulnerability, or year..."
-            aria-label="Filter projects"
-            className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] py-2 pr-9 pl-8 text-[13px] text-[var(--text)] placeholder:text-[var(--text-faint)] transition-colors focus:border-[var(--border-strong)] focus:outline-none"
+            placeholder="Search by client, bug, or year"
+            aria-label="Search projects"
+            className="w-full rounded-md border border-[var(--border)] bg-transparent py-1.5 pr-8 pl-8 text-[13px] text-[var(--text)] placeholder:text-[var(--text-faint)] transition-colors focus:border-[var(--purple)] focus:outline-none"
           />
           {query ? (
             <button
               type="button"
               onClick={() => setQuery("")}
               aria-label="Clear search"
-              className="absolute top-1/2 right-2.5 inline-flex h-5 w-5 -translate-y-1/2 cursor-pointer items-center justify-center rounded text-[var(--text-muted)] transition-colors hover:bg-[var(--hover-bg)] hover:text-[var(--text)]"
+              className="absolute top-1/2 right-1.5 inline-flex h-5 w-5 -translate-y-1/2 cursor-pointer items-center justify-center rounded text-[var(--text-muted)] transition-colors hover:bg-[var(--hover-bg)] hover:text-[var(--text)]"
             >
               <X className="h-3.5 w-3.5" strokeWidth={1.8} />
             </button>
@@ -212,7 +226,11 @@ export function ProjectExplorer({ projects }: ProjectExplorerProps) {
 
             return (
               <section key={domain.id} aria-labelledby={`domain-${domain.id}`}>
-                <div className="mb-1 border-b border-[var(--border-strong)]/70 pb-3.5">
+                <div
+                  className={`mb-1 border-b border-[var(--border-strong)]/70 ${
+                    selected === "all" ? "pb-2.5" : "pb-3.5"
+                  }`}
+                >
                   <div className="flex items-baseline justify-between gap-3">
                     <h2
                       id={`domain-${domain.id}`}
@@ -231,9 +249,11 @@ export function ProjectExplorer({ projects }: ProjectExplorerProps) {
                     </span>
                   </div>
 
-                  <p className="mt-1.5 text-[13px] leading-relaxed text-[var(--text-muted)]">
+                  {selected !== "all" ? (
+                    <p className="mt-1.5 text-[13px] leading-relaxed text-[var(--text-muted)]">
                     {domain.description}
                   </p>
+                  ) : null}
                 </div>
 
                 <ul className="divide-y divide-[var(--border)]">
