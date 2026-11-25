@@ -1,8 +1,4 @@
-import {
-  PROJECT_DOMAINS,
-  SITE_DATA,
-  type ProjectDomainId,
-} from "@/data/site";
+import { SITE_DATA } from "@/data/site";
 import { buildBreadcrumbJsonLd, buildPageMetadata } from "@/lib/seo";
 import { ProjectExplorer } from "@/components/ProjectExplorer";
 import { JsonLd } from "@/components/JsonLd";
@@ -14,20 +10,7 @@ export const metadata = buildPageMetadata({
   path: "/project",
 });
 
-const validDomains = new Set<string>(PROJECT_DOMAINS.map((d) => d.id));
-
-export default async function ProjectPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ domain?: string }>;
-}) {
-  const resolved = await searchParams;
-  const rawDomain = resolved?.domain;
-  const initialDomain: ProjectDomainId | "all" =
-    rawDomain && validDomains.has(rawDomain)
-      ? (rawDomain as ProjectDomainId)
-      : "all";
-
+export default function ProjectPage() {
   return (
     <div className="space-y-8">
       <JsonLd
@@ -51,11 +34,7 @@ export default async function ProjectPage({
         </p>
       </header>
 
-      <ProjectExplorer
-        key={initialDomain}
-        projects={SITE_DATA.projects}
-        initialDomain={initialDomain}
-      />
+      <ProjectExplorer projects={SITE_DATA.projects} />
     </div>
   );
 }

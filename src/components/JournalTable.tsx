@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import type { JournalPost } from "@/data/site";
 
@@ -9,72 +9,23 @@ interface JournalTableProps {
   sortable?: boolean;
 }
 
-type SortKey = "date" | "views";
 type SortDir = "desc" | "asc";
 
 export function JournalTable({ posts, sortable = true }: JournalTableProps) {
-  const [sortKey, setSortKey] = useState<SortKey>("date");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
-  const [viewsMap, setViewsMap] = useState<Record<string, number> | null>(null);
 
-  useEffect(() => {
-    const controller = new AbortController();
-
-    async function loadViews() {
-      try {
-        const res = await fetch("/api/views", {
-          cache: "no-store",
-          signal: controller.signal,
-        });
-        if (!res.ok) return;
-        const data = (await res.json()) as { views?: Record<string, number> };
-        if (data.views) {
-          setViewsMap(data.views);
-        }
-      } catch {
-        // Ignore abort or transient network errors
-      }
-    }
-
-    loadViews();
-
-    return () => {
-      controller.abort();
-    };
-  }, []);
-
-  const toggleSort = (key: SortKey) => {
-    if (sortKey === key) {
-      setSortDir((prev) => (prev === "desc" ? "asc" : "desc"));
-    } else {
-      setSortKey(key);
-      setSortDir("desc");
-    }
-  };
+  const toggleSort = () =>
+    setSortDir((prev) => (prev === "desc" ? "asc" : "desc"));
 
   const sortedPosts = useMemo(() => {
-    const withViews = posts.map((post) => ({
-      ...post,
-      totalViews: viewsMap ? (viewsMap[post.slug] ?? 0) : null,
-    }));
-
-    withViews.sort((a, b) => {
-      if (sortKey === "views") {
-        const av = a.totalViews ?? 0;
-        const bv = b.totalViews ?? 0;
-        return sortDir === "desc" ? bv - av : av - bv;
-      }
+    const sorted = [...posts].sort((a, b) => {
       const diff = new Date(b.date).getTime() - new Date(a.date).getTime();
       return sortDir === "desc" ? diff : -diff;
     });
+    return sorted;
+  }, [posts, sortDir]);
 
-    return withViews;
-  }, [posts, viewsMap, sortKey, sortDir]);
-
-  const arrow = (key: SortKey) => {
-    if (sortKey !== key) return "";
-    return sortDir === "desc" ? "↓" : "↑";
-  };
+  const arrow = sortDir === "desc" ? "↓" : "↑";
 
   let lastYear: string | null = null;
 
@@ -85,12 +36,10 @@ export function JournalTable({ posts, sortable = true }: JournalTableProps) {
           {sortable ? (
             <button
               type="button"
-              onClick={() => toggleSort("date")}
-              className={`inline-flex cursor-pointer items-center gap-1 transition-colors hover:text-[var(--text)] ${
-                sortKey === "date" ? "text-[var(--text)]" : ""
-              }`}
+              onClick={toggleSort}
+              className="inline-flex cursor-pointer items-center gap-1 text-[var(--text)] transition-colors hover:text-[var(--text)]"
             >
-              date <span>{arrow("date")}</span>
+              date <span>{arrow}</span>
             </button>
           ) : (
             <span>date</span>
@@ -98,27 +47,11 @@ export function JournalTable({ posts, sortable = true }: JournalTableProps) {
         </div>
 
         <div className="min-w-0 flex-1">title</div>
-
-        <div className="shrink-0 pl-3 text-right">
-          {sortable ? (
-            <button
-              type="button"
-              onClick={() => toggleSort("views")}
-              className={`inline-flex cursor-pointer items-center gap-1 transition-colors hover:text-[var(--text)] ${
-                sortKey === "views" ? "text-[var(--text)]" : ""
-              }`}
-            >
-              views <span>{arrow("views")}</span>
-            </button>
-          ) : (
-            <span>views</span>
-          )}
-        </div>
       </div>
 
       <ul className="divide-y divide-[var(--border)]">
         {sortedPosts.map((post) => {
-          const showYear = sortKey !== "date" || post.year !== lastYear;
+          const showYear = post.year !== lastYear;
           lastYear = post.year;
 
           return (
@@ -135,12 +68,6 @@ export function JournalTable({ posts, sortable = true }: JournalTableProps) {
                   <span className="block text-[14.5px] font-medium leading-snug text-[var(--text)]">
                     {post.title}
                   </span>
-                </span>
-
-                <span className="shrink-0 pl-2 text-right font-mono text-xs tabular-nums text-[var(--text-muted)]">
-                  {post.totalViews === null
-                    ? "—"
-                    : new Intl.NumberFormat("en-US").format(post.totalViews)}
                 </span>
               </Link>
             </li>

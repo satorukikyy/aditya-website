@@ -19,7 +19,7 @@ Minimal, typography-first personal portfolio & journal inspired by [rauchg.com](
   - `/sitemap.xml`, `/robots.txt`, `/feed.xml`, `/manifest.webmanifest`, `/humans.txt`
 - **Security Hardening**:
   - RFC 9116 `/.well-known/security.txt`
-  - Strict HTTP Security Headers in `next.config.ts` (`CSP`, `HSTS`, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, `COOP`, `CORP`, `poweredByHeader: false`)
+  - Strict HTTP Security Headers in `public/_headers` (`CSP`, `HSTS`, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, `COOP`, `CORP`)
 - **Responsive Mobile & Desktop** + Light/Dark mode (toggle icon or press `T`)
 
 ## Run Locally
@@ -30,19 +30,17 @@ pnpm dev
 
 Open `http://localhost:3000`.
 
-## Production Build
+## Production Build & Deploy
+
+Static export (`output: "export"`), deployed to **Cloudflare Pages**:
 
 ```bash
-pnpm build
-pnpm start
+pnpm build   # outputs ./out
 ```
 
-## Real Journal Views
-
-Journal view counts start from `0` (no placeholder numbers) and are served via `/api/views` and `/api/views/[slug]` with bot/prefetch filtering and 24-hour privacy-safe (SHA-256 hashed) per-visitor deduplication.
-
-- **Localhost / VPS / Docker:** Automatically persisted in `.data/journal-views.json`.
-- **Production (Vercel / Serverless):** Add `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` (or connect Upstash Redis in Vercel Marketplace, which injects `KV_REST_API_URL` / `KV_REST_API_TOKEN` automatically — see `.env.example`).
+- Cloudflare Pages build command: `pnpm build`, output directory: `out`
+- HTTP security headers are defined in `public/_headers` (not `next.config.ts`).
+- Optional env: `NEXT_PUBLIC_SITE_URL` (canonical URL, see `.env.example`).
 
 ## Edit Content
 

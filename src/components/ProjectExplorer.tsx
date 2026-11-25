@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Search, X } from "lucide-react";
 import {
@@ -11,17 +11,19 @@ import {
 
 interface ProjectExplorerProps {
   projects: ProjectItem[];
-  initialDomain?: ProjectDomainId | "all";
 }
 
-export function ProjectExplorer({
-  projects,
-  initialDomain = "all",
-}: ProjectExplorerProps) {
-  const [selected, setSelected] = useState<ProjectDomainId | "all">(
-    initialDomain
-  );
+export function ProjectExplorer({ projects }: ProjectExplorerProps) {
+  const [selected, setSelected] = useState<ProjectDomainId | "all">("all");
   const [query, setQuery] = useState("");
+
+  // Static export has no request-time searchParams: read ?domain= after mount.
+  useEffect(() => {
+    const domain = new URLSearchParams(window.location.search).get("domain");
+    if (PROJECT_DOMAINS.some((d) => d.id === domain)) {
+      setSelected(domain as ProjectDomainId);
+    }
+  }, []);
 
   const selectDomain = (next: ProjectDomainId | "all") => {
     setSelected(next);

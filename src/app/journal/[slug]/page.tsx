@@ -9,7 +9,6 @@ import {
   buildPageMetadata,
 } from "@/lib/seo";
 import { JsonLd } from "@/components/JsonLd";
-import { ViewTracker } from "@/components/ViewTracker";
 
 export function generateStaticParams() {
   return SITE_DATA.journal.map((post) => ({ slug: post.slug }));
@@ -78,8 +77,6 @@ export default async function JournalDetailPage({
           <time dateTime={post.date} className="font-mono tabular-nums">
             {post.displayDate}
           </time>
-          <span className="text-[var(--text-faint)]">&middot;</span>
-          <ViewTracker slug={post.slug} />
           <span className="text-[var(--text-faint)]">&middot;</span>
           <span>{post.readTime}</span>
         </div>
