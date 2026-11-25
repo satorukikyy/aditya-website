@@ -3,16 +3,17 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, MotionConfig, motion, useReducedMotion } from "motion/react";
 
-// Five feeds, colored by the site palette. `id` drives the mute toggle, `label` is what the
-// legend shows (named like real pipeline sources).
-type Source = "ATTACK" | "SIEM" | "AWS" | "GRC" | "FIX";
+// Six feeds. `id` drives the mute toggle, `label` is what the legend shows (named like real
+// pipeline sources). Colors: pink = attacks, purple/sky/yellow = the three clouds, neutral = SIEM and fixes.
+type Source = "ATTACK" | "SIEM" | "AWS" | "AZURE" | "GCP" | "FIX";
 
 const SOURCES: { id: Source; label: string; dot: string; ink: string; hint: string }[] = [
   { id: "ATTACK", label: "nginx/waf", dot: "var(--pink)", ink: "var(--pink-ink)", hint: "Edge access logs and WAF hits" },
-  { id: "SIEM", label: "wazuh/siem", dot: "var(--sky)", ink: "var(--sky-ink)", hint: "Wazuh, Suricata, pfSense, Elastic" },
+  { id: "SIEM", label: "wazuh/siem", dot: "var(--text)", ink: "var(--text)", hint: "Wazuh, Suricata, pfSense, Elastic" },
   { id: "AWS", label: "aws", dot: "var(--purple)", ink: "var(--purple-ink)", hint: "CloudTrail, GuardDuty, VPC Flow, Config" },
-  { id: "GRC", label: "grc", dot: "var(--yellow)", ink: "var(--yellow-ink)", hint: "Audit evidence and risk register" },
-  { id: "FIX", label: "patch", dot: "var(--text-muted)", ink: "var(--text)", hint: "Patches and retests" },
+  { id: "AZURE", label: "azure", dot: "var(--sky)", ink: "var(--sky-ink)", hint: "Entra ID, Activity Log, Defender, Sentinel" },
+  { id: "GCP", label: "gcp", dot: "var(--yellow)", ink: "var(--yellow-ink)", hint: "Cloud Audit, SCC, Cloud Armor, GKE" },
+  { id: "FIX", label: "patch", dot: "var(--text-muted)", ink: "var(--text-secondary)", hint: "Patches and retests" },
 ];
 
 interface Line {
@@ -71,15 +72,34 @@ const POOL: Record<Source, Line[]> = {
     { tag: "lambda", msg: "ap-southeast-3 auth-handler errors=4.2% p99=1840ms alarm=ALARM" },
     { tag: "inspector", msg: "ap-southeast-1 CVE-2021-44228 log4j-core 2.14.1 i-0fa12 sev=CRITICAL" },
   ],
-  GRC: [
-    { tag: "evidence", msg: "ISO27001:A.8.15 logging collected src=cloudtrail+wazuh owner=secops" },
-    { tag: "evidence", msg: "ISO27001:A.8.13 backup-restore-test.pdf uploaded status=ok" },
-    { tag: "risk", msg: "R-017 vendor=saas-crm score 12 -> 8 treatment=mitigate" },
-    { tag: "audit", msg: "internal NC-minor ref=A.5.15 due=14d owner=it-ops" },
-    { tag: "audit", msg: "access-review q4 scope=prod-aws reviewed=48 revoked=3" },
-    { tag: "dpia", msg: "hr-portal status=approved reviewer=dpo law=UU-PDP" },
-    { tag: "soa", msg: "A.5.23 cloud services in scope, justification updated" },
-    { tag: "policy", msg: "incident-response-plan v3.0 signed owner=ciso" },
+  AZURE: [
+    { tag: "entra", msg: "SigninLogs dev.kai@contoso.com errorCode=50126 ip=198.51.100.7 app=Azure Portal" },
+    { tag: "entra", msg: "SigninLogs audit-ro@contoso.com errorCode=50074 MFA required ip=203.0.113.24" },
+    { tag: "entra", msg: "SigninLogs r.admin@contoso.com errorCode=53003 CA blocked ip=192.0.2.77" },
+    { tag: "activity", msg: "southeastasia roleAssignments/write caller=ci-deploy role=Owner Succeeded" },
+    { tag: "activity", msg: "centralindia storageAccounts/write allowBlobPublicAccess=true rg=rg-demo" },
+    { tag: "defender", msg: "Suspected brute-force attack on vm-web-01 sev=High southeastasia" },
+    { tag: "defender", msg: "Anonymous scan of storage account stdemo01 sev=Medium eastasia" },
+    { tag: "sentinel", msg: 'rule="Multiple failed logins then success" entity=svc-backup sev=Medium' },
+    { tag: "sentinel", msg: "incident #1042 opened sev=High MITRE=T1110 entity=vm-web-01" },
+    { tag: "nsgflow", msg: "southeastasia nsg-web rule=DenyAllInBound 198.51.100.7:51522 > 10.1.0.4:3389 deny" },
+    { tag: "keyvault", msg: "kv-prod-demo SecretGet Forbidden caller=app-func ip=203.0.113.18" },
+    { tag: "azpolicy", msg: 'westeurope "Storage accounts should disable public access" NonCompliant' },
+    { tag: "appgw-waf", msg: "ruleId=942130 anomalyScore=15 action=Blocked client=203.0.113.42" },
+  ],
+  GCP: [
+    { tag: "cloudaudit", msg: "asia-southeast2 SetIamPolicy ci-deploy@demo-prod.iam role=roles/owner" },
+    { tag: "cloudaudit", msg: "storage.objects.get PERMISSION_DENIED principal=allUsers bucket=logs-demo" },
+    { tag: "cloudaudit", msg: "iam.serviceAccounts.keys.create sa=ci-deploy@demo-prod.iam status=OK" },
+    { tag: "scc", msg: "OPEN_FIREWALL sev=HIGH 0.0.0.0/0:22 project=demo-prod asia-southeast2" },
+    { tag: "scc", msg: "PUBLIC_BUCKET_ACL sev=HIGH bucket=logs-demo asia-southeast1" },
+    { tag: "scc", msg: "MFA_NOT_ENFORCED sev=MEDIUM org=demo-org user=r.admin" },
+    { tag: "gcp-fw", msg: "asia-southeast2 deny-ssh 198.51.100.7 -> 10.2.0.7:22 DENIED" },
+    { tag: "gcp-fw", msg: "asia-south1 deny-rdp 203.0.113.60 -> 10.3.0.4:3389 DENIED" },
+    { tag: "cloudarmor", msg: "policy=waf-edge rule=owasp-crs-v030301-id942100-sqli deny(403) 203.0.113.42" },
+    { tag: "cloudarmor", msg: "policy=waf-edge rate-limit action=throttle 192.0.2.141 429" },
+    { tag: "gke-audit", msg: "pods/exec create user=dev.kai ns=prod forbidden by RBAC" },
+    { tag: "cloudrun", msg: "auth-api 5xx=3.8% latency_p99=1.7s alert=firing asia-southeast2" },
   ],
   FIX: [
     { tag: "patch", msg: "web-03 openssl 3.0.13 -> 3.0.15 restart=ok" },
@@ -89,6 +109,8 @@ const POOL: Record<Source, Line[]> = {
     { tag: "s3", msg: "logs-demo block-public-access=on region=ap-southeast-1" },
     { tag: "nginx", msg: "limit_req zone=login rate=10r/m burst=5 reloaded" },
     { tag: "secrets", msg: "ci-deploy key rotated, old key revoked, deploy green" },
+    { tag: "azpolicy", msg: "deny public blob access enforced on rg-demo tenant-wide" },
+    { tag: "orgpolicy", msg: "iam.disableServiceAccountKeyCreation enforced org=demo-org" },
   ],
 };
 
@@ -108,12 +130,12 @@ const SEED_PICKS: [Source, number][] = [
   ["SIEM", 4],
   ["ATTACK", 0],
   ["AWS", 6],
+  ["AZURE", 0],
+  ["GCP", 3],
   ["ATTACK", 7],
   ["SIEM", 0],
   ["AWS", 9],
-  ["GRC", 0],
   ["FIX", 1],
-  ["AWS", 0],
 ];
 
 const fmt = (d: Date) => d.toLocaleTimeString("en-GB", { hour12: false });
@@ -130,8 +152,8 @@ const rand = (n: number) => Math.floor(Math.random() * n);
 // Highlighting: key= prefixes dim, IPs bright, HTTP errors and block verdicts pink,
 // good outcomes sky.
 const TOKEN =
-  /(\b\d{1,3}(?:\.\d{1,3}){3}(?::\d+)?\b|(?<=" )\d{3}(?= )|\b[A-Za-z_][\w.-]*=|\b(?:BLOCK|blocked|block|REJECT|AccessDenied|NON_COMPLIANT|CRITICAL|ALARM|rejected|denied|Failed)\b|\b(?:not-reproducible|enforced|rotated|revoked|approved|collected|tuned|reloaded|closed|signed|green)\b)/gi;
-const BAD = /^(?:BLOCK|blocked|block|REJECT|AccessDenied|NON_COMPLIANT|CRITICAL|ALARM|rejected|denied|Failed)$/i;
+  /(\b\d{1,3}(?:\.\d{1,3}){3}(?::\d+)?\b|(?<=" )\d{3}(?= )|\b[A-Za-z_][\w.-]*=|\b(?:BLOCK|blocked|block|REJECT|AccessDenied|NON_COMPLIANT|NonCompliant|CRITICAL|ALARM|rejected|denied|DENIED|deny|Failed|Forbidden|forbidden|PERMISSION_DENIED|OPEN_FIREWALL|PUBLIC_BUCKET_ACL|MFA_NOT_ENFORCED|High|HIGH|firing)\b|\b(?:not-reproducible|enforced|rotated|revoked|approved|collected|tuned|reloaded|closed|signed|green)\b)/gi;
+const BAD = /^(?:BLOCK|blocked|block|REJECT|AccessDenied|NON_COMPLIANT|NonCompliant|CRITICAL|ALARM|rejected|denied|DENIED|deny|Failed|Forbidden|forbidden|PERMISSION_DENIED|OPEN_FIREWALL|PUBLIC_BUCKET_ACL|MFA_NOT_ENFORCED|High|HIGH|firing)$/i;
 const GOOD = /^(?:not-reproducible|enforced|rotated|revoked|approved|collected|tuned|reloaded|closed|signed|green)$/i;
 
 function renderMsg(msg: string) {
@@ -155,7 +177,8 @@ export function LogStream() {
     ATTACK: true,
     SIEM: true,
     AWS: true,
-    GRC: true,
+    AZURE: true,
+    GCP: true,
     FIX: true,
   });
   const [paused, setPaused] = useState(false);
@@ -201,8 +224,8 @@ export function LogStream() {
       if (visible.current && !hovering.current && !document.hidden) {
         const on = SOURCES.filter((s) => enabledRef.current[s.id]).map((s) => s.id);
         if (on.length > 0) {
-          // Edge and SIEM feeds are the loudest, like a real pipeline.
-          const weighted = on.flatMap((id) => (id === "ATTACK" || id === "SIEM" || id === "AWS" ? [id, id] : [id]));
+          // Everything except patch notes is noisy, like a real pipeline.
+          const weighted = on.flatMap((id) => (id === "FIX" ? [id] : [id, id]));
           const src = weighted[rand(weighted.length)];
           const onScreen = new Set(shown.current);
           const fresh = POOL[src].filter((l) => !onScreen.has(keyOf(l)));
@@ -300,8 +323,8 @@ export function LogStream() {
         </MotionConfig>
       </div>
       <figcaption className="mt-2 font-mono text-[11.5px] text-[var(--text-muted)]">
-        Sample logs, all made up: documentation IPs, fictional hosts, AWS&rsquo;s example account ID. Hover to pause,
-        tap a source to mute it.
+        Sample logs, all made up: documentation IPs, fictional hosts, tenants, and projects, plus AWS&rsquo;s example
+        account ID. Hover to pause, tap a source to mute it.
       </figcaption>
     </figure>
   );
