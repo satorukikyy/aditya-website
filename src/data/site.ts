@@ -462,7 +462,7 @@ const BUG_BOUNTY_PROJECTS: ProjectItem[] = [
     ],
     outcome: [
       "Filed with Google VRP (OSS VRP) targeting google-gemini/gemini-cli; full technical exploit details remain intentionally withheld.",
-      "Highlighted what sits in range when an AI coding agent hits SSRF: local dev services, DB/API secrets, cloud metadata endpoints, and internal networks on laptops or CI runners.",
+      "Pointed out what is in reach when an AI coding agent gets SSRF: local dev services, DB/API secrets, cloud metadata endpoints, and internal networks on laptops or CI runners.",
     ],
   },
   {
@@ -491,8 +491,8 @@ const BUG_BOUNTY_PROJECTS: ProjectItem[] = [
       "A single unvalidated host setting meant stored destination API keys, OAuth client secrets, and every forwarded customer event (user IDs, IPs, user agents, page URLs, properties) rode along silently, and responses could still look like normal successful deliveries.",
     approach: [
       "Identified the unvalidated host-shaping pattern where no host allowlist or legitimate-endpoint verification ran when enabling the destination.",
-      "Verified the behavior safely on production using only a harmless sentinel value inside a throwaway workspace (requiring destination-config permissions, with zero impact to real tenants).",
-      "Recommended a clean four-step sweep: enforce strict host allowlists, reject URL separators and control characters, verify the legitimate vendor endpoint on enable, and audit every destination in the repo together instead of patching one by one.",
+      "Verified the behavior safely on production using only a harmless sentinel value inside a throwaway workspace (this needs destination-config permissions and had no impact on real tenants).",
+      "Recommended four fixes: enforce strict host allowlists, reject URL separators and control characters, verify the legitimate vendor endpoint when a destination is enabled, and audit every destination in the repo together instead of patching one at a time.",
     ],
     outcome: [
       "Reported to Twilio through HackerOne on Oct 19 (rated Critical 9.6); specific technical exploit details remain intentionally withheld.",
@@ -529,7 +529,7 @@ const BUG_BOUNTY_PROJECTS: ProjectItem[] = [
     ],
     outcome: [
       "Reported to Privy Bounty via HackerOne on Sep 11 (High 8.4, CWE-346 & CWE-345).",
-      "Scoped impact honestly: breaks cross-app signing channel integrity (misdirected future wallet ops or forged dApp outcomes) without exposing embedded wallet private keys or forging provider-side signatures.",
+      "Impact, stated plainly: it breaks the integrity of the cross-app signing channel (misdirected future wallet operations or forged dApp outcomes) but does not expose embedded wallet private keys or let anyone forge provider-side signatures.",
     ],
   },
   {
@@ -556,8 +556,8 @@ const BUG_BOUNTY_PROJECTS: ProjectItem[] = [
     challenge:
       "CommitParser.parseReferences() runs on every commit message line; when no reference keyword is present, fallback /()(.+)/gi hands the entire line to referenceParts.exec(line), where three overlapping matchers ((?:.*?)??, \\s*, and ([\\w-.\\/]*)??) fight over the exact same characters.",
     approach: [
-      "Benchmarked default options on Node 24: 500 spaces took 210 ms, 1,000 took 1,671 ms, 2,000 took 13,051 ms, 3,000 took 43,468 ms, and 4,000 spaces stalled for 103,493 ms (roughly cubic growth, double the input, ~8x the wait).",
-      "Tested a targeted fix dropping the leading catch-all and doubled lazy/optional quantifiers so backtracking disappears.",
+      "Benchmarked default options on Node 24: 500 spaces took 210 ms, 1,000 took 1,671 ms, 2,000 took 13,051 ms, 3,000 took 43,468 ms, and 4,000 spaces stalled for 103,493 ms (roughly cubic growth: double the input, about 8x the wait).",
+      "Tested a fix that drops the leading catch-all and the doubled lazy/optional quantifiers, which removes the backtracking.",
       "Verified locally that 20,000 spaces finished in ~0.1 ms while real commit references like angular/angular#456 still parsed cleanly.",
     ],
     codeSnippet: {
@@ -567,7 +567,7 @@ const BUG_BOUNTY_PROJECTS: ProjectItem[] = [
     },
     outcome: [
       "Filed through GitHub Security Advisories on Sep 2 as GHSA-53jp-mg8h-xjfh (Moderate severity, affecting <= 7.1.2).",
-      "Kept impact transparent: CPU exhaustion and event-loop DoS on apps parsing attacker-influenced commit messages (availability only, no code execution, no data leak).",
+      "Impact, stated plainly: CPU exhaustion and event-loop DoS on apps parsing attacker-influenced commit messages (availability only, no code execution, no data leak).",
     ],
   },
   {
@@ -592,10 +592,10 @@ const BUG_BOUNTY_PROJECTS: ProjectItem[] = [
     overview:
       "Reported an unauthenticated arbitrary file read in Vercel's serve-handler 6.1.7 (pinned by serve 14.2.6, meaning default npx serve ran affected) via HackerOne. Even with symlinks: false enabled by default, a symlink placed in the middle of a directory path bypassed the server's path checks completely.",
     challenge:
-      "serve-handler checked lexical ../ traversal up front (returning 400) and ran lstat only on the final path component (returning 404 for a direct symlink file), leaving a blind spot for intermediate directory symlinks, so createReadStream happily followed the mid-path link and streamed files from outside the root.",
+      "serve-handler checked lexical ../ traversal up front (returning 400) and ran lstat only on the final path component (returning 404 for a direct symlink file), leaving a blind spot for intermediate directory symlinks, so createReadStream followed the mid-path link and streamed files from outside the root.",
     approach: [
       "Verified the behavior matrix under default symlinks: false: /../etc/passwd -> 400, /%2e%2e/etc/passwd -> 400, /assets/abs-file (final-component symlink) -> 404, but /assets/backup/etc/passwd (mid-path symlink) -> 200 OK serving the file.",
-      "Confirmed downstream impact on serve 14.2.6, where symlinks stays unset and defaults straight into the vulnerable mode.",
+      "Confirmed downstream impact on serve 14.2.6, where symlinks stays unset and so falls back to the vulnerable default.",
       "Proposed resolving realpath for both target and root before checking isPathInside(real, root) in both symlink modes, plus handling missing paths, symlink loops, and TOCTOU races on the opened file descriptor.",
     ],
     codeSnippet: {
@@ -605,7 +605,7 @@ const BUG_BOUNTY_PROJECTS: ProjectItem[] = [
     },
     outcome: [
       "Reported to Vercel Open Source via HackerOne on Sep 1 (CWE-59 & CWE-22; CVSS 8.6 High when symlinks can arrive via archives/uploads/untrusted repos, 6.8 Medium otherwise).",
-      "Clear confidentiality impact (any source, config, credential, or token readable by the server process) with no write or integrity impact.",
+      "Confidentiality impact only: any source, config, credential, or token readable by the server process. No write or integrity impact.",
     ],
   },
   {
@@ -630,7 +630,7 @@ const BUG_BOUNTY_PROJECTS: ProjectItem[] = [
     overview:
       "Reported a High severity (7.0–8.9) authentication gate bypass on a -dev staging host to the NBA Public Bug Bounty via HackerOne. While standard page routes properly forced corporate login, the entire /api/* surface skipped the gate and served responses to unauthenticated requests.",
     challenge:
-      "Comparing the -dev host against its -qa sibling made the root cause unmistakable: on -qa, GET /api/heartbeat redirected 302 to login, whereas on -dev, GET /api/heartbeat and GET /api/content answered 200 OK with zero cookies or tokens.",
+      "Comparing the -dev host against its -qa sibling pointed straight at the root cause: on -qa, GET /api/heartbeat redirected 302 to login, whereas on -dev, GET /api/heartbeat and GET /api/content answered 200 OK with zero cookies or tokens.",
     approach: [
       "Verified the mismatch across route classes: GET / and GET /scaffolding returned 302 login redirects, while /api/* endpoints bypassed auth completely.",
       "Documented the exposed non-production surface: staging CMS posts, internal non-production hostnames, and pre-release endpoints (content, schedule, teams, players, transactions, games, search, streaming, standings). Then stopped immediately without touching any PII, credentials, or secrets.",
@@ -638,7 +638,7 @@ const BUG_BOUNTY_PROJECTS: ProjectItem[] = [
     ],
     outcome: [
       "Submitted to NBA Public Bug Bounty via HackerOne on Sep 1 (rated High 7.0–8.9; host redacted).",
-      "Kept testing strictly ethical: zero credentials, PII, or secrets accessed.",
+      "Testing stayed strictly ethical: no credentials, PII, or secrets were accessed.",
     ],
   },
   {
@@ -671,7 +671,7 @@ const BUG_BOUNTY_PROJECTS: ProjectItem[] = [
     ],
     outcome: [
       "Reported to Mattermost Public Bug Bounty via Bugcrowd on Aug 24 (P2 suggested by VRT; test tenant redacted).",
-      "Clearly scoped impact: unauthorized account linking allowing attacker-controlled Confluence content to surface through the victim's integration (does not expose the victim's Atlassian credentials).",
+      "Impact is limited to unauthorized account linking, which lets attacker-controlled Confluence content surface through the victim's integration. It does not expose the victim's Atlassian credentials.",
     ],
   },
 ];
@@ -687,10 +687,11 @@ const GRC_PROJECTS: ProjectItem[] = [
     domain: "grc",
     featured: true,
     summary:
-      "Hands-on IT GRC and security compliance work for a securities & capital markets environment: tightening governance, risk tracking, and audit readiness.",
+      "IT GRC and security compliance work for a securities firm: tighter governance, clearer risk tracking, and audit readiness.",
     role: "IT GRC Consultant",
     organization: "PT Shinhan Sekuritas Indonesia",
-    impact: "Capital-markets security governance, risk alignment & compliance readiness",
+    impact:
+      "Capital-markets security governance, risk alignment, and compliance readiness",
     frameworks: ["ISO/IEC 27001:2022", "IT GRC", "Risk Management"],
     stack: ["Governance Review", "Risk Assessment", "Control Alignment", "Audit Readiness"],
     deliverables: [
@@ -701,15 +702,15 @@ const GRC_PROJECTS: ProjectItem[] = [
     overview:
       "Worked with PT Shinhan Sekuritas Indonesia on IT GRC and security compliance across their securities and capital markets operations.",
     challenge:
-      "Keeping governance, risk registers, and technical security controls dialed in for a tightly regulated financial services environment without drowning teams in busywork.",
+      "Keeping governance, risk registers, and technical controls in good shape in a heavily regulated environment, without burying teams in paperwork.",
     approach: [
-      "Reviewed existing security policies, risk workflows, and operational controls against ISO/IEC 27001:2022 and regulatory expectations.",
-      "Mapped real gaps and built clear, prioritized action items for both IT and compliance stakeholders.",
-      "Backed audit readiness with clean control evidence and practical day-to-day governance habits.",
+      "Reviewed security policies, risk workflows, and operational controls against ISO/IEC 27001:2022 and regulatory expectations.",
+      "Mapped the real gaps and turned them into a prioritized action list for IT and compliance.",
+      "Backed audit readiness with clean control evidence and simple day-to-day governance habits.",
     ],
     outcome: [
-      "Sharpened overall security governance and compliance readiness across capital-markets ops.",
-      "Aligned technical and compliance teams on clear risk priorities and audit-ready evidence.",
+      "Stronger security governance and compliance readiness across the business.",
+      "IT and compliance agreed on the same risk priorities and had audit-ready evidence to back them.",
     ],
   },
   {
@@ -722,10 +723,11 @@ const GRC_PROJECTS: ProjectItem[] = [
     domain: "grc",
     featured: true,
     summary:
-      "Building out info-sec governance and an ISO/IEC 27001:2022 ISMS: practical policies, real risk checks, control reviews, and audit readiness.",
+      "Building information security governance and an ISO/IEC 27001:2022 ISMS: practical policies, risk assessments, control reviews, and audit readiness.",
     role: "IT GRC Consultant",
     organization: "PT Berlian Sistem Informasi",
-    impact: "ISMS governance, risk checks & ISO/IEC 27001:2022 rollout",
+    impact:
+      "ISMS governance, risk assessment, and ISO/IEC 27001:2022 rollout",
     frameworks: ["ISO/IEC 27001:2022", "ISMS", "Annex A Controls"],
     stack: ["Risk Assessment", "Policy Design", "Control Evaluation", "Compliance"],
     deliverables: [
@@ -734,17 +736,17 @@ const GRC_PROJECTS: ProjectItem[] = [
       "Security Control Evaluation & Compliance Mapping",
     ],
     overview:
-      "Helping build out information security governance and an ISO/IEC 27001:2022 ISMS at PT Berlian Sistem Informasi.",
+      "Helping build information security governance and an ISO/IEC 27001:2022 ISMS at PT Berlian Sistem Informasi.",
     challenge:
-      "Setting up real security governance and mapping policies, risk registers, and Annex A controls into daily work without slowing the team down.",
+      "Turning policies, risk registers, and Annex A controls into daily practice without slowing the team down.",
     approach: [
-      "Put together lean info-sec policies and ISMS governance docs people can actually read.",
-      "Ran risk checks to spot the biggest threats, gaps, and what needed fixing first.",
-      "Reviewed live security controls and lined everything up cleanly with ISO/IEC 27001:2022.",
+      "Wrote lean security policies and ISMS governance documents that people can actually read.",
+      "Ran risk assessments to find the biggest threats and gaps, and what to fix first.",
+      "Reviewed live security controls and aligned everything with ISO/IEC 27001:2022.",
     ],
     outcome: [
-      "Got a solid ISO/IEC 27001:2022 governance baseline up and running.",
-      "Built repeatable risk-check and control-review habits across the team.",
+      "A solid ISO/IEC 27001:2022 governance baseline, up and running.",
+      "Repeatable habits for risk assessment and control review across the team.",
     ],
   },
   {
@@ -757,7 +759,7 @@ const GRC_PROJECTS: ProjectItem[] = [
     tag: "ISMS + QMS",
     domain: "grc",
     summary:
-      "Rolling out ISO/IEC 27001:2022 and ISO 9001:2015 together under one roof: gap checks, unified risk workflows, and internal audit prep.",
+      "Rolling out ISO/IEC 27001:2022 and ISO 9001:2015 together: gap assessments, one shared risk workflow, and internal audit prep.",
     role: "IT GRC Consultant",
     organization: "PT Mahardika Teknotama Integrasi",
     impact: "Unified ISMS (ISO 27001:2022) & QMS (ISO 9001:2015) setup",
@@ -769,17 +771,17 @@ const GRC_PROJECTS: ProjectItem[] = [
       "Internal Audit Prep & Compliance Review",
     ],
     overview:
-      "Helping roll out both ISO/IEC 27001:2022 (security) and ISO 9001:2015 (quality) together at PT Mahardika Teknotama Integrasi.",
+      "Helped roll out ISO/IEC 27001:2022 (security) and ISO 9001:2015 (quality) together at PT Mahardika Teknotama Integrasi.",
     challenge:
-      "Running two ISO standards side by side without forcing teams to drown in duplicate SOPs and copy-paste docs.",
+      "Running two ISO standards side by side without duplicate SOPs and copy-pasted documents.",
     approach: [
-      "Ran gap checks against both ISO/IEC 27001:2022 and ISO 9001:2015 clauses.",
-      "Built one clean documentation and risk workflow covering both info-sec and quality ops.",
-      "Prepped internal audits and compliance checks so everything held together before audit day.",
+      "Ran gap assessments against the clauses of both ISO/IEC 27001:2022 and ISO 9001:2015.",
+      "Built a single documentation and risk workflow covering both security and quality.",
+      "Prepared internal audits and compliance checks so everything held up before audit day.",
     ],
     outcome: [
-      "Got security and quality running under one unified, audit-ready system.",
-      "Cut out duplicate paperwork while leveling up readiness across both standards.",
+      "Security and quality now run under one audit-ready system.",
+      "Less duplicate paperwork, and better readiness for both standards.",
     ],
   },
   {
@@ -792,7 +794,7 @@ const GRC_PROJECTS: ProjectItem[] = [
     tag: "Implementation",
     domain: "grc",
     summary:
-      "Led ISMS scoping and rollout: figuring out org context, spotting real risks, mapping controls, and writing lean docs that fit fast ops.",
+      "Led ISMS scoping and rollout: understanding the organization, identifying real risks, mapping controls, and writing lean documents for a fast-moving team.",
     role: "IT GRC Consultant",
     organization: "PT Inovasi Digital Untuk Transformasi",
     impact: "ISMS scoping, risk mapping & practical control alignment",
@@ -804,17 +806,17 @@ const GRC_PROJECTS: ProjectItem[] = [
       "Core ISMS Policies & Procedures",
     ],
     overview:
-      "Ran ISMS scoping and ISO/IEC 27001:2022 rollout work for PT Inovasi Digital Untuk Transformasi.",
+      "Ran ISMS scoping and the ISO/IEC 27001:2022 rollout for PT Inovasi Digital Untuk Transformasi.",
     challenge:
-      "Turning ISO/IEC 27001:2022 clauses into lean docs and controls that actually match how a fast-moving digital team ships.",
+      "Turning ISO/IEC 27001:2022 clauses into short documents and controls that match how a fast-moving digital team ships.",
     approach: [
-      "Mapped org context, key stakeholders, and clear ISMS boundaries.",
-      "Flagged real security risks and picked the Annex A controls that actually made sense.",
-      "Wrote straight-to-the-point ISMS docs built around how the team already works.",
+      "Mapped organizational context, key stakeholders, and clear ISMS boundaries.",
+      "Identified real security risks and picked the Annex A controls that made sense.",
+      "Wrote to-the-point ISMS documents built around how the team already works.",
     ],
     outcome: [
-      "Shipped a clean ISMS doc set and risk baseline.",
-      "Lined security controls straight up with core day-to-day operations.",
+      "A clean ISMS document set and risk baseline.",
+      "Security controls tied directly to day-to-day operations.",
     ],
   },
   {
@@ -828,7 +830,7 @@ const GRC_PROJECTS: ProjectItem[] = [
     domain: "grc",
     featured: true,
     summary:
-      "Helped get ISO/IEC 27001:2022 live: ISMS docs, risk assessments, Annex A control alignment, and internal audit prep.",
+      "Helped get ISO/IEC 27001:2022 live: ISMS documents, risk assessments, Annex A control alignment, and internal audit prep.",
     role: "IT GRC Consultant",
     organization: "PT Sonicwave Nusantara Teknologi",
     impact: "ISMS docs, risk checks & internal audit readiness",
@@ -840,17 +842,17 @@ const GRC_PROJECTS: ProjectItem[] = [
       "Internal Audit Prep & Control Alignment",
     ],
     overview:
-      "Worked with PT Sonicwave Nusantara Teknologi to get their ISO/IEC 27001:2022 controls, docs, and internal audit prep dialed in.",
+      "Worked with PT Sonicwave Nusantara Teknologi on their ISO/IEC 27001:2022 controls, documentation, and internal audit prep.",
     challenge:
-      "Getting full ISMS docs, risk checks, and internal audit prep buttoned up cleanly on a tight timeline.",
+      "Getting complete ISMS documentation, risk assessments, and internal audit prep done on a tight timeline.",
     approach: [
-      "Drafted clean ISMS policies, procedures, and compliance records aligned with ISO/IEC 27001:2022.",
-      "Ran security risk assessments and synced operational controls with Annex A.",
-      "Prepped internal audits so gaps got spotted and patched before external auditors showed up.",
+      "Drafted ISMS policies, procedures, and compliance records aligned with ISO/IEC 27001:2022.",
+      "Ran security risk assessments and aligned operational controls with Annex A.",
+      "Prepared internal audits so gaps were found and fixed before external auditors arrived.",
     ],
     outcome: [
-      "Tightened the org's security structure and Annex A control coverage.",
-      "Left the team confident and ready with solid docs and internal audit backing.",
+      "A tighter security structure and better Annex A coverage.",
+      "A team that felt ready, with solid documentation and internal audit backing.",
     ],
   },
   {
@@ -863,7 +865,7 @@ const GRC_PROJECTS: ProjectItem[] = [
     domain: "grc",
     featured: true,
     summary:
-      "Honest security compliance check: looking at real controls, spotting gaps, and mapping out what to fix first without checklist bloat.",
+      "An honest security compliance check: looking at real controls, finding gaps, and mapping what to fix first, without checklist bloat.",
     role: "IT GRC Consultant",
     organization: "PT Solusi Dwi Satya",
     impact: "Clear gap snapshot, compliance readiness & prioritized fix roadmap",
@@ -875,17 +877,17 @@ const GRC_PROJECTS: ProjectItem[] = [
       "Prioritized Remediation Roadmap",
     ],
     overview:
-      "Ran a hands-on security compliance check for PT Solusi Dwi Satya to see how their current controls stacked up against ISO 27001 and regulatory expectations.",
+      "Ran a hands-on security compliance assessment for PT Solusi Dwi Satya to see how their current controls compared with ISO 27001 and regulatory expectations.",
     challenge:
-      "Giving leadership a clear, honest picture of compliance gaps without burying the team in theoretical checklists.",
+      "Giving leadership a clear, honest view of compliance gaps without burying the team in theoretical checklists.",
     approach: [
-      "Checked existing security policies, technical controls, and real day-to-day evidence.",
-      "Mapped gaps straight against ISO/IEC 27001:2022 and data protection requirements.",
-      "Built a practical fix roadmap ordered by actual business risk.",
+      "Checked existing security policies, technical controls, and day-to-day evidence.",
+      "Mapped the gaps against ISO/IEC 27001:2022 and data protection requirements.",
+      "Built a practical fix roadmap ordered by business risk.",
     ],
     outcome: [
-      "Gave PT Solusi Dwi Satya a clear baseline and concrete next moves.",
-      "Got technical and governance folks aligned on the exact same priorities.",
+      "Gave PT Solusi Dwi Satya a clear baseline and concrete next steps.",
+      "Aligned technical and governance teams on the same priorities.",
     ],
   },
   {
@@ -899,10 +901,11 @@ const GRC_PROJECTS: ProjectItem[] = [
     domain: "grc",
     featured: true,
     summary:
-      "Surveillance audit work at BDx Data Centers: checking physical & environmental security, access control, and live audit evidence.",
+      "Surveillance audit work at BDx Data Centers: physical and environmental security, access control, and live audit evidence.",
     role: "IT GRC Consultant",
     organization: "PT Starone Mitra Telekomunikasi (BDx Data Centers)",
-    impact: "Data center physical, environmental & access-control review",
+    impact:
+      "Data center physical, environmental, and access-control review",
     frameworks: ["ISO/IEC 27001:2022", "Surveillance Audit", "Physical & Environmental Security"],
     stack: ["Physical Security Audit", "Access Management Review", "Audit Evidence"],
     deliverables: [
@@ -911,17 +914,17 @@ const GRC_PROJECTS: ProjectItem[] = [
       "Targeted Security Improvement Notes",
     ],
     overview:
-      "Supported ISO/IEC 27001:2022 surveillance audit work at BDx Data Centers (PT Starone Mitra Telekomunikasi), checking real controls in a high-stakes data center environment.",
+      "Supported the ISO/IEC 27001:2022 surveillance audit at BDx Data Centers (PT Starone Mitra Telekomunikasi), checking real controls in a high-stakes data center environment.",
     challenge:
-      "Validating strict physical, environmental, and access controls expected in a live data center while finding practical upgrades that actually help ops.",
+      "Validating the strict physical, environmental, and access controls a live data center needs, while finding practical improvements that help operations.",
     approach: [
       "Checked live controls with extra focus on physical and environmental security.",
-      "Reviewed access management flows and verified real audit evidence.",
-      "Flagged practical tweaks to keep facility security and the ISMS sharp.",
+      "Reviewed access management flows and verified the audit evidence.",
+      "Flagged practical tweaks to keep facility security and the ISMS in good shape.",
     ],
     outcome: [
       "Confirmed ongoing ISO/IEC 27001:2022 compliance and ISMS health on site.",
-      "Handed over clear, actionable upgrade notes across physical, environmental, and access controls.",
+      "Handed over clear, actionable notes on physical, environmental, and access controls.",
     ],
   },
   {
@@ -946,51 +949,52 @@ const GRC_PROJECTS: ProjectItem[] = [
       "Asset, Incident & Supplier Security Controls",
     ],
     overview:
-      "Worked across the full ISO/IEC 27001:2022 ISMS build at PT Arta MediaTek Transformasi, wiring governance docs straight into real operational security.",
+      "Worked across the full ISO/IEC 27001:2022 ISMS build at PT Arta MediaTek Transformasi, tying governance documents into real operational security.",
     challenge:
-      "Pulling asset tracking, incident response, and third-party vendor controls together into one clean, auditable ISMS.",
+      "Bringing asset tracking, incident response, and third-party vendor controls together into one auditable ISMS.",
     approach: [
-      "Built core security policies, risk registers, and the Statement of Applicability (SoA).",
+      "Built the core security policies, risk registers, and Statement of Applicability (SoA).",
       "Set up practical controls for asset management, incident handling, and supplier security.",
-      "Prepped internal audit docs to sanity-check controls before external review.",
+      "Prepared internal audit documents to check controls before external review.",
     ],
     outcome: [
-      "Shipped a complete ISO/IEC 27001:2022 governance and operational toolkit.",
-      "Tightened coverage across internal assets, incident response, and external vendors.",
+      "A complete ISO/IEC 27001:2022 governance and operations toolkit.",
+      "Better coverage across internal assets, incident response, and external vendors.",
     ],
   },
   {
-    slug: "security-compliance-pt-solusi-dwi-satya-2025",
+    slug: "security-assessment-pt-solusi-dwi-satya-2025",
     year: "2025",
     period: "2025",
     date: "2025-08-01",
-    title: "Security Compliance – PT Solusi Dwi Satya",
-    tag: "Compliance",
+    title: "Security Assessment – PT Solusi Dwi Satya",
+    tag: "Assessment",
     domain: "grc",
     summary:
-      "Security compliance work for PT Solusi Dwi Satya: checking real controls against requirements, finding gaps, and lining up evidence for audit.",
+      "Security assessment for PT Solusi Dwi Satya: reviewing real controls, finding gaps, and prioritizing what to fix.",
     role: "IT GRC Consultant",
     organization: "PT Solusi Dwi Satya",
-    impact: "Security compliance review, gap visibility, and audit-ready evidence",
-    frameworks: ["IT GRC", "Security Compliance"],
-    stack: ["Control Review", "Gap Analysis", "Compliance Advisory"],
+    impact:
+      "Security assessment, gap visibility, and a prioritized fix list",
+    frameworks: ["Security Assessment", "IT GRC"],
+    stack: ["Control Review", "Gap Analysis", "Risk Prioritization"],
     deliverables: [
-      "Security Compliance Review",
+      "Security Assessment Report",
       "Gap & Priority Summary",
-      "Audit Evidence Support",
+      "Remediation Recommendations",
     ],
     overview:
-      "Worked with PT Solusi Dwi Satya on security compliance, looking at how their day-to-day controls held up against the requirements in scope.",
+      "Ran a security assessment for PT Solusi Dwi Satya to see how their controls and day-to-day practices held up.",
     challenge:
-      "Getting an honest picture of where controls stood without burying the team in checklists.",
+      "Getting an honest view of where security stood without burying the team in checklists.",
     approach: [
       "Reviewed existing policies, technical controls, and the evidence behind them.",
-      "Mapped gaps against the compliance requirements in scope.",
-      "Turned the gaps into a short, prioritized list the team could act on.",
+      "Identified gaps and rated them by risk.",
+      "Turned the findings into a short, prioritized list the team could act on.",
     ],
     outcome: [
-      "Gave PT Solusi Dwi Satya a clear view of its compliance position and what to fix first.",
-      "Kept evidence organized so audit conversations were easier.",
+      "Gave PT Solusi Dwi Satya a clear view of its security posture and what to fix first.",
+      "Left the team with recommendations they could start on right away.",
     ],
   },
   {
@@ -1002,10 +1006,11 @@ const GRC_PROJECTS: ProjectItem[] = [
     tag: "Implementation",
     domain: "grc",
     summary:
-      "Leveling up the org's ISMS with gap checks, risk treatment planning, core security docs, and Annex A control rollouts.",
+      "Strengthening the organization's ISMS with gap assessments, risk treatment planning, core security documents, and Annex A control rollout.",
     role: "IT GRC Consultant",
     organization: "PT Prima Sistem Informasi",
-    impact: "Gap check, risk treatment plan & Annex A control rollout",
+    impact:
+      "Gap assessment, risk treatment plan, and Annex A control rollout",
     frameworks: ["ISO/IEC 27001:2022", "ISMS", "Risk Treatment"],
     stack: ["Gap Assessment", "Risk Treatment Plan", "Security Docs", "Annex A Controls"],
     deliverables: [
@@ -1014,17 +1019,17 @@ const GRC_PROJECTS: ProjectItem[] = [
       "Annex A Control Implementation Support",
     ],
     overview:
-      "Helped build out and strengthen PT Prima Sistem Informasi's ISO/IEC 27001:2022 ISMS over a multi-quarter rollout.",
+      "Helped build and strengthen PT Prima Sistem Informasi's ISO/IEC 27001:2022 ISMS over a multi-quarter rollout.",
     challenge:
-      "Closing governance and technical gaps step by step without teams burning out halfway through.",
+      "Closing governance and technical gaps step by step without burning the team out.",
     approach: [
-      "Ran gap checks mapped against ISO/IEC 27001:2022 clauses.",
-      "Put together practical risk treatment plans and maintainable docs.",
-      "Supported the rollout of applicable Annex A controls across day-to-day ops.",
+      "Ran gap assessments mapped to ISO/IEC 27001:2022 clauses.",
+      "Wrote practical risk treatment plans and documents the team could maintain.",
+      "Supported the rollout of applicable Annex A controls across daily operations.",
     ],
     outcome: [
-      "Stepped up overall ISMS maturity and control coverage.",
-      "Left behind clean risk tracking and audit-ready documentation.",
+      "Higher ISMS maturity and broader control coverage.",
+      "Clean risk tracking and audit-ready documentation left behind.",
     ],
   },
   {
@@ -1037,10 +1042,11 @@ const GRC_PROJECTS: ProjectItem[] = [
     tag: "ISMS + QMS",
     domain: "grc",
     summary:
-      "Built combined ISMS + QMS workflows connecting security controls, quality ops, risk checks, and internal audits in one place.",
+      "Built combined ISMS and QMS workflows linking security controls, quality operations, risk assessments, and internal audits.",
     role: "IT GRC Consultant",
     organization: "PT Omnia Teknologi Indonesia",
-    impact: "Combined ISMS & QMS setup, clean SOPs & internal audits",
+    impact:
+      "Combined ISMS and QMS setup, clear SOPs, and internal audits",
     frameworks: ["ISO/IEC 27001:2022", "ISO 9001:2015", "Integrated ISMS & QMS"],
     stack: ["ISMS/QMS Framework", "Risk Assessment", "Documented Procedures", "Internal Audit"],
     deliverables: [
@@ -1049,17 +1055,17 @@ const GRC_PROJECTS: ProjectItem[] = [
       "Internal Audit Execution & Compliance Support",
     ],
     overview:
-      "Built unified ISO/IEC 27001:2022 and ISO 9001:2015 frameworks at PT Omnia Teknologi Indonesia so security and quality ran smoothly together.",
+      "Built unified ISO/IEC 27001:2022 and ISO 9001:2015 frameworks at PT Omnia Teknologi Indonesia so security and quality work together.",
     challenge:
-      "Designing shared SOPs and audit cycles that satisfy both security and quality standards without creating busywork.",
+      "Designing shared SOPs and audit cycles that satisfy both standards without creating busywork.",
     approach: [
       "Wrote unified documentation covering both security controls and quality workflows.",
-      "Ran practical risk checks and locked in clean operational procedures.",
-      "Backed internal audits to verify compliance and polish day-to-day execution.",
+      "Ran practical risk assessments and settled on clear operating procedures.",
+      "Backed internal audits to verify compliance and tidy up day-to-day execution.",
     ],
     outcome: [
-      "Put a unified ISMS + QMS baseline in place.",
-      "Made team workflows more consistent and ready for certification audits.",
+      "A unified ISMS and QMS baseline.",
+      "More consistent workflows, ready for certification audits.",
     ],
   },
   {
@@ -1071,10 +1077,11 @@ const GRC_PROJECTS: ProjectItem[] = [
     tag: "Implementation",
     domain: "grc",
     summary:
-      "Fast-track ISO/IEC 27001:2022 rollout and audit prep: ISMS docs, risk management, control checks, and getting the team audit-ready.",
+      "Fast-track ISO/IEC 27001:2022 rollout and audit prep: ISMS documents, risk management, control checks, and getting the team audit-ready.",
     role: "IT GRC Consultant",
     organization: "PT Covena Teknologi Global",
-    impact: "Fast-track ISMS rollout & certification audit prep",
+    impact:
+      "Fast-track ISMS rollout and certification audit prep",
     frameworks: ["ISO/IEC 27001:2022", "Certification Readiness", "ISMS"],
     stack: ["ISMS Documentation", "Risk Management", "Control Evaluation", "Audit Prep"],
     deliverables: [
@@ -1083,17 +1090,17 @@ const GRC_PROJECTS: ProjectItem[] = [
       "Certification Audit Readiness & Control Check",
     ],
     overview:
-      "Helped get PT Covena Teknologi Global's ISO/IEC 27001:2022 setup and certification prep across the finish line.",
+      "Helped PT Covena Teknologi Global finish its ISO/IEC 27001:2022 setup and certification prep.",
     challenge:
-      "Getting solid ISMS docs, risk evidence, and control checks lined up smoothly on a tight audit schedule.",
+      "Lining up solid ISMS documents, risk evidence, and control checks on a tight audit schedule.",
     approach: [
-      "Put together core ISMS docs and clean risk records.",
+      "Put together the core ISMS documents and clean risk records.",
       "Checked implemented controls against ISO/IEC 27001:2022 Annex A.",
-      "Walked stakeholders through audit prep so nobody walked into certification guessing.",
+      "Walked stakeholders through audit prep so nobody went into certification guessing.",
     ],
     outcome: [
-      "Got the team cleanly prepped for ISO/IEC 27001:2022 certification.",
-      "Left behind verified control evidence and tidy risk documentation.",
+      "The team was well prepared for ISO/IEC 27001:2022 certification.",
+      "Verified control evidence and tidy risk documentation left behind.",
     ],
   },
   {
@@ -1105,10 +1112,11 @@ const GRC_PROJECTS: ProjectItem[] = [
     tag: "Implementation",
     domain: "grc",
     summary:
-      "Year-long ISMS build from scratch: security policies, risk management, Statement of Applicability (SoA), and Annex A alignment.",
+      "A year-long ISMS build from scratch: security policies, risk management, Statement of Applicability (SoA), and Annex A alignment.",
     role: "IT GRC Consultant",
     organization: "PT Navios Evolusi Solusindo",
-    impact: "Ground-up ISMS setup, policy suite & SoA alignment",
+    impact:
+      "Ground-up ISMS setup, policy suite, and SoA alignment",
     frameworks: ["ISO/IEC 27001:2022", "ISMS", "Statement of Applicability"],
     stack: ["Policy Prep", "Risk Management", "SoA Development", "Control Alignment"],
     deliverables: [
@@ -1117,17 +1125,17 @@ const GRC_PROJECTS: ProjectItem[] = [
       "Security Control Alignment Pack",
     ],
     overview:
-      "Helped build out PT Navios Evolusi Solusindo's ISO/IEC 27001:2022 ISMS from the ground up over the full year.",
+      "Helped build PT Navios Evolusi Solusindo's ISO/IEC 27001:2022 ISMS from the ground up over the course of a year.",
     challenge:
-      "Standing up an ISMS from zero: policies, risk criteria, and honest Annex A justifications in the SoA without overcomplicating daily ops.",
+      "Standing up an ISMS from zero (policies, risk criteria, honest Annex A justifications in the SoA) without overcomplicating daily work.",
     approach: [
-      "Drafted straightforward info-sec policies and day-to-day procedures.",
-      "Ran risk management cycles and built out the Statement of Applicability (SoA).",
-      "Lined everyday security controls up cleanly with ISO/IEC 27001:2022.",
+      "Drafted straightforward security policies and day-to-day procedures.",
+      "Ran risk management cycles and built the Statement of Applicability (SoA).",
+      "Aligned everyday security controls with ISO/IEC 27001:2022.",
     ],
     outcome: [
-      "Put a clean, auditable information security management setup in place.",
-      "Delivered honest SoA justifications and controls the team actually uses.",
+      "A clean, auditable information security management system.",
+      "Honest SoA justifications and controls the team actually uses.",
     ],
   },
   {
@@ -1140,10 +1148,11 @@ const GRC_PROJECTS: ProjectItem[] = [
     tag: "Transition",
     domain: "grc",
     summary:
-      "Migrated an existing ISMS from ISO/IEC 27001:2013 to 2022: delta gap checks, refreshed docs, updated risk maps, and revised Annex A controls.",
+      "Migrated an existing ISMS from ISO/IEC 27001:2013 to 2022: delta gap assessment, refreshed documents, updated risk maps, and revised Annex A controls.",
     role: "IT GRC Consultant",
     organization: "PT Autopedia Sukses Lestari",
-    impact: "Smooth ISO/IEC 27001:2013 → 2022 upgrade & Annex A refresh",
+    impact:
+      "Smooth ISO/IEC 27001:2013 to 2022 upgrade and Annex A refresh",
     frameworks: ["ISO/IEC 27001:2022", "2013→2022 Transition", "Revised Annex A"],
     stack: ["Transition Gap Assessment", "Doc Modernization", "Annex A Mapping", "Risk Alignment"],
     deliverables: [
@@ -1152,17 +1161,17 @@ const GRC_PROJECTS: ProjectItem[] = [
       "93 Revised Annex A Controls Evaluation",
     ],
     overview:
-      "Helped migrate PT Autopedia Sukses Lestari's existing ISMS cleanly from ISO/IEC 27001:2013 to 2022 alongside their surveillance review.",
+      "Helped PT Autopedia Sukses Lestari move its existing ISMS from ISO/IEC 27001:2013 to 2022, alongside their surveillance review.",
     challenge:
-      "Remapping 114 older Annex A controls into the tighter 93-control structure (plus 11 brand-new 2022 controls) without disrupting live teams.",
+      "Remapping the 114 older Annex A controls into the 93-control structure (plus 11 new 2022 controls) without disrupting live teams.",
     approach: [
-      "Ran delta gap checks to catch every clause change and brand-new 2022 Annex A control.",
+      "Ran a delta gap assessment to catch every clause change and each new 2022 Annex A control.",
       "Refreshed ISMS policies, procedures, and risk records for the 2022 standard.",
-      "Checked revised Annex A controls so the transition audit went smoothly.",
+      "Checked the revised Annex A controls so the transition audit would go smoothly.",
     ],
     outcome: [
-      "Modernized legacy ISMS docs and control maps to ISO/IEC 27001:2022.",
-      "Got the team cleanly set up for their transition audit.",
+      "Legacy ISMS documents and control maps updated to ISO/IEC 27001:2022.",
+      "The team was set up for its transition audit.",
     ],
   },
   {
@@ -1175,10 +1184,11 @@ const GRC_PROJECTS: ProjectItem[] = [
     tag: "Transition",
     domain: "grc",
     summary:
-      "Helped upgrade from ISO/IEC 27001:2013 to 2022: reviewing current ISMS habits, checking what changed, updating docs, and mapping revised Annex A.",
+      "Helped upgrade from ISO/IEC 27001:2013 to 2022: reviewing current ISMS practice, checking what changed, updating documents, and mapping the revised Annex A.",
     role: "IT GRC Consultant",
     organization: "PT JBA Indonesia",
-    impact: "ISMS delta review & clean revised Annex A upgrade",
+    impact:
+      "ISMS delta review and a clean move to the revised Annex A",
     frameworks: ["ISO/IEC 27001:2022", "2013→2022 Transition", "Revised Annex A"],
     stack: ["ISMS Review", "Requirement Delta Check", "Doc Updates", "Control Alignment"],
     deliverables: [
@@ -1187,17 +1197,17 @@ const GRC_PROJECTS: ProjectItem[] = [
       "Revised Annex A Alignment",
     ],
     overview:
-      "Supported PT JBA Indonesia's upgrade from ISO/IEC 27001:2013 to ISO/IEC 27001:2022 across docs, requirements, and revised controls.",
+      "Supported PT JBA Indonesia's upgrade from ISO/IEC 27001:2013 to 2022 across documents, requirements, and revised controls.",
     challenge:
-      "Reviewing established 2013-era habits to catch every requirement change and modernize docs without adding unnecessary bloat.",
+      "Reviewing established 2013-era practices to catch every requirement change and update documents without adding bloat.",
     approach: [
-      "Checked current ISMS workflows and listed out everything that shifted in ISO/IEC 27001:2022.",
-      "Updated governance and operational docs to match the new clauses.",
-      "Mapped live security controls straight into the revised Annex A layout.",
+      "Checked current ISMS workflows and listed everything that changed in ISO/IEC 27001:2022.",
+      "Updated governance and operational documents to match the new clauses.",
+      "Mapped live security controls into the revised Annex A layout.",
     ],
     outcome: [
-      "Brought PT JBA Indonesia's ISMS docs and controls smoothly up to ISO/IEC 27001:2022.",
-      "Kept crystal-clear traceability from legacy controls to the new Annex A structure.",
+      "PT JBA Indonesia's ISMS documents and controls brought up to ISO/IEC 27001:2022.",
+      "Clear traceability from legacy controls to the new Annex A structure.",
     ],
   },
   {
@@ -1210,10 +1220,11 @@ const GRC_PROJECTS: ProjectItem[] = [
     tag: "Surveillance",
     domain: "grc",
     summary:
-      "Ongoing ISO/IEC 27001:2022 surveillance support: making sure controls actually hold up, checking live audit evidence, and spotting easy wins.",
+      "Ongoing ISO/IEC 27001:2022 surveillance support: confirming controls hold up, checking live audit evidence, and spotting quick wins.",
     role: "IT GRC Consultant",
     organization: "PT Manpro Teknologi Indonesia",
-    impact: "Keeping the ISMS sharp & audit-ready year over year",
+    impact:
+      "Keeping the ISMS sharp and audit-ready year after year",
     frameworks: ["ISO/IEC 27001:2022", "Surveillance Audit", "Continual Improvement"],
     stack: ["Audit Evidence Review", "Control Verification", "ISMS Evaluation"],
     deliverables: [
@@ -1222,17 +1233,17 @@ const GRC_PROJECTS: ProjectItem[] = [
       "Continual Improvement Action Items",
     ],
     overview:
-      "Helping with recurring ISO/IEC 27001:2022 surveillance audits at PT Manpro Teknologi Indonesia so their ISMS stays alive long after day one.",
+      "Helping with recurring ISO/IEC 27001:2022 surveillance audits at PT Manpro Teknologi Indonesia so the ISMS stays alive long after day one.",
     challenge:
-      "Keeping controls real, well-evidenced, and useful as the company and its workflows keep evolving every year.",
+      "Keeping controls real, well evidenced, and useful as the company and its workflows change every year.",
     approach: [
-      "Checked how well the ISMS was holding up across ISO/IEC 27001:2022 clauses and Annex A.",
-      "Reviewed live controls and verified supporting compliance evidence.",
+      "Checked how well the ISMS held up across ISO/IEC 27001:2022 clauses and Annex A.",
+      "Reviewed live controls and verified the supporting compliance evidence.",
       "Flagged practical improvements to keep the setup sharp and audit-ready.",
     ],
     outcome: [
-      "Kept solid, verifiable compliance evidence rolling across surveillance cycles.",
-      "Shared practical tweaks that keep the ISMS evolving without extra friction.",
+      "Verifiable compliance evidence kept flowing across surveillance cycles.",
+      "Practical tweaks that keep the ISMS improving without extra friction.",
     ],
   },
   {
@@ -1244,10 +1255,11 @@ const GRC_PROJECTS: ProjectItem[] = [
     tag: "Implementation",
     domain: "grc",
     summary:
-      "Helped build an ISO/IEC 27001:2022 ISMS from the ground up, core docs, risk checks, control rollouts, and governance basics.",
+      "Helped build an ISO/IEC 27001:2022 ISMS from the ground up: core documents, risk assessments, control rollout, and governance basics.",
     role: "IT GRC Consultant",
     organization: "PT Pallav Kredit Makmur",
-    impact: "ISMS foundation & financial info-sec governance baseline",
+    impact:
+      "ISMS foundation and a financial information security governance baseline",
     frameworks: ["ISO/IEC 27001:2022", "ISMS", "Security Governance"],
     stack: ["Security Docs", "Risk Assessment", "Control Rollout", "Compliance"],
     deliverables: [
@@ -1256,17 +1268,17 @@ const GRC_PROJECTS: ProjectItem[] = [
       "Control Rollout & Governance Baseline",
     ],
     overview:
-      "Helped stand up an ISO/IEC 27001:2022-aligned ISMS from scratch at PT Pallav Kredit Makmur.",
+      "Helped set up an ISO/IEC 27001:2022-aligned ISMS from scratch at PT Pallav Kredit Makmur.",
     challenge:
-      "Getting a legit info-sec governance baseline built for financial credit ops inside a tight timeline.",
+      "Building a real information security governance baseline for credit operations on a tight timeline.",
     approach: [
-      "Drafted clean core ISMS docs aligned with ISO/IEC 27001:2022.",
-      "Ran risk checks and backed the rollout of applicable security controls.",
-      "Lined compliance requirements up neatly to level up security governance.",
+      "Drafted core ISMS documents aligned with ISO/IEC 27001:2022.",
+      "Ran risk assessments and supported the rollout of applicable security controls.",
+      "Mapped compliance requirements to strengthen security governance.",
     ],
     outcome: [
-      "Got a formal ISO/IEC 27001:2022 ISMS baseline up and running.",
-      "Put the team in a much stronger spot for governance and compliance.",
+      "A formal ISO/IEC 27001:2022 ISMS baseline up and running.",
+      "A much stronger footing for governance and compliance.",
     ],
   },
   {
@@ -1278,7 +1290,7 @@ const GRC_PROJECTS: ProjectItem[] = [
     tag: "Awareness",
     domain: "grc",
     summary:
-      "Built and ran a security awareness program that actually sticks, real phishing red flags, everyday cyber hygiene, and zero boring slide-reading.",
+      "Built and ran a security awareness program that sticks: real phishing red flags, everyday cyber hygiene, and no boring slide-reading.",
     role: "IT GRC Consultant",
     organization: "PT Kilang Pertama Internasional",
     impact: "Practical security habits & human-layer risk reduction",
@@ -1290,16 +1302,16 @@ const GRC_PROJECTS: ProjectItem[] = [
       "Awareness Completion & Compliance Evidence",
     ],
     overview:
-      "Ran security awareness sessions at PT Kilang Pertama Internasional to turn dry security policies into everyday habits people actually remember.",
+      "Ran security awareness sessions at PT Kilang Pertama Internasional to turn dry policies into habits people remember.",
     challenge:
-      "Keeping security training relatable and interesting for both tech and non-tech folks in an industrial energy setting.",
+      "Keeping training relatable for both technical and non-technical people in an industrial energy setting.",
     approach: [
-      "Built sessions around real-world phishing tricks, password/account hygiene, and quick incident reporting.",
-      "Connected everyday habits straight back to company data protection and ISO 27001 expectations.",
+      "Built sessions around real phishing tricks, password and account hygiene, and quick incident reporting.",
+      "Tied everyday habits back to company data protection and ISO 27001 expectations.",
     ],
     outcome: [
-      "Leveled up everyday security awareness and policy habits across participating teams.",
-      "Ticked off ISO/IEC 27001 awareness compliance evidence cleanly along the way.",
+      "Better everyday security awareness and policy habits across participating teams.",
+      "Collected ISO/IEC 27001 awareness evidence along the way.",
     ],
   },
   {
@@ -1311,10 +1323,11 @@ const GRC_PROJECTS: ProjectItem[] = [
     tag: "Product",
     domain: "grc",
     summary:
-      "Built a web app to ditch messy compliance spreadsheets, unifying ISO/IEC 27001, 27701, SOC Type 2, Essential Eight, and UU PDP in one dashboard.",
+      "Built a web app to replace messy compliance spreadsheets, bringing ISO/IEC 27001, 27701, SOC Type 2, Essential Eight, and UU PDP into one dashboard.",
     role: "Product & GRC Architect",
     organization: "Multi-Framework Compliance App",
-    impact: "One clean workspace tracking 5 security & privacy frameworks",
+    impact:
+      "One workspace tracking five security and privacy frameworks",
     frameworks: [
       "ISO/IEC 27001",
       "ISO/IEC 27701",
@@ -1329,16 +1342,16 @@ const GRC_PROJECTS: ProjectItem[] = [
       "Reusable Compliance Delivery Workflow",
     ],
     overview:
-      "Built a compliance web app to replace chaotic spreadsheets with one clean workspace across ISO 27001, ISO 27701, SOC Type 2, Essential Eight, and UU PDP.",
+      "Built a compliance web app that replaces chaotic spreadsheets with one workspace across ISO 27001, ISO 27701, SOC Type 2, Essential Eight, and UU PDP.",
     challenge:
-      "Tracking overlapping controls and audit evidence across five frameworks in static Excel sheets gets messy fast.",
+      "Tracking overlapping controls and audit evidence across five frameworks in static spreadsheets gets messy fast.",
     approach: [
-      "Mapped shared controls across ISO/IEC 27001, 27701, SOC Type 2, Essential Eight, and UU PDP into one clean data model.",
-      "Built clear status views so teams can see control progress, gaps, and audit evidence at a glance.",
+      "Mapped shared controls across ISO/IEC 27001, 27701, SOC Type 2, Essential Eight, and UU PDP into one data model.",
+      "Built clear status views so teams see control progress, gaps, and audit evidence at a glance.",
     ],
     outcome: [
-      "Made multi-framework consulting and control tracking way faster across client projects.",
-      "Turned repetitive compliance grunt work into a repeatable, productized flow.",
+      "Faster multi-framework consulting and control tracking across client projects.",
+      "Turned repetitive compliance work into a repeatable, productized flow.",
     ],
   },
 ];
@@ -1354,10 +1367,11 @@ const INCIDENT_PROJECTS: ProjectItem[] = [
     domain: "incident-management",
     featured: true,
     summary:
-      "Hands-on incident handling, log forensics, attack timeline reconstruction, and root cause analysis for an enterprise software & IT solutions environment.",
+      "Incident handling, log forensics, attack timeline reconstruction, and root cause analysis for an enterprise software and IT solutions company.",
     role: "Incident Responder",
     organization: "PT Javan Cipta Solusi",
-    impact: "Structured containment, root cause analysis & post-incident hardening",
+    impact:
+      "Structured containment, root cause analysis, and post-incident hardening",
     frameworks: ["Incident Management", "Root Cause Analysis", "Timeline Reconstruction"],
     stack: ["Log Forensics", "Telemetry Analysis", "Containment Advisory", "IR Coordination"],
     deliverables: [
@@ -1366,17 +1380,17 @@ const INCIDENT_PROJECTS: ProjectItem[] = [
       "Containment & Post-Incident Hardening Plan",
     ],
     overview:
-      "Jumped in on incident management and response for PT Javan Cipta Solusi, tracing what happened, finding the root cause, and guiding calm containment.",
+      "Handled incident management and response for PT Javan Cipta Solusi: tracing what happened, finding the root cause, and guiding containment.",
     challenge:
-      "Piecing together application, server, and access logs quickly to separate signal from noise while keeping live client operations steady.",
+      "Piecing together application, server, and access logs quickly to separate signal from noise while keeping client operations steady.",
     approach: [
-      "Dug through system, application, and network telemetry to trace suspicious activity and rebuild the full event timeline.",
-      "Coordinated containment steps directly with internal engineering and IT teams to close the entry point cleanly.",
-      "Wrote up a clear root cause analysis and practical hardening checklist to stop repeat issues.",
+      "Went through system, application, and network telemetry to trace suspicious activity and rebuild the event timeline.",
+      "Coordinated containment steps with internal engineering and IT to close the entry point cleanly.",
+      "Wrote a clear root cause analysis and a practical hardening checklist to prevent a repeat.",
     ],
     outcome: [
-      "Delivered a straight-shooting RCA and prioritized hardening roadmap the team could act on immediately.",
-      "Leveled up incident coordination and post-incident visibility across technical stakeholders.",
+      "Delivered a plain-spoken RCA and a prioritized hardening roadmap the team could act on right away.",
+      "Improved incident coordination and post-incident visibility across technical stakeholders.",
     ],
   },
   {
@@ -1389,10 +1403,11 @@ const INCIDENT_PROJECTS: ProjectItem[] = [
     domain: "incident-management",
     featured: true,
     summary:
-      "Hands-on incident handling, alert digging, root cause analysis, and attack timeline reconstruction for critical industrial infrastructure.",
+      "Incident handling, alert investigation, root cause analysis, and attack timeline reconstruction for critical industrial infrastructure.",
     role: "Incident Responder",
     organization: "PT Pupuk Iskandar Muda",
-    impact: "Calm containment, root cause analysis & full attack timeline",
+    impact:
+      "Calm containment, root cause analysis, and a full attack timeline",
     frameworks: ["Incident Management", "Root Cause Analysis", "Timeline Reconstruction"],
     stack: ["Log Forensics", "Telemetry Analysis", "Containment Advisory", "IR Coordination"],
     deliverables: [
@@ -1401,17 +1416,17 @@ const INCIDENT_PROJECTS: ProjectItem[] = [
       "Containment & Post-Incident Hardening Plan",
     ],
     overview:
-      "Stepped in on incident management and response for PT Pupuk Iskandar Muda, digging through evidence, finding the root cause, and guiding containment.",
+      "Handled incident management and response for PT Pupuk Iskandar Muda: going through the evidence, finding the root cause, and guiding containment.",
     challenge:
-      "Piecing together what happened quickly inside a critical industrial environment while keeping response steps calm, structured, and traceable.",
+      "Working out what happened quickly in a critical industrial environment while keeping every response step calm, structured, and traceable.",
     approach: [
-      "Dug through endpoint, server, and network logs to trace sketchy activity and rebuild the attack timeline.",
-      "Worked side-by-side with internal IT and security teams to contain the issue and nail down the root cause.",
-      "Wrote up practical post-incident hardening steps so the same thing couldn't happen twice.",
+      "Went through endpoint, server, and network logs to trace suspicious activity and rebuild the attack timeline.",
+      "Worked alongside internal IT and security teams to contain the issue and pin down the root cause.",
+      "Wrote practical post-incident hardening steps so the same thing couldn't happen twice.",
     ],
     outcome: [
-      "Delivered a straight-shooting root cause analysis and actionable hardening plan.",
-      "Tightened up how technical teams coordinate when real incidents hit.",
+      "Delivered a plain-spoken root cause analysis and an actionable hardening plan.",
+      "Tightened how technical teams coordinate when a real incident hits.",
     ],
   },
   {
@@ -1424,10 +1439,11 @@ const INCIDENT_PROJECTS: ProjectItem[] = [
     domain: "incident-management",
     featured: true,
     summary:
-      "Incident response coordination, SIEM log correlation, root cause analysis, and timeline reconstruction inside a banking environment.",
+      "Incident response coordination, SIEM log correlation, root cause analysis, and timeline reconstruction in a banking environment.",
     role: "Incident Responder",
     organization: "PT Bank Resona Perdania",
-    impact: "Banking incident investigation, timeline reconstruction & containment",
+    impact:
+      "Banking incident investigation, timeline reconstruction, and containment",
     frameworks: ["Incident Response", "SIEM Correlation", "Root Cause Analysis"],
     stack: ["Wazuh", "Elastic Stack (ELK)", "Endpoint Telemetry", "Log Investigation"],
     deliverables: [
@@ -1436,16 +1452,16 @@ const INCIDENT_PROJECTS: ProjectItem[] = [
       "Containment & Detection Tuning Recommendations",
     ],
     overview:
-      "Backed incident management and response for PT Bank Resona Perdania, pairing SIEM telemetry with hands-on event investigation.",
+      "Supported incident management and response for PT Bank Resona Perdania, combining SIEM telemetry with hands-on investigation.",
     challenge:
-      "Rebuilding accurate event timelines under strict banking scrutiny while coordinating smoothly with internal IT and security teams.",
+      "Rebuilding an accurate event timeline under banking-level scrutiny while coordinating with internal IT and security.",
     approach: [
       "Correlated endpoint and network logs across Wazuh and Elastic Stack (ELK) to isolate suspicious activity.",
       "Rebuilt the full event timeline and laid out clear root cause findings for stakeholders.",
-      "Turned lessons learned straight into fresh SIEM detection rules.",
+      "Turned the lessons learned into new SIEM detection rules.",
     ],
     outcome: [
-      "Gave the team crisp timeline clarity and clear containment steps when it mattered most.",
+      "Gave the team a clear timeline and clear containment steps when it mattered most.",
       "Upgraded post-incident detection rules so similar patterns get flagged automatically next time.",
     ],
   },
