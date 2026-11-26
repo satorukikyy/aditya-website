@@ -42,6 +42,15 @@ pnpm build   # outputs ./out
 - HTTP security headers are defined in `public/_headers` (not `next.config.ts`).
 - Optional env: `NEXT_PUBLIC_SITE_URL` (canonical URL, see `.env.example`).
 
+## Checks
+
+```bash
+pnpm lint    # ESLint (Next + React hooks rules)
+pnpm build   # type-checks and builds the static export
+```
+
+TypeScript is pinned to `~6.0` on purpose: `typescript-eslint` only supports TypeScript below 6.1, so TypeScript 7 breaks `pnpm lint`. Bump both together once `typescript-eslint` supports 7.
+
 ## Edit Content
 
 All site content lives in a single file: `src/data/site.ts`.

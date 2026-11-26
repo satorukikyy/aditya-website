@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { AnimatePresence, MotionConfig, motion, useReducedMotion } from "motion/react";
 
 // Six feeds. `id` drives the mute toggle, `label` is what the legend shows (named like real
@@ -117,6 +117,8 @@ const POOL: Record<Source, Line[]> = {
 interface Entry {
   id: number;
   time: string;
+  /** Seed lines only: how long before the page loaded they "happened", so times look live. */
+  seedAge?: number;
   src: Source;
   tag: string;
   msg: string;
@@ -143,27 +145,49 @@ const fmt = (d: Date) => d.toLocaleTimeString("en-GB", { hour12: false });
 const SEED: Entry[] = SEED_PICKS.map(([src, i], n) => ({
   id: n,
   time: `21:41:${String(10 + n * 2).padStart(2, "0")}`,
+  seedAge: (SEED_PICKS.length - n) * 1400,
   src,
   ...POOL[src][i],
 }));
 
 const rand = (n: number) => Math.floor(Math.random() * n);
 
+// Client clock snapshot: 0 on the server (so HTML matches), the page-load time in the browser.
+let loadedAt = 0;
+const getLoadedAt = () => (loadedAt ||= Date.now());
+const getServerLoadedAt = () => 0;
+const subscribeNever = () => () => {};
+
 // Highlighting: key= prefixes dim, IPs bright, HTTP errors and block verdicts pink,
 // good outcomes sky.
 const TOKEN =
-  /(\b\d{1,3}(?:\.\d{1,3}){3}(?::\d+)?\b|(?<=" )\d{3}(?= )|\b[A-Za-z_][\w.-]*=|\b(?:BLOCK|blocked|block|REJECT|AccessDenied|NON_COMPLIANT|NonCompliant|CRITICAL|ALARM|rejected|denied|DENIED|deny|Failed|Forbidden|forbidden|PERMISSION_DENIED|OPEN_FIREWALL|PUBLIC_BUCKET_ACL|MFA_NOT_ENFORCED|High|HIGH|firing)\b|\b(?:not-reproducible|enforced|rotated|revoked|approved|collected|tuned|reloaded|closed|signed|green)\b)/gi;
+  /(\b\d{1,3}(?:\.\d{1,3}){3}(?::\d+)?\b|\b[A-Za-z_][\w.-]*=|\b(?:BLOCK|blocked|block|REJECT|AccessDenied|NON_COMPLIANT|NonCompliant|CRITICAL|ALARM|rejected|denied|DENIED|deny|Failed|Forbidden|forbidden|PERMISSION_DENIED|OPEN_FIREWALL|PUBLIC_BUCKET_ACL|MFA_NOT_ENFORCED|High|HIGH|firing)\b|\b(?:not-reproducible|enforced|rotated|revoked|approved|collected|tuned|reloaded|closed|signed|green)\b)/gi;
 const BAD = /^(?:BLOCK|blocked|block|REJECT|AccessDenied|NON_COMPLIANT|NonCompliant|CRITICAL|ALARM|rejected|denied|DENIED|deny|Failed|Forbidden|forbidden|PERMISSION_DENIED|OPEN_FIREWALL|PUBLIC_BUCKET_ACL|MFA_NOT_ENFORCED|High|HIGH|firing)$/i;
 const GOOD = /^(?:not-reproducible|enforced|rotated|revoked|approved|collected|tuned|reloaded|closed|signed|green)$/i;
 
+// nginx access lines carry an HTTP status after the quoted request: split it out first.
+const ACCESS_LINE = /^(\S+ "[^"]*" )(\d{3})( .*)$/;
+
 function renderMsg(msg: string) {
+  const access = msg.match(ACCESS_LINE);
+  if (access) {
+    const status = access[2];
+    const bad = status.startsWith("4") || status.startsWith("5");
+    return (
+      <>
+        {renderTokens(access[1])}
+        <span style={{ color: bad ? "var(--pink-ink)" : "var(--sky-ink)" }}>{status}</span>
+        {renderTokens(access[3])}
+      </>
+    );
+  }
+  return renderTokens(msg);
+}
+
+function renderTokens(msg: string) {
   return msg.split(TOKEN).map((part, i) => {
     if (!part) return null;
     if (/^[A-Za-z_][\w.-]*=$/.test(part)) return <span key={i} className="text-[var(--text-muted)]">{part}</span>;
-    if (/^\d{3}$/.test(part)) {
-      const bad = part.startsWith("4") || part.startsWith("5");
-      return <span key={i} style={{ color: bad ? "var(--pink-ink)" : "var(--sky-ink)" }}>{part}</span>;
-    }
     if (BAD.test(part)) return <span key={i} style={{ color: "var(--pink-ink)" }}>{part}</span>;
     if (GOOD.test(part)) return <span key={i} style={{ color: "var(--sky-ink)" }}>{part}</span>;
     if (/^\d{1,3}(?:\.\d{1,3}){3}/.test(part)) return <span key={i} className="text-[var(--text)]">{part}</span>;
@@ -183,6 +207,7 @@ export function LogStream() {
   });
   const [paused, setPaused] = useState(false);
   const prefersReduced = useReducedMotion();
+  const pageLoadedAt = useSyncExternalStore(subscribeNever, getLoadedAt, getServerLoadedAt);
 
   const nextId = useRef(SEED.length);
   const visible = useRef(true);
@@ -194,14 +219,6 @@ export function LogStream() {
   useEffect(() => {
     enabledRef.current = enabled;
   }, [enabled]);
-
-  // Swap the fixed seed times for real ones, so the stream looks live from the first frame.
-  useEffect(() => {
-    const now = Date.now();
-    setEntries((prev) =>
-      prev.map((e, i) => ({ ...e, time: fmt(new Date(now - (prev.length - i) * 1400)) }))
-    );
-  }, []);
 
   useEffect(() => {
     const el = rootRef.current;
@@ -259,11 +276,13 @@ export function LogStream() {
     <figure ref={rootRef} className="mt-7">
       <div
         className="overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--code-bg)]"
-        onMouseEnter={() => {
+        onPointerEnter={(e) => {
+          if (e.pointerType !== "mouse") return;
           hovering.current = true;
           setPaused(true);
         }}
-        onMouseLeave={() => {
+        onPointerLeave={(e) => {
+          if (e.pointerType !== "mouse") return;
           hovering.current = false;
           setPaused(false);
         }}
@@ -310,7 +329,7 @@ export function LogStream() {
                     transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
                     className="flex items-baseline gap-2.5 whitespace-nowrap"
                   >
-                    <span className="hidden shrink-0 tabular-nums text-[var(--text-faint)] sm:inline">{e.time}</span>
+                    <span className="hidden shrink-0 tabular-nums text-[var(--text-faint)] sm:inline">{e.seedAge !== undefined && pageLoadedAt ? fmt(new Date(pageLoadedAt - e.seedAge)) : e.time}</span>
                     <span className="w-[72px] shrink-0 truncate font-medium sm:w-[78px]" style={{ color: m.ink }}>
                       {e.tag}
                     </span>

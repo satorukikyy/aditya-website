@@ -27,8 +27,6 @@ export function JournalTable({ posts, sortable = true }: JournalTableProps) {
 
   const arrow = sortDir === "desc" ? "↓" : "↑";
 
-  let lastYear: string | null = null;
-
   return (
     <div>
       <div className="flex items-center border-b border-[var(--border)] pb-2 text-xs text-[var(--text-muted)] select-none">
@@ -50,9 +48,8 @@ export function JournalTable({ posts, sortable = true }: JournalTableProps) {
       </div>
 
       <ul className="divide-y divide-[var(--border)]">
-        {sortedPosts.map((post) => {
-          const showYear = post.year !== lastYear;
-          lastYear = post.year;
+        {sortedPosts.map((post, i) => {
+          const showYear = i === 0 || post.year !== sortedPosts[i - 1].year;
 
           return (
             <li key={post.slug}>

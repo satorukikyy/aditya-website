@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { motion, MotionConfig } from "motion/react";
 import { ArrowUpRight, Search, X } from "lucide-react";
@@ -15,22 +15,25 @@ interface ProjectExplorerProps {
   projects: ProjectItem[];
 }
 
-export function ProjectExplorer({ projects }: ProjectExplorerProps) {
-  const [selected, setSelected] = useState<ProjectDomainId | "all">("all");
-  const [query, setQuery] = useState("");
-  const hasInteracted = useRef(false);
+// Static export has no request-time searchParams, so ?domain= is read from the URL in the browser.
+const subscribeToUrl = (notify: () => void) => {
+  window.addEventListener("popstate", notify);
+  return () => window.removeEventListener("popstate", notify);
+};
+const readDomainFromUrl = (): ProjectDomainId | "all" => {
+  const domain = new URLSearchParams(window.location.search).get("domain");
+  return PROJECT_DOMAINS.find((d) => d.id === domain)?.id ?? "all";
+};
 
-  // Static export has no request-time searchParams: read ?domain= after mount.
-  useEffect(() => {
-    const domain = new URLSearchParams(window.location.search).get("domain");
-    if (PROJECT_DOMAINS.some((d) => d.id === domain)) {
-      setSelected(domain as ProjectDomainId);
-    }
-  }, []);
+export function ProjectExplorer({ projects }: ProjectExplorerProps) {
+  const urlDomain = useSyncExternalStore(subscribeToUrl, readDomainFromUrl, () => "all" as const);
+  // null until the visitor picks a tab themselves; until then the URL decides.
+  const [picked, setPicked] = useState<ProjectDomainId | "all" | null>(null);
+  const selected = picked ?? urlDomain;
+  const [query, setQuery] = useState("");
 
   const selectDomain = (next: ProjectDomainId | "all") => {
-    hasInteracted.current = true;
-    setSelected(next);
+    setPicked(next);
     try {
       const nextUrl = next === "all" ? "/project" : `/project?domain=${next}`;
       window.history.replaceState(null, "", nextUrl);
@@ -214,7 +217,7 @@ export function ProjectExplorer({ projects }: ProjectExplorerProps) {
         <motion.div
           key={selected}
           className="space-y-11"
-          initial={hasInteracted.current ? { opacity: 0, y: 10 } : false}
+          initial={picked !== null ? { opacity: 0, y: 10 } : false}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
         >
